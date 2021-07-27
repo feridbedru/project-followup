@@ -1,0 +1,71 @@
+{{ form_start(form) }}
+<div class="row">
+	<div class="form-group col-md-6">
+		<label class="control-label no-padding-right">{{ form_label(form.name) }}</label>
+		{{ form_widget(form.name,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-3">
+		<label class="control-label no-padding-right">{{ form_label(form.currency) }}</label>
+		{{ form_widget(form.currency,{'attr':{'class':'form-control select2'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-3">
+		<label class="control-label no-padding-right">{{ form_label(form.amount) }}</label>
+		{{ form_widget(form.amount,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+</div>
+<div class="row">
+	<div class="form-group col-md-4">
+		<label class="control-label no-padding-right">{{ form_label(form.category) }}</label>
+		{{ form_widget(form.category,{'attr':{'class':'form-control select2'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-4">
+		<label class="control-label no-padding-right">{{ form_label(form.project_manager) }}</label>
+		{{ form_widget(form.project_manager,{'attr':{'class':'form-control select2'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-4">
+		<label class="control-label no-padding-right">{{ form_label(form.program) }}</label>
+		{{ form_widget(form.program,{'attr':{'class':'form-control select2'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+</div>
+<div class="form-group col-md-12">
+	<label class="control-label no-padding-right">{{ form_label(form.description) }}</label>
+	{{ form_widget(form.description,{'attr':{'class':'form-control'}}) }}
+	<div class="help-block with-errors"></div>
+</div>
+<div class="row">
+	<div class="form-group col-md-6">
+		<label class="control-label no-padding-right">{{ form_label(form.stakeholders) }}</label>
+		{{ form_widget(form.stakeholders,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-6">
+		<label class="control-label no-padding-right">{{ form_label(form.outcome) }}</label>
+		{{ form_widget(form.outcome,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+</div>
+<div class="row">
+	<div class="form-group col-md-4">
+		<label class="control-label no-padding-right">{{ form_label(form.start_date) }}</label>
+		{{ form_widget(form.start_date,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-4">
+		<label class="control-label no-padding-right">{{ form_label(form.end_date) }}</label>
+		{{ form_widget(form.end_date,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-4">
+		<label class="control-label no-padding-right">{{ form_label(form.status) }}</label>
+		{{ form_widget(form.status,{'attr':{'class':'form-control select2'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+</div><br>
+<button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

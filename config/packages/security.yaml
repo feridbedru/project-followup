@@ -1,0 +1,38 @@
+security:
+    # Enables the new Symfony Security system based on Authenticators, all used authenticators must support this before enabling this.
+    enable_authenticator_manager: true
+    access_decision_manager:
+        strategy: ~ 
+        service: ~
+        allow_if_all_abstain: false
+        allow_if_equal_granted_denied: true
+    encoders:
+        App\Entity\User: bcrypt
+
+    password_hashers:
+        App\Entity\User: auto
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: username
+
+    firewalls: 
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+        main:
+            lazy: true
+            login_throttling:
+                max_attempts: 3
+                interval: "15 minutes"
+            guard:
+                authenticators:
+                    - App\Security\LoginFormAuthenticator
+            logout:
+                path: app_logout
+    access_control:
+        - { path: ^/$, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/*, roles: ROLE_ADMIN }

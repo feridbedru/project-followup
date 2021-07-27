@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project Resource
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('project_resource_index', {'project': project.id})}}">{% trans %}
+			Project Resource
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		Show
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Show Project Resource
+	{% endtrans %}
+{% endblock %}
+{% block body %}
+	{% if is_granted("project_resource_show") %}
+		<div class="card card-info">
+			<div class="card-header">
+				<h3>{% trans %}
+					Show Project Resource
+					{% endtrans %}</h3>
+			</div>
+			<div class="card-body">
+				<table class="table">
+					<tbody>
+						<tr>
+							<th>{% trans %}Title{% endtrans %}</th>
+							<td>{{ project_resource.title }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Description{% endtrans %}</th>
+							<td>{{ project_resource.description }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}File{% endtrans %}</th>
+							<td>
+								<a href="{{ asset('/upload/resource/')}}{{ project_resource.file }}">
+									View File
+								</a>
+							</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Status{% endtrans %}</th>
+							<td>{{ project_resource.status }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Public{% endtrans %}</th>
+							<td>{{ project_resource.isPublic ? 'Yes' : 'No' }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Pinned{% endtrans %}</th>
+							<td>{{ project_resource.isPinned ? 'Yes' : 'No' }}</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<a href="{{ path('project_resource_edit', {'id': project_resource.id, 'project': project.id}) }}" class="btn btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+				{{ include('project/resource/_delete_form.html.twig') }}
+			</div>
+		</div>
+		<br>
+	{% endif %}
+{% endblock %}

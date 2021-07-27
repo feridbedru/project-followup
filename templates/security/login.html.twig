@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>Login | Project</title>
+		<link rel="stylesheet" href="{{ asset('assets/plugins/fontawesome-free/css/all.min.css') }}">
+		<link rel="stylesheet" href="{{ asset('assets/dist/css/adminlte.min.css') }}">
+	</head>
+	<body class="hold-transition login-page">
+		<div class="login-box">
+			<div class="card card-outline card-primary">
+				<div class="card-header text-center">
+					<a href="#" class="h1">
+						<b>Project</b></a>
+				</div>
+				<div class="card-body">
+
+					<p class="login-box-msg">Sign in to start your session
+						{% if error %}
+							<div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+						{% endif %}
+
+						{% if app.user %}
+							<div class="mb-3">
+								You are logged in as
+								{{ app.user.username }},
+								<a href="{{ path('app_logout') }}">Logout</a>
+							</div>
+						{% endif %}
+					</p>
+
+					<form method="post">
+						<div class="input-group mb-3">
+							<input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" required autofocus placeholder="Email">
+							<div class="input-group-append">
+								<div class="input-group-text">
+									<span class="fas fa-envelope"></span>
+								</div>
+							</div>
+						</div>
+						<div class="input-group mb-3">
+							<input type="password" name="password" id="inputPassword" class="form-control" required placeholder="Password">
+							<div class="input-group-append">
+								<div class="input-group-text">
+									<span class="fas fa-lock"></span>
+								</div>
+							</div>
+						</div>
+						<input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+						<div class="row">
+							<div class="col-md-12">
+								<button type="submit" class="btn btn-primary btn-block">Sign In</button>
+							</div>
+						</div>
+					</form>
+
+					<p class="mb-1">
+						<a href="#">Forgot password</a>
+					</p>
+					<p class="mb-0">
+						<a href="#" class="text-center">Register</a>
+					</p>
+				</div>
+			</div>
+		</div>
+		<script src="{{ asset('assets/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+		<script src="{{ asset('assets/dist/js/adminlte.js') }}"></script>
+		<script src="{{ asset('assets/plugins/jquery/jquery.min.js') }}"></script>
+	</body>
+</html>

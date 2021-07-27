@@ -1,0 +1,78 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Program
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('program_index')}}">{% trans %}
+			Program
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		Show
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Show Program
+	{% endtrans %}
+{% endblock %}
+{% block body %}
+	{% if is_granted("program_show") %}
+		<div class="card card-info">
+			<div class="card-header">
+				<h3>{% trans %}
+					Show Program
+					{% endtrans %}</h3>
+			</div>
+			<div class="card-body">
+				<table class="table">
+					<tbody>
+						<tr>
+							<th>{% trans %}Name{% endtrans %}</th>
+							<td>{{ program.name }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Description{% endtrans %}</th>
+							<td>{{ program.description }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Stakeholders{% endtrans %}</th>
+							<td>{{ program.stakeholders }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Amount{% endtrans %}</th>
+							<td>{{ program.currency.abbreviation }} {{ program.amount }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Start Date{% endtrans %}</th>
+							<td>{{ program.startDate ? program.startDate|date('Y-m-d') : '' }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}End Date{% endtrans %}</th>
+							<td>{{ program.endDate ? program.endDate|date('Y-m-d') : '' }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Objective{% endtrans %}</th>
+							<td>{{ program.objective }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Status{% endtrans %}</th>
+							<td>
+								{% if program.status == 1 %}
+									Active
+								{% else %}
+									Closed
+								{% endif %}
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<a href="{{ path('program_edit', {'id': program.id}) }}" class="btn btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+				{{ include('program/_delete_form.html.twig') }}
+			</div>
+		</div>
+		<br>
+	{% endif %}
+{% endblock %}

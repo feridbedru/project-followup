@@ -1,0 +1,83 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('project_index')}}">{% trans %}
+			Project
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		List
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Project{% endtrans %}
+{% endblock %}
+{% block body %}
+	<div class="card card-info">
+		<div class="card-header">
+			<h3>{% trans %}
+				Project
+				{% endtrans %}</h3>
+		</div>
+		<div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>{{ knp_pagination_sortable(projects, 'Name'|trans, 'p.name') }}</th>
+						<th>{{ knp_pagination_sortable(projects, 'Amount'|trans, 'p.amount') }}</th>
+						<th>{{ knp_pagination_sortable(projects, 'Start Date'|trans, 'p.start_date') }}</th>
+						<th>{{ knp_pagination_sortable(projects, 'End Date'|trans, 'p.end_date') }}</th>
+						<th>{{ knp_pagination_sortable(projects, 'Status'|trans, 'p.status') }}</th>
+						<th>{% trans %}Actions{% endtrans %}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% set i = 1 %}
+					{% for project in projects %}
+						<tr>
+							<td>{{ i }}
+								{% set i = i+1 %}
+							</td>
+							<td>{{ project.name }}</td>
+							<td>{{ project.currency.abbreviation }}
+								{{ project.amount }}</td>
+							<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
+							<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
+							<td>
+								{% if project.status == 1 %}
+									Active
+								{% else %}
+									Closed
+								{% endif %}
+							</td>
+							<td>
+								{% if is_granted("project_show") %}
+									<a href="{{ path('project_show', {'id': project.id}) }}" class="btn btn-sm btn-primary">{% trans %}Show{% endtrans %}</a>
+								{% endif %}
+								{% if is_granted("project_edit") %}
+									<a href="{{ path('project_edit', {'id': project.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+								{% endif %}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="11">{% trans %}no records found{% endtrans %}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<div class="navigation">{{ knp_pagination_render(projects) }}</div>
+		</div>
+	</div>
+	{% if is_granted("project_create") %}
+		<a href="{{ path('project_new') }}" class="btn btn-sm btn-success">
+			<span class="fa fa-plus"></span>
+			{% trans %}Create new{% endtrans %}</a>
+	{% endif %}
+	<br>
+{% endblock %}

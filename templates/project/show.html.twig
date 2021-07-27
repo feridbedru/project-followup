@@ -1,0 +1,155 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('project_index')}}">{% trans %}
+			Project
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		Show
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Show Project
+	{% endtrans %}
+{% endblock %}
+{% block body %}
+	<div class="row">
+		<div class="col-md-6">
+			{% if is_granted("project_show") %}
+				<div class="card card-info">
+					<div class="card-header">
+						<h3>{% trans %}
+							Project Information
+							{% endtrans %}</h3>
+					</div>
+					<div class="card-body">
+						<table class="table">
+							<tbody>
+								<tr>
+									<th>{% trans %}Name{% endtrans %}</th>
+									<td>{{ project.name }}</td>
+								</tr>
+								<tr>
+									<th>{% trans %}Description{% endtrans %}</th>
+									<td>{{ project.description }}</td>
+								</tr>
+								<tr>
+									<th>{% trans %}Amount{% endtrans %}</th>
+									<td>{{ project.currency.abbreviation }}
+										{{ project.amount }}</td>
+								</tr>
+								<tr>
+									<th>{% trans %}Start Date{% endtrans %}</th>
+									<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
+								</tr>
+								<tr>
+									<th>{% trans %}End Date{% endtrans %}</th>
+									<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
+								</tr>
+								<tr>
+									<th>{% trans %}Stakeholders{% endtrans %}</th>
+									<td>{{ project.stakeholders }}</td>
+								</tr>
+								<tr>
+									<th>{% trans %}Outcome{% endtrans %}</th>
+									<td>{{ project.outcome }}</td>
+								</tr>
+								<tr>
+									<th>{% trans %}Status{% endtrans %}</th>
+									<td>
+										{% if project.status == 1 %}
+											Active
+										{% else %}
+											Closed
+										{% endif %}
+									</td>
+								</tr>
+
+							</tbody>
+						</table>
+
+						<a href="{{ path('project_edit', {'id': project.id}) }}" class="btn btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+						{{ include('project/_delete_form.html.twig') }}
+					</div>
+				</div>
+				<br>
+			{% endif %}
+		</div>
+	</div>
+	<h3>Resources</h3>
+	<div class="row">
+		<div class="col-md-3">
+			<div class="card card-outline card-primary">
+				<div class="card-body">
+					<h2 class="text-center">
+						<span class="fa fa-plus fa-2x"></span>
+					</h2>
+					<h4 class="text-center">Add New</h4>
+
+				</div>
+			</div>
+		</div>
+		{% for resource in resources %}
+			<div class="col-md-3">
+				<div class="card card-outline card-primary">
+					<div class="">
+						<div class="card-tools float-right">
+							<div class="dropdown">
+								<button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
+								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+									<a class="dropdown-item" href="#">Edit</a>
+									<a class="dropdown-item" href="#">Delete</a>
+									<a class="dropdown-item" href="#">Download</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="card-body">
+						<h2 class="text-center">{{ resource.file|split('.')|last|upper }}</h2>
+						<h4 class="text-center">{{ resource.title }}</h4>
+					</div>
+				</div>
+			</div>
+		{% endfor %}
+		<div class="mx-auto d-block">
+			<a class="btn btn-primary text-center" href="#">View All</a>
+		</div>
+	</div><br>
+	<h3>Teams</h3>
+	<div class="row">
+		<div class="col-md-12 col-sm-6">
+			<div class="card card-primary card-outline card-outline-tabs">
+				<div class="card-header p-0 border-bottom-0">
+					<ul class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">
+						{% for team in teams %}
+							<li class="nav-item">
+								<a class="nav-link {% if loop.first %} active {% endif %}" id="custom-{{ team.id }}-tab" data-toggle="pill" href="#custom-tabs-{{ team.id }}" role="tab" aria-controls="custom-tabs-{{ team.id }}" aria-selected="false">{{ team.name }}</a>
+							</li>
+						{% endfor %}
+					</ul>
+				</div>
+				<div class="card-body">
+					<div class="tab-content" id="custom-tabs-four-tabContent">
+						{% for team in teams %}
+							<div class="tab-pane fade show {% if loop.first %} active {% endif %}" id="custom-tabs-{{ team.id }}" role="tabpanel" aria-labelledby="custom-{{ team.id }}-tab">
+								{% for member in team.projectMembers %}
+									{{ member.user.username }}
+								{% else %}
+									No members found
+								{% endfor %}
+							</div>
+						{% endfor %}
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="mx-auto d-block">
+			<a class="btn btn-primary text-center" href="{{ path('project_team_index', {'project': project.id })}}">View All</a>
+		</div>
+	</div>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Program
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('program_index')}}">{% trans %}
+			Program
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		New
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	New Program
+	{% endtrans %}
+{% endblock %}
+{% block body %}
+	{% if is_granted("program_create") %}
+		<div class="">
+			<div class="card card-info">
+				<div class="card-header">
+					<h3>{% trans %}
+						New Program{% endtrans %}</h3>
+				</div>
+				<div class="card-body">
+					{{ include('program/_form.html.twig') }}
+				</div>
+			</div>
+		</div><br>
+	{% endif %}
+{% endblock %}
+{# {% block javascripts %}
+<script src="{{ asset('assets/plugins/daterangepicker/daterangepicker.js')}}"></script>
+<script>
+  $(document).ready(function () {
+	//   $('#datemask').inputmask('dd/mm/yyyy', { 'placeholder': 'dd/mm/yyyy' })
+    //Date picker
+    $('.pickdate').datetimepicker({
+        format: 'L'
+    });
+  });
+</script>
+{% endblock %} #}

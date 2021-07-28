@@ -26,6 +26,16 @@ class ProjectController extends AbstractController
             'projects' => $projects,
         ]);
     }
+    
+    #[Route('/{id}/dashboard', name: 'project_dashboard', methods: ['GET'])]
+    public function dashboard(Project $project): Response
+    {
+        // $this->denyAccessUnlessGranted('project_dashboard');
+        // $projects = $paginator->paginate($projectRepository->findAll(), $request->query->getInt('page', 1), 10);
+        return $this->render('project/dashboard.html.twig', [
+            'project' => $project,
+        ]);
+    }
 
     #[Route('/new', name: 'project_new', methods: ['GET', 'POST'])]
     public function new(Request $request): Response

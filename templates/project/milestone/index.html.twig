@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project Milestone
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('project_milestone_index', {'project': project.id})}}">{% trans %}
+			Project Milestone
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		List
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Project Milestone{% endtrans %}
+{% endblock %}
+{% block body %}
+	<div class="card card-info">
+		<div class="card-header">
+			<h3>{% trans %}
+				Project Milestone
+				{% endtrans %}</h3>
+		</div>
+		<div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>{{ knp_pagination_sortable(project_milestones, 'Name'|trans, 'p.name') }}</th>
+						<th>{{ knp_pagination_sortable(project_milestones, 'Description'|trans, 'p.description') }}</th>
+						<th>{{ knp_pagination_sortable(project_milestones, 'Last Revision'|trans, 'p.last_revision') }}</th>
+						<th>{% trans %}Actions{% endtrans %}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% set i = 1 %}
+					{% for project_milestone in project_milestones %}
+						<tr>
+							<td>{{ i }}
+								{% set i = i+1 %}
+							</td>
+							<td>{{ project_milestone.name }}</td>
+							<td>{{ project_milestone.description }}</td>
+							<td>{{ project_milestone.lastRevision ? project_milestone.lastRevision|date('Y-m-d') : '' }}</td>
+							<td>
+								{% if is_granted("project_milestone_show") %}
+									<a href="{{ path('project_milestone_show', {'id': project_milestone.id, 'project': project.id}) }}" class="btn btn-sm btn-primary">{% trans %}Show{% endtrans %}</a>
+								{% endif %}
+								{% if is_granted("project_milestone_edit") %}
+									<a href="{{ path('project_milestone_edit', {'id': project_milestone.id, 'project': project.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+								{% endif %}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="6">{% trans %}no records found{% endtrans %}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<div class="navigation">{{ knp_pagination_render(project_milestones) }}</div>
+		</div>
+	</div>
+	{% if is_granted("project_milestone_create") %}
+		<a href="{{ path('project_milestone_new', {'project': project.id}) }}" class="btn btn-sm btn-success">
+			<span class="fa fa-plus"></span>
+			{% trans %}Create new{% endtrans %}</a>
+	{% endif %}
+	<br>
+{% endblock %}

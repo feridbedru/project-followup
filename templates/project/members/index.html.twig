@@ -52,8 +52,8 @@
 		<div class="col-md-8">
 			<div class="card card-info">
 				<div class="card-header">
-					<h3 class="card-title">{% trans %}
-						Project Members
+					<h3 class="card-title">{{ team.name }} {% trans %}
+						Members
 						{% endtrans %}</h3>
 				</div>
 				<div class="card-body">
@@ -77,7 +77,14 @@
 									</td>
 									<td>{{ project_member.user.username }}</td>
 									<td>{{ project_member.role.name }}</td>
-									<td>{{ project_member.status }}</td>
+									<td><button class="btn btn-sm btn-success">
+										{% if project_member.status == 1 %}
+											Active
+										{% else %}
+											Closed
+										{% endif %}
+										</button>
+									</td>
 									<td>{{ project_member.isWorkingOnTask ? 'Yes' : 'No' }}</td>
 									<td>
 

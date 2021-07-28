@@ -117,7 +117,7 @@
 			</div>
 		{% endfor %}
 		<div class="mx-auto d-block">
-			<a class="btn btn-primary text-center" href="#">View All</a>
+			<a class="btn btn-primary text-center" href="{{ path('project_resource_index', {'project': project.id })}}">View All</a>
 		</div>
 	</div><br>
 	<h3>Teams</h3>
@@ -151,5 +151,5 @@
 		<div class="mx-auto d-block">
 			<a class="btn btn-primary text-center" href="{{ path('project_team_index', {'project': project.id })}}">View All</a>
 		</div>
-	</div>
+	</div><br>
 {% endblock %}

@@ -4,8 +4,18 @@
 {% endblock %}
 {% block breadcrumb %}
 	<li class="breadcrumb-item">
+		<a href="{{path('project_index')}}">
+			{% trans %}
+			Projects
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item">
+		<a href="{{path('project_show', {'id': project.id})}}">{{ project.name }}
+		</a>
+	</li>
+	<li class="breadcrumb-item">
 		<a href="{{path('project_resource_index', {'project': project.id})}}">{% trans %}
-			Project Resource
+			Resources
 			{% endtrans %}</a>
 	</li>
 	<li class="breadcrumb-item active">{% trans %}
@@ -46,7 +56,12 @@
 						</tr>
 						<tr>
 							<th>{% trans %}Status{% endtrans %}</th>
-							<td>{{ project_resource.status }}</td>
+							<td>{% if project_resource.status == 1 %}
+									Active
+								{% else %}
+									Closed
+								{% endif %}
+							</td>
 						</tr>
 						<tr>
 							<th>{% trans %}Public{% endtrans %}</th>

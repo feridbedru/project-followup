@@ -1,12 +1,81 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-	<a href="#" class="brand-link">
-		<span class="brand-text font-weight-light">Project</span>
+	<a href="#" class="brand-link text-center">
+		<span class="brand-text font-weight-light ">Project Followup</span>
 	</a>
 
 	<!-- Sidebar -->
 	<div class="sidebar">
 		<nav class="mt-2">
 			<ul class="nav nav-pills nav-sidebar nav-child-indent flex-column" data-widget="treeview" role="menu" data-accordion="false">
+				<li class="nav-item">
+					<a href="{{ path('dashboard')}}" class="nav-link">
+						<i class="nav-icon fas fa-home"></i>
+						<p>
+							Dashboard
+						</p>
+					</a>
+				</li>
+				{% for project in app.session.all['myprojects'] %}
+					<li class="nav-item">
+						<a href="#" class="nav-link ">
+							<i class="nav-icon fas fa-project-diagram"></i>
+							<p>
+								{{ project.name }}
+								<i class="right fas fa-angle-left"></i>
+							</p>
+						</a>
+						<ul class="nav nav-treeview">
+							<li class="nav-item">
+								<a href="{{ path('project_dashboard', {'id': project.id })}}" class="nav-link ">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>Dashboard</p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a href="{{ path('project_resource_index', {'project': project.id })}}" class="nav-link">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>Resources</p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a href="{{ path('project_milestone_index', {'project': project.id })}}" class="nav-link">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>Milestone</p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a href="#" class="nav-link">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>Tasks</p>
+								</a>
+							</li>
+							<li class="nav-item">
+								<a href="{{ path('project_deliverable_index', {'project': project.id })}}" class="nav-link">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>Deliverables</p>
+								</a>
+							</li>
+						</ul>
+					</li>
+				{% endfor %}
+
+				<li class="nav-item">
+					<a href="#" class="nav-link">
+						<i class="nav-icon fas fa-tasks"></i>
+						<p>
+							My Tasks
+						</p>
+					</a>
+				</li>
+				<li class="nav-item">
+					<a href="#" class="nav-link">
+						<i class="nav-icon fas fa-calendar"></i>
+						<p>
+							Calendar
+						</p>
+					</a>
+				</li>
+				<hr>
 				<li class="nav-item">
 					<a href="#" class="nav-link ">
 						<i class="nav-icon fas fa-project-diagram"></i>
@@ -53,14 +122,6 @@
 						</li>
 					</ul>
 				</li>
-				{# <li class="nav-item">
-				            <a href="#" class="nav-link">
-				              <i class="nav-icon fas fa-th"></i>
-				              <p>
-				                My Tasks
-				              </p>
-				            </a>
-				          </li> #}
 				<li class="nav-item">
 					<a href="#" class="nav-link ">
 						<i class="nav-icon fas fa-users"></i>

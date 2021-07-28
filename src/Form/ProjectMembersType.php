@@ -21,7 +21,6 @@ class ProjectMembersType extends AbstractType
                 'placeholder' => "Choose Status",
                 'required' => true,
             ])
-            ->add('is_working_on_task')
             ->add('user')
             ->add('role')
         ;

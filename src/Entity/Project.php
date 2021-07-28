@@ -113,12 +113,24 @@ class Project
      */
     private $projectTeams;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectDeliverable::class, mappedBy="project")
+     */
+    private $projectDeliverables;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectMilestone::class, mappedBy="project")
+     */
+    private $projectMilestones;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
         $this->projectSponsors = new ArrayCollection();
         $this->projectResources = new ArrayCollection();
         $this->projectTeams = new ArrayCollection();
+        $this->projectDeliverables = new ArrayCollection();
+        $this->projectMilestones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -413,6 +425,66 @@ class Project
             // set the owning side to null (unless already changed)
             if ($projectTeam->getProject() === $this) {
                 $projectTeam->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectDeliverable[]
+     */
+    public function getProjectDeliverables(): Collection
+    {
+        return $this->projectDeliverables;
+    }
+
+    public function addProjectDeliverable(ProjectDeliverable $projectDeliverable): self
+    {
+        if (!$this->projectDeliverables->contains($projectDeliverable)) {
+            $this->projectDeliverables[] = $projectDeliverable;
+            $projectDeliverable->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectDeliverable(ProjectDeliverable $projectDeliverable): self
+    {
+        if ($this->projectDeliverables->removeElement($projectDeliverable)) {
+            // set the owning side to null (unless already changed)
+            if ($projectDeliverable->getProject() === $this) {
+                $projectDeliverable->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectMilestone[]
+     */
+    public function getProjectMilestones(): Collection
+    {
+        return $this->projectMilestones;
+    }
+
+    public function addProjectMilestone(ProjectMilestone $projectMilestone): self
+    {
+        if (!$this->projectMilestones->contains($projectMilestone)) {
+            $this->projectMilestones[] = $projectMilestone;
+            $projectMilestone->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectMilestone(ProjectMilestone $projectMilestone): self
+    {
+        if ($this->projectMilestones->removeElement($projectMilestone)) {
+            // set the owning side to null (unless already changed)
+            if ($projectMilestone->getProject() === $this) {
+                $projectMilestone->setProject(null);
             }
         }
 

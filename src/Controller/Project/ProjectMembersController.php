@@ -55,6 +55,7 @@ class ProjectMembersController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $projectMember->setIsWorkingOnTask(0);
             $projectMember->setCreatedBy($this->getUser());
             $projectMember->setCreatedAt(new \DateTime());
             $projectMember->setTeam($team);

@@ -1,0 +1,42 @@
+{{ form_start(form) }}
+<div class="row">
+	<div class="form-group col-md-8">
+		<label class="control-label no-padding-right">{{ form_label(form.title) }}</label>
+		{{ form_widget(form.title,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-4">
+		<label class="control-label no-padding-right">{{ form_label(form.milestone) }}</label>
+		{{ form_widget(form.milestone,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+</div>
+<div class="form-group col-md-12">
+	<label class="control-label no-padding-right">{{ form_label(form.description) }}</label>
+	{{ form_widget(form.description,{'attr':{'class':'form-control'}}) }}
+	<div class="help-block with-errors"></div>
+</div>
+<div class="row">
+	<div class="form-group col-md-3">
+		<label class="control-label no-padding-right">{{ form_label(form.due_date) }}</label>
+		{{ form_widget(form.due_date,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-3">
+		<label class="control-label no-padding-right">Activity Order</label>
+		{{ form_widget(form.display_order,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-3">
+		<label class="control-label no-padding-right">{{ form_label(form.weight) }}</label>
+		{{ form_widget(form.weight,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-3">
+		<label class="control-label">{{ form_label(form.can_be_concurrent) }}</label>
+		{{ form_widget(form.can_be_concurrent,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+</div>
+<br><button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}

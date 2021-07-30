@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project Activity
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('project_index')}}">
+			{% trans %}
+			Projects
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item">
+		<a href="{{path('project_show', {'id': project.id})}}">{{ project.name }}
+		</a>
+	</li>
+	<li class="breadcrumb-item">
+		<a href="{{path('project_activity_index', {'project': project.id})}}">{% trans %}
+			Project Activity
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		List
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Project Activity{% endtrans %}
+{% endblock %}
+{% block body %}
+	<div class="card card-info">
+		<div class="card-header">
+			<h3>{% trans %}
+				Project Activity
+				{% endtrans %}</h3>
+		</div>
+		<div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>{{ knp_pagination_sortable(project_activities, 'Title'|trans, 'p.title') }}</th>
+						<th>{{ knp_pagination_sortable(project_activities, 'Due Date'|trans, 'p.due_date') }}</th>
+						<th>{{ knp_pagination_sortable(project_activities, 'Status'|trans, 'p.status') }}</th>
+						<th>{{ knp_pagination_sortable(project_activities, 'Active'|trans, 'p.is_active') }}</th>
+						<th>{% trans %}Actions{% endtrans %}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% set i = 1 %}
+					{% for project_activity in project_activities %}
+						<tr>
+							<td>{{ i }}
+								{% set i = i+1 %}
+							</td>
+							<td>
+								<a href="{{ path('project_activity_show', {'id': project_activity.id, 'project': project.id}) }}" >{{ project_activity.title }}</a>
+							</td>
+							<td>{{ project_activity.dueDate ? project_activity.dueDate|date('Y-m-d') : '' }}</td>
+							<td>{{ project_activity.status }}</td>
+							<td>{{ project_activity.isActive ? 'Yes' : 'No' }}</td>
+							<td>
+									<a href="{{ path('activity_files_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-success mr-2">{% trans %}Files{% endtrans %}</a>
+									<a href="{{ path('activity_progress_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-danger mr-2">{% trans %}Progress{% endtrans %}</a>
+									<a href="{{ path('activity_user_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-warning mr-2">{% trans %}Members{% endtrans %}</a>
+									<a href="{{ path('activity_chat_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-primary mr-2">{% trans %}Collaboration{% endtrans %}</a>
+								{# {% if is_granted("project_activity_show") %}
+									<a href="{{ path('project_activity_show', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-sm btn-primary">{% trans %}Show{% endtrans %}</a>
+								{% endif %}
+								{% if is_granted("project_activity_edit") %}
+									<a href="{{ path('project_activity_edit', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+								{% endif %} #}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="9">{% trans %}no records found{% endtrans %}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<div class="navigation">{{ knp_pagination_render(project_activities) }}</div>
+		</div>
+	</div>
+	{% if is_granted("project_activity_create") %}
+		<a href="{{ path('project_activity_new', {'project': project.id}) }}" class="btn btn-sm btn-success">
+			<span class="fa fa-plus"></span>
+			{% trans %}Create new{% endtrans %}</a>
+	{% endif %}
+	<br>
+{% endblock %}

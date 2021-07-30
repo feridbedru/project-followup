@@ -109,11 +109,6 @@ class Project
     private $projectResources;
 
     /**
-     * @ORM\OneToMany(targetEntity=ProjectTeam::class, mappedBy="project")
-     */
-    private $projectTeams;
-
-    /**
      * @ORM\OneToMany(targetEntity=ProjectDeliverable::class, mappedBy="project")
      */
     private $projectDeliverables;
@@ -123,14 +118,25 @@ class Project
      */
     private $projectMilestones;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectMemberHistory::class, mappedBy="project")
+     */
+    private $projectMemberHistories;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectMembers::class, mappedBy="project")
+     */
+    private $projectMembers;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
         $this->projectSponsors = new ArrayCollection();
         $this->projectResources = new ArrayCollection();
-        $this->projectTeams = new ArrayCollection();
         $this->projectDeliverables = new ArrayCollection();
         $this->projectMilestones = new ArrayCollection();
+        $this->projectMemberHistories = new ArrayCollection();
+        $this->projectMembers = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -402,36 +408,6 @@ class Project
     }
 
     /**
-     * @return Collection|ProjectTeam[]
-     */
-    public function getProjectTeams(): Collection
-    {
-        return $this->projectTeams;
-    }
-
-    public function addProjectTeam(ProjectTeam $projectTeam): self
-    {
-        if (!$this->projectTeams->contains($projectTeam)) {
-            $this->projectTeams[] = $projectTeam;
-            $projectTeam->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProjectTeam(ProjectTeam $projectTeam): self
-    {
-        if ($this->projectTeams->removeElement($projectTeam)) {
-            // set the owning side to null (unless already changed)
-            if ($projectTeam->getProject() === $this) {
-                $projectTeam->setProject(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection|ProjectDeliverable[]
      */
     public function getProjectDeliverables(): Collection
@@ -485,6 +461,66 @@ class Project
             // set the owning side to null (unless already changed)
             if ($projectMilestone->getProject() === $this) {
                 $projectMilestone->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectMemberHistory[]
+     */
+    public function getProjectMemberHistories(): Collection
+    {
+        return $this->projectMemberHistories;
+    }
+
+    public function addProjectMemberHistory(ProjectMemberHistory $projectMemberHistory): self
+    {
+        if (!$this->projectMemberHistories->contains($projectMemberHistory)) {
+            $this->projectMemberHistories[] = $projectMemberHistory;
+            $projectMemberHistory->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectMemberHistory(ProjectMemberHistory $projectMemberHistory): self
+    {
+        if ($this->projectMemberHistories->removeElement($projectMemberHistory)) {
+            // set the owning side to null (unless already changed)
+            if ($projectMemberHistory->getProject() === $this) {
+                $projectMemberHistory->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectMembers[]
+     */
+    public function getProjectMembers(): Collection
+    {
+        return $this->projectMembers;
+    }
+
+    public function addProjectMember(ProjectMembers $projectMember): self
+    {
+        if (!$this->projectMembers->contains($projectMember)) {
+            $this->projectMembers[] = $projectMember;
+            $projectMember->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectMember(ProjectMembers $projectMember): self
+    {
+        if ($this->projectMembers->removeElement($projectMember)) {
+            // set the owning side to null (unless already changed)
+            if ($projectMember->getProject() === $this) {
+                $projectMember->setProject(null);
             }
         }
 

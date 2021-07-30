@@ -15,10 +15,8 @@ class ProjectDeliverableType extends AbstractType
             ->add('title')
             ->add('description')
             ->add('delivery_date')
-            ->add('payable_amount')
             ->add('percentage')
             ->add('planned_delivery_date')
-            ->add('payment_currency')
         ;
     }
 

@@ -18,12 +18,6 @@ class ProjectMembers
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=ProjectTeam::class, inversedBy="projectMembers")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $team;
-
-    /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
      */
@@ -56,21 +50,15 @@ class ProjectMembers
      */
     private $created_at;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Project::class, inversedBy="projectMembers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $project;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getTeam(): ?ProjectTeam
-    {
-        return $this->team;
-    }
-
-    public function setTeam(?ProjectTeam $team): self
-    {
-        $this->team = $team;
-
-        return $this;
     }
 
     public function getUser(): ?User
@@ -141,6 +129,23 @@ class ProjectMembers
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->user;
+    }
+
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(?Project $project): self
+    {
+        $this->project = $project;
 
         return $this;
     }

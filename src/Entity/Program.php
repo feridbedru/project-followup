@@ -70,6 +70,12 @@ class Program
      */
     private $projects;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $program_manager;
+
     public function __construct()
     {
         $this->projects = new ArrayCollection();
@@ -219,6 +225,18 @@ class Program
                 $project->setProgram(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getProgramManager(): ?User
+    {
+        return $this->program_manager;
+    }
+
+    public function setProgramManager(?User $program_manager): self
+    {
+        $this->program_manager = $program_manager;
 
         return $this;
     }

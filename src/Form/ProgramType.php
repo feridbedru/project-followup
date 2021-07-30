@@ -21,6 +21,7 @@ class ProgramType extends AbstractType
             ->add('start_date', DateType::class, [])
             ->add('end_date', DateType::class, [])
             ->add('objective')
+            ->add('program_manager')
             ->add('status', ChoiceType::class, [
                 'choices' => [
                     'Active' => '1',

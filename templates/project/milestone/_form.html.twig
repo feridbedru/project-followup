@@ -15,9 +15,25 @@
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-12">
-        <label class="control-label no-padding-right">{{ form_label(form.tasks_are_equal) }}</label>
-        {{ form_widget(form.tasks_are_equal,{'attr':{'class':'form-control'}}) }}
+        <label class="control-label no-padding-right">{{ form_label(form.planned_delivery_date) }}</label>
+        {{ form_widget(form.planned_delivery_date,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>
-<br><button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+    <div class="form-group col-md-12">
+        <label class="control-label no-padding-right">{{ form_label(form.activities_equal_weight) }}</label>
+        {{ form_widget(form.activities_equal_weight,{'attr':{'class':'form-control'}}) }}
+        <div class="help-block with-errors"></div>
+    </div>
+{% if not button_label is defined  %}
+    <button class="btn btn-info">{{ button_label|default('Save') }}</button>
+    <button class="btn  btn-warning mr-3" type="reset">Reset</button>
+
+{% else %}
+    <input type="hidden" name="edit" value="{{ edit }}">
+    <a href="{{ path('project_milestone_index', {'project': project.id}) }}" class="btn btn-primary">
+        Cancel
+    </a>
+
+    <button class="btn btn-success mr-2">{{ button_label|default('Save') }}</button>
+{% endif %}
 {{ form_end(form) }}

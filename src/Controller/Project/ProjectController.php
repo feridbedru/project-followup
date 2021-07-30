@@ -7,7 +7,6 @@ use App\Entity\Log;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
 use App\Repository\ProjectResourceRepository;
-use App\Repository\ProjectTeamRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -30,8 +29,7 @@ class ProjectController extends AbstractController
     #[Route('/{id}/dashboard', name: 'project_dashboard', methods: ['GET'])]
     public function dashboard(Project $project): Response
     {
-        // $this->denyAccessUnlessGranted('project_dashboard');
-        // $projects = $paginator->paginate($projectRepository->findAll(), $request->query->getInt('page', 1), 10);
+        $this->denyAccessUnlessGranted('project_show');
         return $this->render('project/dashboard.html.twig', [
             'project' => $project,
         ]);
@@ -53,7 +51,7 @@ class ProjectController extends AbstractController
             $entityManager->flush();
             $this->addFlash("success","created project successfully.");
 
-            return $this->redirectToRoute('project_index');
+            return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
         }
 
         return $this->render('project/new.html.twig', [
@@ -63,16 +61,13 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}', name: 'project_show', methods: ['GET'])]
-    public function show(Project $project, ProjectResourceRepository $projectResourceRepository, ProjectTeamRepository $projectTeamRepository): Response
+    public function show(Project $project, ProjectResourceRepository $projectResourceRepository): Response
     {
         $this->denyAccessUnlessGranted('project_show');
         $projectResource = $projectResourceRepository->findBy(['project'=>$project]);
-        $projectTeam = $projectTeamRepository->findBy(['project'=>$project]);
-        // dd($projectResource);
         return $this->render('project/show.html.twig', [
             'project' => $project,
             'resources' => $projectResource,
-            'teams' => $projectTeam,
         ]);
     }
 

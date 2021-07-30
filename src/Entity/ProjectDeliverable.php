@@ -35,17 +35,6 @@ class ProjectDeliverable
     private $delivery_date;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Currency::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $payment_currency;
-
-    /**
-     * @ORM\Column(type="float")
-     */
-    private $payable_amount;
-
-    /**
      * @ORM\Column(type="float", nullable=true)
      */
     private $percentage;
@@ -130,30 +119,6 @@ class ProjectDeliverable
     public function setDeliveryDate(\DateTimeInterface $delivery_date): self
     {
         $this->delivery_date = $delivery_date;
-
-        return $this;
-    }
-
-    public function getPaymentCurrency(): ?Currency
-    {
-        return $this->payment_currency;
-    }
-
-    public function setPaymentCurrency(?Currency $payment_currency): self
-    {
-        $this->payment_currency = $payment_currency;
-
-        return $this;
-    }
-
-    public function getPayableAmount(): ?float
-    {
-        return $this->payable_amount;
-    }
-
-    public function setPayableAmount(float $payable_amount): self
-    {
-        $this->payable_amount = $payable_amount;
 
         return $this;
     }

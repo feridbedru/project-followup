@@ -81,9 +81,27 @@ class ProjectActivity
      */
     private $activityFiles;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ActivityUser::class, mappedBy="activity")
+     */
+    private $activityUsers;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ActivityProgress::class, mappedBy="activity")
+     */
+    private $activityProgress;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ActivityChat::class, mappedBy="activity")
+     */
+    private $activityChats;
+
     public function __construct()
     {
         $this->activityFiles = new ArrayCollection();
+        $this->activityUsers = new ArrayCollection();
+        $this->activityProgress = new ArrayCollection();
+        $this->activityChats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -247,6 +265,96 @@ class ProjectActivity
             // set the owning side to null (unless already changed)
             if ($activityFile->getActivity() === $this) {
                 $activityFile->setActivity(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ActivityUser[]
+     */
+    public function getActivityUsers(): Collection
+    {
+        return $this->activityUsers;
+    }
+
+    public function addActivityUser(ActivityUser $activityUser): self
+    {
+        if (!$this->activityUsers->contains($activityUser)) {
+            $this->activityUsers[] = $activityUser;
+            $activityUser->setActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivityUser(ActivityUser $activityUser): self
+    {
+        if ($this->activityUsers->removeElement($activityUser)) {
+            // set the owning side to null (unless already changed)
+            if ($activityUser->getActivity() === $this) {
+                $activityUser->setActivity(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ActivityProgress[]
+     */
+    public function getActivityProgress(): Collection
+    {
+        return $this->activityProgress;
+    }
+
+    public function addActivityProgress(ActivityProgress $activityProgress): self
+    {
+        if (!$this->activityProgress->contains($activityProgress)) {
+            $this->activityProgress[] = $activityProgress;
+            $activityProgress->setActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivityProgress(ActivityProgress $activityProgress): self
+    {
+        if ($this->activityProgress->removeElement($activityProgress)) {
+            // set the owning side to null (unless already changed)
+            if ($activityProgress->getActivity() === $this) {
+                $activityProgress->setActivity(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ActivityChat[]
+     */
+    public function getActivityChats(): Collection
+    {
+        return $this->activityChats;
+    }
+
+    public function addActivityChat(ActivityChat $activityChat): self
+    {
+        if (!$this->activityChats->contains($activityChat)) {
+            $this->activityChats[] = $activityChat;
+            $activityChat->setActivity($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivityChat(ActivityChat $activityChat): self
+    {
+        if ($this->activityChats->removeElement($activityChat)) {
+            // set the owning side to null (unless already changed)
+            if ($activityChat->getActivity() === $this) {
+                $activityChat->setActivity(null);
             }
         }
 

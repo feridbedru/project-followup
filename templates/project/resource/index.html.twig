@@ -35,7 +35,7 @@
 					<tr>
 						<th>#</th>
 						<th>{{ knp_pagination_sortable(project_resources, 'Title'|trans, 'p.title') }}</th>
-						<th>{{ knp_pagination_sortable(project_resources, 'Description'|trans, 'p.description') }}</th>
+						<th>{{ knp_pagination_sortable(project_resources, 'Type'|trans, 'p.resourceType.name') }}</th>
 						<th>{{ knp_pagination_sortable(project_resources, 'File'|trans, 'p.file') }}</th>
 						<th>{{ knp_pagination_sortable(project_resources, 'Status'|trans, 'p.status') }}</th>
 						<th>{{ knp_pagination_sortable(project_resources, 'Public'|trans, 'p.is_public') }}</th>
@@ -51,7 +51,7 @@
 								{% set i = i+1 %}
 							</td>
 							<td>{{ project_resource.title }}</td>
-							<td>{{ project_resource.description }}</td>
+							<td>{{ project_resource.resourceType.name }}</td>
 							<td>{{ project_resource.file }}</td>
 							<td>
 								{% if project_resource.status == 1 %}

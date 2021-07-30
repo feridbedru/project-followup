@@ -6,6 +6,7 @@ use App\Entity\Program;
 use App\Entity\Log;
 use App\Form\ProgramType;
 use App\Repository\ProgramRepository;
+use App\Repository\ProjectRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -49,11 +50,13 @@ class ProgramController extends AbstractController
     }
 
     #[Route('/{id}', name: 'program_show', methods: ['GET'])]
-    public function show(Program $program): Response
+    public function show(Program $program, ProjectRepository $projectRepository): Response
     {
         $this->denyAccessUnlessGranted('program_show');
+        $project = $projectRepository->findBy(['program' => $program]);
         return $this->render('program/show.html.twig', [
             'program' => $program,
+            'projects' => $project,
         ]);
     }
 

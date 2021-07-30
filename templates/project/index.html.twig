@@ -29,6 +29,7 @@
 					<tr>
 						<th>#</th>
 						<th>{{ knp_pagination_sortable(projects, 'Name'|trans, 'p.name') }}</th>
+						<th>{{ knp_pagination_sortable(projects, 'Program'|trans, 'p.program') }}</th>
 						<th>{{ knp_pagination_sortable(projects, 'Amount'|trans, 'p.amount') }}</th>
 						<th>{{ knp_pagination_sortable(projects, 'Start Date'|trans, 'p.start_date') }}</th>
 						<th>{{ knp_pagination_sortable(projects, 'End Date'|trans, 'p.end_date') }}</th>
@@ -44,6 +45,7 @@
 								{% set i = i+1 %}
 							</td>
 							<td>{{ project.name }}</td>
+							<td>{{ project.program }}</td>
 							<td>{{ project.currency.abbreviation }}
 								{{ project.amount }}</td>
 							<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>

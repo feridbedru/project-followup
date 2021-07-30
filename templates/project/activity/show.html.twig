@@ -1,0 +1,82 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Project Activity
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('project_index')}}">
+			{% trans %}
+			Projects
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item">
+		<a href="{{path('project_show', {'id': project.id})}}">{{ project.name }}
+		</a>
+	</li>
+	<li class="breadcrumb-item">
+		<a href="{{path('project_activity_index', {'project': project.id})}}">{% trans %}
+			Project Activity
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		Show
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Show Project Activity
+	{% endtrans %}
+{% endblock %}
+{% block body %}
+	{% if is_granted("project_activity_show") %}
+		<div class="card card-info">
+			<div class="card-header">
+				<h3>{% trans %}
+					Show Project Activity
+					{% endtrans %}</h3>
+			</div>
+			<div class="card-body">
+				<table class="table">
+					<tbody>
+						<tr>
+							<th>{% trans %}Title{% endtrans %}</th>
+							<td>{{ project_activity.title }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Description{% endtrans %}</th>
+							<td>{{ project_activity.description }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Status{% endtrans %}</th>
+							<td>{{ project_activity.status }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Due_date{% endtrans %}</th>
+							<td>{{ project_activity.dueDate ? project_activity.dueDate|date('Y-m-d') : '' }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Display_order{% endtrans %}</th>
+							<td>{{ project_activity.displayOrder }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Is_active{% endtrans %}</th>
+							<td>{{ project_activity.isActive ? 'Yes' : 'No' }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Can_be_concurrent{% endtrans %}</th>
+							<td>{{ project_activity.canBeConcurrent ? 'Yes' : 'No' }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Weight{% endtrans %}</th>
+							<td>{{ project_activity.weight }}</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<a href="{{ path('project_activity_edit', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+				{{ include('project/activity/_delete_form.html.twig') }}
+			</div>
+		</div>
+		<br>
+	{% endif %}
+{% endblock %}

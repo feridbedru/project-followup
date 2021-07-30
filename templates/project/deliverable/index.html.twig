@@ -59,7 +59,6 @@
 								<th>#</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Title'|trans, 'p.title') }}</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Delivery Date'|trans, 'p.delivery_date') }}</th>
-								<th>{{ knp_pagination_sortable(project_deliverables, 'Amount'|trans, 'p.payable_amount') }}</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Percentage'|trans, 'p.percentage') }}</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Planned Delivery Date'|trans, 'p.planned_delivery_date') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
@@ -74,7 +73,6 @@
 									</td>
 									<td>{{ project_deliverable.title }}</td>
 									<td>{{ project_deliverable.deliveryDate ? project_deliverable.deliveryDate|date('Y-m-d') : '' }}</td>
-									<td>{{ project_deliverable.paymentCurrency.abbreviation }}{{ project_deliverable.payableAmount }}</td>
 									<td>{{ project_deliverable.percentage }}</td>
 									<td>{{ project_deliverable.plannedDeliveryDate ? project_deliverable.plannedDeliveryDate|date('Y-m-d') : '' }}</td>
 									<td>

@@ -14,15 +14,13 @@ class DashboardController extends AbstractController
     #[Route('/dashboard', name: 'dashboard')]
     public function index(ProjectRepository $projectRepository, Request $request, ProjectMembersRepository $projectMembersRepository): Response
     {
-        $projectMember = $projectMembersRepository->findBy(['user' => $this->getUser()]);
+        $projectMember = $projectMembersRepository->findBy(['user' => $this->getUser(), 'status' => 1]);
         // dd($projectMember);
         $projects = [];
         $project_list = [];
         foreach ($projectMember as $member ) {
-            $project = $projectRepository->findOneBy(['id' => $member->getTeam()->getProject()->getId()]);
+            $project = $projectRepository->findOneBy(['id' => $member->getProject()->getId()]);
             array_push($projects, $project);
-            // echo $member;
-            // dd($member);
         }
         foreach ($projects as $proj ) {
             if ( ! in_array($proj, $project_list)) {
@@ -31,7 +29,6 @@ class DashboardController extends AbstractController
         }
 
         $myproject = $projectRepository->findById(array($project_list));
-        // dd($project_list);
 
         $session = $this->get('session');
         $session->set('myprojects', $project_list);

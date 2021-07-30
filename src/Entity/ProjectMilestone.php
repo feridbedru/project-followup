@@ -58,11 +58,6 @@ class ProjectMilestone
     private $created_at;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $tasks_are_equal;
-
-    /**
      * @ORM\OneToMany(targetEntity=ProjectMilestoneStatus::class, mappedBy="milestone")
      */
     private $projectMilestoneStatuses;
@@ -71,6 +66,16 @@ class ProjectMilestone
      * @ORM\OneToMany(targetEntity=ProjectActivity::class, mappedBy="milestone")
      */
     private $projectActivities;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $planned_delivery_date;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $activities_equal_weight;
 
     public function __construct()
     {
@@ -167,18 +172,6 @@ class ProjectMilestone
         return $this;
     }
 
-    public function getTasksAreEqual(): ?bool
-    {
-        return $this->tasks_are_equal;
-    }
-
-    public function setTasksAreEqual(bool $tasks_are_equal): self
-    {
-        $this->tasks_are_equal = $tasks_are_equal;
-
-        return $this;
-    }
-
     /**
      * @return Collection|ProjectMilestoneStatus[]
      */
@@ -235,6 +228,35 @@ class ProjectMilestone
                 $projectActivity->setMilestone(null);
             }
         }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    public function getPlannedDeliveryDate(): ?\DateTimeInterface
+    {
+        return $this->planned_delivery_date;
+    }
+
+    public function setPlannedDeliveryDate(\DateTimeInterface $planned_delivery_date): self
+    {
+        $this->planned_delivery_date = $planned_delivery_date;
+
+        return $this;
+    }
+
+    public function getActivitiesEqualWeight(): ?bool
+    {
+        return $this->activities_equal_weight;
+    }
+
+    public function setActivitiesEqualWeight(bool $activities_equal_weight): self
+    {
+        $this->activities_equal_weight = $activities_equal_weight;
 
         return $this;
     }

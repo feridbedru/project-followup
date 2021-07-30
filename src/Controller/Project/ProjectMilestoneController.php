@@ -16,23 +16,36 @@ use Knp\Component\Pager\PaginatorInterface;
 #[Route('/project/{project}/milestones')]
 class ProjectMilestoneController extends AbstractController
 {
-    #[Route('/', name: 'project_milestone_index', methods: ['GET'])]
+    #[Route('/', name: 'project_milestone_index', methods: ['GET', 'POST'])]
     public function index(ProjectMilestoneRepository $projectMilestoneRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        $this->denyAccessUnlessGranted('project_milestone_index');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        $projectMilestones = $paginator->paginate($projectMilestoneRepository->findBy(['project'=>$request->attributes->get('project')]), $request->query->getInt('page', 1), 10);
-        return $this->render('project/milestone/index.html.twig', [
-            'project_milestones' => $projectMilestones,
-            'project' => $project,
-        ]);
-    }
+        if($request->request->get('edit')){
+            
+            $id = $request->request->get('edit');
+            $projectMilestone = $projectMilestoneRepository->findOneBy(['id'=>$id]);
+            $form = $this->createForm(ProjectMilestoneType::class, $projectMilestone);
+            $form->handleRequest($request);
 
-    #[Route('/new', name: 'project_milestone_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProjectRepository $projectRepository): Response
-    {
-        $this->denyAccessUnlessGranted('project_milestone_create');
-        $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+            if ($form->isSubmitted() && $form->isValid()) {
+                $this->getDoctrine()->getManager()->flush();
+                $this->addFlash("success","Updated project milestone successfully.");
+
+                return $this->redirectToRoute('project_milestone_index', ["project" => $project->getId()]);
+            }
+
+            $queryBuilder = $projectMilestoneRepository->findBy(['project'=>$request->attributes->get('project')]);
+            $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
+
+            return $this->render('project/milestone/index.html.twig', [
+                'project_milestones' => $data,
+                'form' => $form->createView(),
+                'edit' => $id,
+                'project' => $project,
+            ]);
+        }
+
+        
         $projectMilestone = new ProjectMilestone();
         $form = $this->createForm(ProjectMilestoneType::class, $projectMilestone);
         $form->handleRequest($request);
@@ -44,49 +57,21 @@ class ProjectMilestoneController extends AbstractController
             $projectMilestone->setProject($project);
             $entityManager->persist($projectMilestone);
             $entityManager->flush();
-            $this->addFlash("success","created project milestone successfully.");
+            $this->addFlash("success","Registered project milestone successfully.");
 
             return $this->redirectToRoute('project_milestone_index', ["project" => $project->getId()]);
         }
 
-        return $this->render('project/milestone/new.html.twig', [
-            'project_milestone' => $projectMilestone,
+        $queryBuilder = $projectMilestoneRepository->findBy(['project'=>$request->attributes->get('project')]);
+        $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
+
+        return $this->render('project/milestone/index.html.twig', [
+            'project_milestones' => $data,
             'form' => $form->createView(),
+            'edit' => false,
             'project' => $project,
         ]);
-    }
 
-    #[Route('/{id}', name: 'project_milestone_show', methods: ['GET'])]
-    public function show(ProjectMilestone $projectMilestone, ProjectRepository $projectRepository, Request $request): Response
-    {
-        $this->denyAccessUnlessGranted('project_milestone_show');
-        $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        return $this->render('project/milestone/show.html.twig', [
-            'project_milestone' => $projectMilestone,
-            'project' => $project,
-        ]);
-    }
-
-    #[Route('/{id}/edit', name: 'project_milestone_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, ProjectRepository $projectRepository, ProjectMilestone $projectMilestone): Response
-    {
-        $this->denyAccessUnlessGranted('project_milestone_edit');
-        $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        $form = $this->createForm(ProjectMilestoneType::class, $projectMilestone);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
-            $this->addFlash("success","Updated project milestone successfully.");
-
-            return $this->redirectToRoute('project_milestone_index', ["project" => $project->getId()]);
-        }
-
-        return $this->render('project/milestone/edit.html.twig', [
-            'project_milestone' => $projectMilestone,
-            'form' => $form->createView(),
-            'project' => $project,
-        ]);
     }
 
     #[Route('/{id}', name: 'project_milestone_delete', methods: ['POST'])]
@@ -99,8 +84,7 @@ class ProjectMilestoneController extends AbstractController
             $entityManager->remove($projectMilestone);
             $entityManager->flush();
         }
-
-        $this->addFlash("success","Deleted project milestone successfully.");
+        $this->addFlash("success","Deleted project_milestone successfully.");
 
         return $this->redirectToRoute('project_milestone_index', ["project" => $project->getId()]);
     }

@@ -20,7 +20,7 @@
 
 {% else %}
     <input type="hidden" name="edit" value="{{ edit }}">
-    <a href="{{ path('project_members_index', {'team': team.id, 'project': project.id }) }}" class="btn btn-primary">
+    <a href="{{ path('project_members_index', {'project': project.id }) }}" class="btn btn-primary">
         Cancel
     </a>
 

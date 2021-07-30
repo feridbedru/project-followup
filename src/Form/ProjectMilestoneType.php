@@ -15,7 +15,8 @@ class ProjectMilestoneType extends AbstractType
             ->add('name')
             ->add('description')
             ->add('deliverable')
-            ->add('tasks_are_equal')
+            ->add('activities_equal_weight')
+            ->add('planned_delivery_date')
         ;
     }
 

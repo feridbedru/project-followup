@@ -1,31 +1,25 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Teams
+{% block title %}Activity Verification
 {% endblock %}
 {% block breadcrumb %}
 	<li class="breadcrumb-item">
-		<a href="{{path('project_index')}}">
-			{% trans %}
-			Projects
+		<a href="{{path('activity_verification_index')}}">{% trans %}
+			Activity Verification
 			{% endtrans %}</a>
 	</li>
-	<li class="breadcrumb-item">
-		<a href="{{path('project_show', {'id': project.id})}}">{{ project.name }}
-		</a>
-	</li>
 	<li class="breadcrumb-item active">{% trans %}
-		Teams
+		List
 		{% endtrans %}</li>
 {% endblock %}
 {% block pagetitle %}
-	{{ project.name }}
 	{% trans %}
-	Teams{% endtrans %}
+	Activity Verification{% endtrans %}
 {% endblock %}
 {% block body %}
 	<div class="row">
 		<div class="col-md-4">
-			{% if is_granted("project_team_create") %}
+			{% if is_granted("activity_verification_create") %}
 				<div class="card card-info">
 					<div class="card-header">
 						<h3 class="card-title">
@@ -34,15 +28,13 @@
 							{% else %}
 								Add New
 							{% endif %}
-							{% trans %}
-							Team{% endtrans %}
 						</h3>
 					</div>
 					<div class="card-body">
 						{% if edit  %}
 							{% set button_label = 'Update' %}
 						{% endif %}
-						{{ include('project/team/_form.html.twig') }}
+						{{ include('project/activity_verification/_form.html.twig') }}
 					</div>
 				</div>
 			{% endif %}
@@ -51,47 +43,53 @@
 			<div class="card card-info">
 				<div class="card-header">
 					<h3 class="card-title">{% trans %}
-						Teams List
+						Activity Verification
 						{% endtrans %}</h3>
+					<div class="card-tools">
+						<form class="form-inline ml-3">
+							<div class="input-group input-group-sm">
+								<input class="form-control form-control-navbar" placeholder="Search" type="search" name="search">
+								<div class="input-group-append">
+									<button class="btn btn-navbar" type="submit">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
 				</div>
 				<div class="card-body">
 					<table class="table table-hover">
 						<thead>
 							<tr>
 								<th>#</th>
-								<th>{{ knp_pagination_sortable(project_teams, 'Name'|trans, 'p.name') }}</th>
-								<th>{% trans %}
-									Total
-									{% endtrans %}</th>
-								<th>{{ knp_pagination_sortable(project_teams, 'Description'|trans, 'p.description') }}</th>
+								<th>{{ knp_pagination_sortable(activity_verifications, 'Comment'|trans, 'a.comment') }}</th>
+								<th>{{ knp_pagination_sortable(activity_verifications, 'Status'|trans, 'a.status') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
 						<tbody>
 							{% set i = 1 %}
-							{% for project_team in project_teams %}
+							{% for activity_verification in activity_verifications %}
 								<tr>
 									<td>{{ i }}
 										{% set i = i+1 %}
 									</td>
-									<td>{{ project_team.name }}</td>
-									<td>{{ project_team.projectMembers|length }}</td>
-									<td>{{ project_team.description }}</td>
+									<td>{{ activity_verification.comment }}</td>
+									<td>{{ activity_verification.status }}</td>
 									<td>
-										{% if is_granted("project_member_index") %}
-											<a href="{{ path('project_members_index', {'team': project_team.id,'project': project.id}) }}" class="btn btn-sm btn-success">{% trans %}Members{% endtrans %}</a>
-										{% endif %}
-										{% if is_granted("project_team_edit") %}
+
+										{% if is_granted("activity_verification_edit") %}
 											<form class="d-inline" method="post">
-												<input type="hidden" name="edit" value="{{project_team.id}}">
+												<input type="hidden" name="edit" value="{{activity_verification.id}}">
 												<button class="btn btn-info btn-sm" title="Edit">
 													<i class="fa fa-edit"></i>
 												</button>
 											</form>
 										{% endif %}
-										{% if is_granted("project_team_delete") %}
-											<form method="post" class="d-inline" action="{{ path('project_team_delete', {'id': project_team.id, 'project': project.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
-												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ project_team.id) }}">
+										{% if is_granted("activity_verification_delete") %}
+											<form method="post" class="d-inline" action="{{ path('activity_verification_delete', {'id': activity_verification.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ activity_verification.id) }}">
 												<button class="btn btn-danger btn-sm">
 													<span class="fa fa-trash"></span>
 												</button>
@@ -106,7 +104,7 @@
 							{% endfor %}
 						</tbody>
 					</table>
-					<div class="navigation">{{ knp_pagination_render(project_teams) }}</div>
+					<div class="navigation">{{ knp_pagination_render(activity_verifications) }}</div>
 				</div>
 			</div>
 		</div>

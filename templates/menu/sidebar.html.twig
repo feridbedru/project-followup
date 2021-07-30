@@ -32,6 +32,12 @@
 								</a>
 							</li>
 							<li class="nav-item">
+								<a href="{{ path('project_members_index', {'project': project.id })}}" class="nav-link">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>Members</p>
+								</a>
+							</li>
+							<li class="nav-item">
 								<a href="{{ path('project_resource_index', {'project': project.id })}}" class="nav-link">
 									<i class="fas fa-list-alt nav-icon"></i>
 									<p>Resources</p>
@@ -44,9 +50,9 @@
 								</a>
 							</li>
 							<li class="nav-item">
-								<a href="#" class="nav-link">
+								<a href="{{path('project_activity_index', {'project': project.id})}}" class="nav-link">
 									<i class="fas fa-list-alt nav-icon"></i>
-									<p>Tasks</p>
+									<p>Activity</p>
 								</a>
 							</li>
 							<li class="nav-item">

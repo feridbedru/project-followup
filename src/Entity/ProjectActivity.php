@@ -96,6 +96,12 @@ class ProjectActivity
      */
     private $activityChats;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Project::class, inversedBy="projectActivities")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $project;
+
     public function __construct()
     {
         $this->activityFiles = new ArrayCollection();
@@ -357,6 +363,18 @@ class ProjectActivity
                 $activityChat->setActivity(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getProject(): ?Project
+    {
+        return $this->project;
+    }
+
+    public function setProject(?Project $project): self
+    {
+        $this->project = $project;
 
         return $this;
     }

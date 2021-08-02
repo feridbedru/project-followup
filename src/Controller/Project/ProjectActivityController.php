@@ -43,6 +43,7 @@ class ProjectActivityController extends AbstractController
             $projectActivity->setCreatedBy($this->getUser());
             $projectActivity->setStatus(1);
             $projectActivity->setIsActive(1);
+            $projectActivity->setProject($project);
             $entityManager->persist($projectActivity);
             $entityManager->flush();
             $this->addFlash("success","created project activity successfully.");

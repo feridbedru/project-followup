@@ -18,20 +18,9 @@ class ActivityChat
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $topic;
-
-    /**
      * @ORM\Column(type="text")
      */
     private $content;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=ProjectActivity::class, inversedBy="activityChats")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $activity;
 
     /**
      * @ORM\ManyToOne(targetEntity=User::class)
@@ -44,21 +33,15 @@ class ActivityChat
      */
     private $posted_at;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ProjectCollaborationTopic::class, inversedBy="activityChats")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $topic;
+
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getTopic(): ?string
-    {
-        return $this->topic;
-    }
-
-    public function setTopic(string $topic): self
-    {
-        $this->topic = $topic;
-
-        return $this;
     }
 
     public function getContent(): ?string
@@ -69,18 +52,6 @@ class ActivityChat
     public function setContent(string $content): self
     {
         $this->content = $content;
-
-        return $this;
-    }
-
-    public function getActivity(): ?ProjectActivity
-    {
-        return $this->activity;
-    }
-
-    public function setActivity(?ProjectActivity $activity): self
-    {
-        $this->activity = $activity;
 
         return $this;
     }
@@ -105,6 +76,18 @@ class ActivityChat
     public function setPostedAt(\DateTimeInterface $posted_at): self
     {
         $this->posted_at = $posted_at;
+
+        return $this;
+    }
+
+    public function getTopic(): ?ProjectCollaborationTopic
+    {
+        return $this->topic;
+    }
+
+    public function setTopic(?ProjectCollaborationTopic $topic): self
+    {
+        $this->topic = $topic;
 
         return $this;
     }

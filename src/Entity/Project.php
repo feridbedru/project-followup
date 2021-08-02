@@ -128,6 +128,16 @@ class Project
      */
     private $projectMembers;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectActivity::class, mappedBy="project")
+     */
+    private $projectActivities;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectCollaborationTopic::class, mappedBy="project")
+     */
+    private $projectCollaborationTopics;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
@@ -137,6 +147,8 @@ class Project
         $this->projectMilestones = new ArrayCollection();
         $this->projectMemberHistories = new ArrayCollection();
         $this->projectMembers = new ArrayCollection();
+        $this->projectActivities = new ArrayCollection();
+        $this->projectCollaborationTopics = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -521,6 +533,66 @@ class Project
             // set the owning side to null (unless already changed)
             if ($projectMember->getProject() === $this) {
                 $projectMember->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectActivity[]
+     */
+    public function getProjectActivities(): Collection
+    {
+        return $this->projectActivities;
+    }
+
+    public function addProjectActivity(ProjectActivity $projectActivity): self
+    {
+        if (!$this->projectActivities->contains($projectActivity)) {
+            $this->projectActivities[] = $projectActivity;
+            $projectActivity->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectActivity(ProjectActivity $projectActivity): self
+    {
+        if ($this->projectActivities->removeElement($projectActivity)) {
+            // set the owning side to null (unless already changed)
+            if ($projectActivity->getProject() === $this) {
+                $projectActivity->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectCollaborationTopic[]
+     */
+    public function getProjectCollaborationTopics(): Collection
+    {
+        return $this->projectCollaborationTopics;
+    }
+
+    public function addProjectCollaborationTopic(ProjectCollaborationTopic $projectCollaborationTopic): self
+    {
+        if (!$this->projectCollaborationTopics->contains($projectCollaborationTopic)) {
+            $this->projectCollaborationTopics[] = $projectCollaborationTopic;
+            $projectCollaborationTopic->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectCollaborationTopic(ProjectCollaborationTopic $projectCollaborationTopic): self
+    {
+        if ($this->projectCollaborationTopics->removeElement($projectCollaborationTopic)) {
+            // set the owning side to null (unless already changed)
+            if ($projectCollaborationTopic->getProject() === $this) {
+                $projectCollaborationTopic->setProject(null);
             }
         }
 

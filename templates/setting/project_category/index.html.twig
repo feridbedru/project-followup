@@ -19,38 +19,37 @@
 {% block body %}
 	<div class="row">
 		<div class="col-md-4">
-            {% if is_granted("project_category_create") %}
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            {% if edit %}
-                                Edit
-                            {% else %}
-                                Add New
-                            {% endif %}
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        {% if edit  %}
-                            {% set button_label = 'Update' %}
-                        {% endif %}
-                        {{ include('setting/project_category/_form.html.twig') }}
-                    </div>
-                </div>
-            {% endif %}
+			{% if is_granted("project_category_create") %}
+				<div class="card card-info">
+					<div class="card-header">
+						<h3 class="card-title">
+							{% if edit %}
+								Edit
+							{% else %}
+								Add New
+							{% endif %}
+						</h3>
+					</div>
+					<div class="card-body">
+						{% if edit  %}
+							{% set button_label = 'Update' %}
+						{% endif %} {{ include('setting/project_category/_form.html.twig') }}
+					</div>
+				</div>
+			{% endif %}
 		</div>
 		<div class="col-md-8">
 			<div class="card card-info">
 				<div class="card-header">
 					<h3 class="card-title">{% trans %}
-						Project Category
+						Project Category List
 						{% endtrans %}</h3>
 					<div class="card-tools">
 						<form class="form-inline ml-3">
 							<div class="input-group input-group-sm">
 								<input class="form-control form-control-navbar" placeholder="Search" type="search" name="search">
 								<div class="input-group-append">
-									<button class="btn btn-navbar" type="submit">
+									<button class="btn btn-secondary" type="submit">
 										<i class="fas fa-search"></i>
 									</button>
 								</div>
@@ -76,7 +75,7 @@
 										{% set i = i+1 %}
 									</td>
 									<td>{{ project_category.name }}</td>
-									<td>{{ project_category.description }}</td>
+									<td>{{ project_category.description|raw }}</td>
 									<td>
 
 										{% if is_granted("project_category_edit") %}
@@ -109,4 +108,15 @@
 			</div>
 		</div>
 	</div>
+{% endblock %}
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+	<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+	<script>
+		$(function () {
+			$('.wyiswig').summernote({placeholder: 'Enter description', tabsize: 2, height: 200})
+		});
+	</script>
 {% endblock %}

@@ -18,8 +18,8 @@ class ProgramType extends AbstractType
             ->add('description')
             ->add('stakeholders')
             ->add('amount')
-            ->add('start_date', DateType::class, [])
-            ->add('end_date', DateType::class, [])
+            ->add('start_date', DateType::class, ['widget' => 'single_text'])
+            ->add('end_date', DateType::class, ['widget' => 'single_text'])
             ->add('objective')
             ->add('program_manager')
             ->add('status', ChoiceType::class, [
@@ -29,6 +29,7 @@ class ProgramType extends AbstractType
                 ],
                 'placeholder' => "Choose Status",
                 'required' => true,
+                'attr' => ['class' => 'mx-5']
             ])
             ->add('currency')
         ;

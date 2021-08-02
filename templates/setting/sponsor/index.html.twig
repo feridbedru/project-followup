@@ -19,38 +19,37 @@
 {% block body %}
 	<div class="row">
 		<div class="col-md-4">
-            {% if is_granted("sponsor_create") %}
-                <div class="card card-info">
-                    <div class="card-header">
-                        <h3 class="card-title">
-                            {% if edit %}
-                                Edit
-                            {% else %}
-                                Add New
-                            {% endif %}
-                        </h3>
-                    </div>
-                    <div class="card-body">
-                        {% if edit  %}
-                            {% set button_label = 'Update' %}
-                        {% endif %}
-                        {{ include('setting/sponsor/_form.html.twig') }}
-                    </div>
-                </div>
-            {% endif %}
+			{% if is_granted("sponsor_create") %}
+				<div class="card card-info">
+					<div class="card-header">
+						<h3 class="card-title">
+							{% if edit %}
+								Edit
+							{% else %}
+								Add New
+							{% endif %}
+						</h3>
+					</div>
+					<div class="card-body">
+						{% if edit  %}
+							{% set button_label = 'Update' %}
+						{% endif %} {{ include('setting/sponsor/_form.html.twig') }}
+					</div>
+				</div>
+			{% endif %}
 		</div>
 		<div class="col-md-8">
 			<div class="card card-info">
 				<div class="card-header">
 					<h3 class="card-title">{% trans %}
-						Sponsor
+						Sponsor List
 						{% endtrans %}</h3>
 					<div class="card-tools">
 						<form class="form-inline ml-3">
 							<div class="input-group input-group-sm">
 								<input class="form-control form-control-navbar" placeholder="Search" type="search" name="search">
 								<div class="input-group-append">
-									<button class="btn btn-navbar" type="submit">
+									<button class="btn btn-secondary" type="submit">
 										<i class="fas fa-search"></i>
 									</button>
 								</div>

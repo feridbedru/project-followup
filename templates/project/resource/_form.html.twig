@@ -1,39 +1,39 @@
 {{ form_start(form) }}
 <div class="row">
     <div class="form-group col-md-8">
-        <label class="control-label no-padding-right">{{ form_label(form.title) }}</label>
+        <label>{{ form_label(form.title) }}</label>
         {{ form_widget(form.title,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-4">
-        <label class="control-label no-padding-right">{{ form_label(form.resource_type) }}</label>
+        <label>{{ form_label(form.resource_type) }}</label>
         {{ form_widget(form.resource_type,{'attr':{'class':'form-control select2'}}) }}
         <div class="help-block with-errors"></div>
     </div>
     </div>
     <div class="form-group col-md-12">
-        <label class="control-label no-padding-right">{{ form_label(form.description) }}</label>
+        <label>{{ form_label(form.description) }}</label>
         {{ form_widget(form.description,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-12">
-        <label class="control-label no-padding-right">{{ form_label(form.file) }}</label>
+        <label>{{ form_label(form.file) }}</label>
         {{ form_widget(form.file,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>
     <div class="row">
     <div class="form-group col-md-4">
-        <label class="control-label no-padding-right">{{ form_label(form.status) }}</label>
+        <label>{{ form_label(form.status) }}</label>
         {{ form_widget(form.status,{'attr':{'class':'form-control select2'}}) }}
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-4">
-        <label class="control-label no-padding-right">{{ form_label(form.is_public) }}</label>
+        <label>{{ form_label(form.is_public) }}</label>
         {{ form_widget(form.is_public,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-4">
-        <label class="control-label no-padding-right">{{ form_label(form.is_pinned) }}</label>
+        <label>{{ form_label(form.is_pinned) }}</label>
         {{ form_widget(form.is_pinned,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>

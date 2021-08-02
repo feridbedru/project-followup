@@ -30,9 +30,9 @@
 	{% if is_granted("project_activity_edit") %}
 		<div class="card card-info">
 			<div class="card-header">
-				<h3>{% trans %}
+				<h5>{% trans %}
 					Edit Project Activity
-					{% endtrans %}</h3>
+					{% endtrans %}</h5>
 			</div>
 			<div class="card-body">
 				{{ include('project/activity/_form.html.twig', {'button_label': 'Update' }) }}

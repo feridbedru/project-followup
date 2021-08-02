@@ -1,11 +1,11 @@
 {{ form_start(form) }}
     <div class="form-group col-md-12">
-        <label class="control-label no-padding-right">{{ form_label(form.content) }}</label>
+        <label>{{ form_label(form.content) }}</label>
         {{ form_widget(form.content,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-12">
-        <label class="control-label no-padding-right">{{ form_label(form.file) }}</label>
+        <label>{{ form_label(form.file) }}</label>
         {{ form_widget(form.file,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>

@@ -31,8 +31,8 @@
 	{% if is_granted("project_resource_create") %}
 		<div class="card card-info">
 			<div class="card-header">
-				<h3>{% trans %}
-					New Project Resource{% endtrans %}</h3>
+				<h5>{% trans %}
+					New Project Resource{% endtrans %}</h5>
 			</div>
 			<div class="card-body">
 				{{ include('project/resource/_form.html.twig') }}

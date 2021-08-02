@@ -33,8 +33,7 @@
 					<div class="card-body">
 						{% if edit  %}
 							{% set button_label = 'Update' %}
-						{% endif %}
-						{{ include('setting/currency/_form.html.twig') }}
+						{% endif %} {{ include('setting/currency/_form.html.twig') }}
 					</div>
 				</div>
 			{% endif %}
@@ -43,14 +42,14 @@
 			<div class="card card-info">
 				<div class="card-header">
 					<h3 class="card-title">{% trans %}
-						Currency
+						Currency List
 						{% endtrans %}</h3>
 					<div class="card-tools">
 						<form class="form-inline ml-3">
 							<div class="input-group input-group-sm">
 								<input class="form-control form-control-navbar" placeholder="Search" type="search" name="search">
 								<div class="input-group-append">
-									<button class="btn btn-navbar" type="submit">
+									<button class="btn btn-secondary" type="submit">
 										<i class="fas fa-search"></i>
 									</button>
 								</div>

@@ -17,11 +17,11 @@
 	Program{% endtrans %}
 {% endblock %}
 {% block body %}
-	<div class="card card-info">
+		<div class="card card-info">
 		<div class="card-header">
-			<h3>{% trans %}
-				Program
-				{% endtrans %}</h3>
+			<h5>{% trans %}
+				Programs List
+				{% endtrans %}</h5>
 		</div>
 		<div class="card-body">
 			<table class="table table-hover">
@@ -56,7 +56,7 @@
 							</td>
 							<td>
 								{% if is_granted("program_show") %}
-									<a href="{{ path('program_show', {'id': program.id}) }}" class="btn btn-sm btn-primary">{% trans %}Show{% endtrans %}</a>
+									<a href="{{ path('program_show', {'id': program.id}) }}" class="btn btn-sm btn-primary mr-2">{% trans %}Show{% endtrans %}</a>
 								{% endif %}
 								{% if is_granted("program_edit") %}
 									<a href="{{ path('program_edit', {'id': program.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a>

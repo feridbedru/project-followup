@@ -6,6 +6,7 @@ use App\Entity\ProjectDeliverable;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class ProjectDeliverableType extends AbstractType
 {
@@ -14,9 +15,9 @@ class ProjectDeliverableType extends AbstractType
         $builder
             ->add('title')
             ->add('description')
-            ->add('delivery_date')
+            ->add('delivery_date', DateType::class, ['widget' => 'single_text'])
             ->add('percentage')
-            ->add('planned_delivery_date')
+            ->add('planned_delivery_date', DateType::class, ['widget' => 'single_text'])
         ;
     }
 

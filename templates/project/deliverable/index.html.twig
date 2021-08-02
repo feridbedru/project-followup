@@ -48,7 +48,7 @@
 			<div class="card card-info">
 				<div class="card-header">
 					<h3 class="card-title">{% trans %}
-						Project Deliverable
+						Project Deliverable List
 						{% endtrans %}</h3>
 
 				</div>
@@ -58,9 +58,9 @@
 							<tr>
 								<th>#</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Title'|trans, 'p.title') }}</th>
-								<th>{{ knp_pagination_sortable(project_deliverables, 'Delivery Date'|trans, 'p.delivery_date') }}</th>
-								<th>{{ knp_pagination_sortable(project_deliverables, 'Percentage'|trans, 'p.percentage') }}</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Planned Delivery Date'|trans, 'p.planned_delivery_date') }}</th>
+								<th>{{ knp_pagination_sortable(project_deliverables, 'Percentage'|trans, 'p.percentage') }}</th>
+								<th>{{ knp_pagination_sortable(project_deliverables, 'Delivery Date'|trans, 'p.delivery_date') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
@@ -72,9 +72,9 @@
 										{% set i = i+1 %}
 									</td>
 									<td>{{ project_deliverable.title }}</td>
-									<td>{{ project_deliverable.deliveryDate ? project_deliverable.deliveryDate|date('Y-m-d') : '' }}</td>
-									<td>{{ project_deliverable.percentage }}</td>
 									<td>{{ project_deliverable.plannedDeliveryDate ? project_deliverable.plannedDeliveryDate|date('Y-m-d') : '' }}</td>
+									<td>{{ project_deliverable.percentage }}</td>
+									<td>{{ project_deliverable.deliveryDate ? project_deliverable.deliveryDate|date('Y-m-d') : '' }}</td>
 									<td>
 										{% if is_granted("project_deliverable_edit") %}
 											<form class="d-inline" method="post">
@@ -106,4 +106,19 @@
 			</div>
 		</div>
 	</div>
+{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+<script>
+  $(function () {
+    $('.wyiswig').summernote({
+		placeholder: 'Enter details here',
+        tabsize: 2,
+        height: 200
+	})
+  })
+</script>
 {% endblock %}

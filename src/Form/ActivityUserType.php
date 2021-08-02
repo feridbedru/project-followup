@@ -6,6 +6,7 @@ use App\Entity\ActivityUser;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class ActivityUserType extends AbstractType
 {
@@ -13,8 +14,8 @@ class ActivityUserType extends AbstractType
     {
         $builder
             ->add('assignment_description')
-            ->add('start_date')
-            ->add('end_date')
+            ->add('start_date', DateType::class, ['widget' => 'single_text'])
+            ->add('end_date', DateType::class, ['widget' => 'single_text'])
             ->add('user')
         ;
     }

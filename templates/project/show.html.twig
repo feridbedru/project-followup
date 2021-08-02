@@ -51,7 +51,7 @@
 								<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
 								<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
 								<td>
-									{{ project.stakeholders }}
+									{{ project.stakeholders|raw }}
 								</td>
 								<td>
 									{% if project.status == 1 %}

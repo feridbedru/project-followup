@@ -58,7 +58,7 @@
 								<th>{{ knp_pagination_sortable(project_milestones, 'Name'|trans, 'p.name') }}</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Description'|trans, 'p.description') }}</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Last Revision'|trans, 'p.last_revision') }}</th>
-								<th>{{ knp_pagination_sortable(project_milestones, 'Tasks are Equal'|trans, 'p.tasks_are_equal') }}</th>
+								<th>{{ knp_pagination_sortable(project_milestones, 'Activities are Equal'|trans, 'p.tasks_are_equal') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
@@ -72,7 +72,7 @@
 									<td>{{ project_milestone.name }}</td>
 									<td>{{ project_milestone.description }}</td>
 									<td>{{ project_milestone.lastRevision ? project_milestone.lastRevision|date('Y-m-d') : '' }}</td>
-									<td>{{ project_milestone.tasksAreEqual ? 'Yes' : 'No' }}</td>
+									<td>{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
 									<td>
 
 										{% if is_granted("project_milestone_edit") %}

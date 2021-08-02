@@ -1,7 +1,7 @@
 {{ form_start(form) }}
     <div class="form-group col-md-12">
         <label>{{ form_label(form.assignment_description) }}</label>
-        {{ form_widget(form.assignment_description,{'attr':{'class':'form-control'}}) }}
+        {{ form_widget(form.assignment_description,{'attr':{'class':'form-control wyiswig'}}) }}
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-12">
@@ -15,7 +15,7 @@
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-12">
-        <label>{{ form_label(form.user) }}</label>
+        <label>Employee</label>
         {{ form_widget(form.user,{'attr':{'class':'form-control'}}) }}
         <div class="help-block with-errors"></div>
     </div>

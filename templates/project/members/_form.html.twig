@@ -1,29 +1,25 @@
 {{ form_start(form) }}
-    <div class="form-group col-md-12">
-        <label class="control-label ">Employee</label>
-        {{ form_widget(form.user,{'attr':{'class':'form-control select2'}}) }}
-        <div class="help-block with-errors"></div>
-    </div>
-    <div class="form-group col-md-12">
-        <label>{{ form_label(form.role) }}</label>
-        {{ form_widget(form.role,{'attr':{'class':'form-control select2'}}) }}
-        <div class="help-block with-errors"></div>
-    </div>
-    <div class="form-group col-md-12">
-        <label>{{ form_label(form.status) }}</label>
-        {{ form_widget(form.status,{'attr':{'class':'form-control select2'}}) }}
-        <div class="help-block with-errors"></div>
-    </div>
+<div class="form-group">
+	<label>Employee</label> {{ form_widget(form.user,{'attr':{'class':'form-control select2'}}) }}
+	<div class="help-block with-errors"></div>
+</div>
+<div class="form-group">
+	<label>{{ form_label(form.role) }}</label> {{ form_widget(form.role,{'attr':{'class':'form-control select2'}}) }}
+	<div class="help-block with-errors"></div>
+</div>
+<div class="form-group">
+	<label>{{ form_label(form.status) }}</label> {{ form_widget(form.status,{'attr':{'class':'form-control select2'}}) }}
+	<div class="help-block with-errors"></div>
+</div>
 {% if not button_label is defined  %}
-    <button class="btn btn-info">{{ button_label|default('Save') }}</button>
-    <button class="btn  btn-warning mr-3" type="reset">Reset</button>
+	<button class="btn btn-info mr-3">{{ button_label|default('Save') }}</button>
+	<button class="btn  btn-warning" type="reset">Reset</button>
 
 {% else %}
-    <input type="hidden" name="edit" value="{{ edit }}">
-    <a href="{{ path('project_members_index', {'project': project.id }) }}" class="btn btn-primary">
-        Cancel
-    </a>
+	<input type="hidden" name="edit" value="{{ edit }}">
+	<button class="btn btn-success mr-2">{{ button_label|default('Save') }}</button>
+	<a href="{{ path('project_members_index', {'project': project.id }) }}" class="btn btn-primary">
+		Cancel
+	</a>
 
-    <button class="btn btn-success mr-2">{{ button_label|default('Save') }}</button>
-{% endif %}
-{{ form_end(form) }}
+{% endif %} {{ form_end(form) }}

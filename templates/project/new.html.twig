@@ -1,24 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}New Project{% endblock %}
-{% block breadcrumb %}
-<li class="breadcrumb-item">
-    <a href="{{path('project_index')}}">{% trans %} Project {% endtrans %}</a>
-</li>
-<li class="breadcrumb-item active">{% trans %} New {% endtrans %}</li>
+{% block title %}New Project
 {% endblock %}
-{% block pagetitle %}{% trans %} New Project {% endtrans %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('project_index')}}">{% trans %}
+			Project
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		New
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	New Project
+	{% endtrans %}
 {% endblock %}
 {% block body %}
-{% if is_granted("project_create") %}
-    <div class="card card-info">
-        <div class="card-header">
-            <h3>{% trans %} New Project{% endtrans %}</h3>
-        </div>
-        <div class="card-body">
-            {{ include('project/_form.html.twig') }}
-        </div>
-    </div>
-<br>
-{% endif %}
+	{% if is_granted("project_create") %}
+		<div class="card card-info">
+			<div class="card-header">
+				<h5>{% trans %}
+					Project Details{% endtrans %}</h5>
+			</div>
+			<div class="card-body"> {{ include('project/_form.html.twig') }}
+			</div>
+		</div>
+		<br>
+	{% endif %}
+{% endblock %}
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+	<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+	<script>
+		$(function () {
+$('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height: 150})
+})
+	</script>
 {% endblock %}

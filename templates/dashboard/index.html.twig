@@ -22,7 +22,7 @@
 				<div class="info-box-content">
 					<span class="info-box-text">Completed Projects</span>
 					<span class="info-box-number">
-						2
+						{{ closed_project|length }}
 					</span>
 				</div>
 			</div>
@@ -37,7 +37,7 @@
 				<div class="info-box-content">
 					<span class="info-box-text">Ongoing Projects</span>
 					<span class="info-box-number">
-						4
+						{{ active_project|length }}
 					</span>
 				</div>
 			</div>
@@ -98,8 +98,7 @@
 									<td>
 										<a href="#">{{ project.name }}</a>
 									</td>
-									<td>{{ project.currency.abbreviation }}
-										{{ project.amount }}</td>
+									<td>{{ project.currency.abbreviation }} {{ project.amount }}</td>
 									<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
 									<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
 									<td class="text-center">

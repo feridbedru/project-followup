@@ -13,7 +13,7 @@
 {% if is_granted("project_edit") %}
     <div class="card card-info">
         <div class="card-header">
-            <h3>{% trans %} Edit Project {% endtrans %}</h3>
+            <h5>{% trans %} Edit Project {% endtrans %}</h5>
         </div>
         <div class="card-body">
             {{ include('project/_form.html.twig', {'button_label': 'Update' }) }}
@@ -22,4 +22,19 @@
     </div>
 <br>
 {% endif %}
+{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+<script>
+  $(function () {
+    $('.wyiswig').summernote({
+		placeholder: 'Enter details here',
+        tabsize: 2,
+        height: 200
+	})
+  })
+</script>
 {% endblock %}

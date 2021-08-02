@@ -6,6 +6,7 @@ use App\Entity\ProjectMilestone;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class ProjectMilestoneType extends AbstractType
 {
@@ -16,7 +17,7 @@ class ProjectMilestoneType extends AbstractType
             ->add('description')
             ->add('deliverable')
             ->add('activities_equal_weight')
-            ->add('planned_delivery_date')
+            ->add('planned_delivery_date', DateType::class, ['widget' => 'single_text'])
         ;
     }
 

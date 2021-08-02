@@ -15,11 +15,11 @@ class DashboardController extends AbstractController
     public function index(ProjectRepository $projectRepository, Request $request, ProjectMembersRepository $projectMembersRepository): Response
     {
         $projectMember = $projectMembersRepository->findBy(['user' => $this->getUser(), 'status' => 1]);
-        // dd($projectMember);
         $projects = [];
         $project_list = [];
         foreach ($projectMember as $member ) {
             $project = $projectRepository->findOneBy(['id' => $member->getProject()->getId()]);
+            dd($project);
             array_push($projects, $project);
         }
         foreach ($projects as $proj ) {
@@ -28,17 +28,17 @@ class DashboardController extends AbstractController
             }
         }
 
-        $myproject = $projectRepository->findById(array($project_list));
-
+        $activeProject = $projectRepository->findBy(['id' => $project_list, 'status' => 1]);
+        $closedProject = $projectRepository->findBy(['id' => $project_list, 'status' => 2]);
+        // dd($closedProject);
         $session = $this->get('session');
         $session->set('myprojects', $project_list);
-        // $this->get('twig')->addGlobal('myprojects', $project_list);
 
-        // $twig = new \Twig\Environment($loader);
-        // $twig->addGlobal('projects', $myproject);
         return $this->render('dashboard/index.html.twig', [
             'controller_name' => 'DashboardController',
             'projects' => $project_list,
+            'active_project' => $activeProject,
+            'closed_project' => $closedProject,
         ]);
     }
 }

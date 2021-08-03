@@ -77,6 +77,32 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $userGroup;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $photo;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $phone;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $position;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $full_name;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=OrganizationUnit::class, inversedBy="users")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $unit;
+
     public function __construct()
     {
     }
@@ -263,6 +289,66 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         if (!$this->userGroup->contains($userGroup)) {
             $this->userGroup[] = $userGroup;
         }
+        return $this;
+    }
+
+    public function getPhoto(): ?string
+    {
+        return $this->photo;
+    }
+
+    public function setPhoto(?string $photo): self
+    {
+        $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getPhone(): ?int
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(int $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
+    public function getPosition(): ?string
+    {
+        return $this->position;
+    }
+
+    public function setPosition(string $position): self
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+    public function getFullName(): ?string
+    {
+        return $this->full_name;
+    }
+
+    public function setFullName(string $full_name): self
+    {
+        $this->full_name = $full_name;
+
+        return $this;
+    }
+
+    public function getUnit(): ?OrganizationUnit
+    {
+        return $this->unit;
+    }
+
+    public function setUnit(?OrganizationUnit $unit): self
+    {
+        $this->unit = $unit;
+
         return $this;
     }
 }

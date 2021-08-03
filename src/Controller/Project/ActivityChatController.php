@@ -8,20 +8,21 @@ use App\Form\ActivityChatType;
 use App\Repository\ActivityChatRepository;
 use App\Repository\ProjectRepository;
 use App\Repository\ProjectActivityRepository;
+use App\Repository\ProjectCollaborationTopicRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 
-#[Route('project/{project}/activity/{activity}/chat')]
+#[Route('project/{project}/topic/{topic}/collaboration')]
 class ActivityChatController extends AbstractController
 {
     #[Route('/', name: 'activity_chat_index', methods: ['GET', 'POST'])]
-    public function index(ActivityChatRepository $activityChatRepository, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ActivityChatRepository $activityChatRepository, ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
+        $topic = $projectCollaborationTopicRepository->findOneBy(['id' => $request->attributes->get('topic')]);
         if($request->request->get('edit')){
             
             $id = $request->request->get('edit');
@@ -33,10 +34,10 @@ class ActivityChatController extends AbstractController
                 $this->getDoctrine()->getManager()->flush();
                 $this->addFlash("success","Updated activity_chat successfully.");
 
-                return $this->redirectToRoute('activity chat_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
+                return $this->redirectToRoute('activity chat_index', ["project" => $project->getId(), "topic" => $topic->getId()]);
             }
 
-            $queryBuilder = $activityChatRepository->findBy(["activity" => $activity]);
+            $queryBuilder = $activityChatRepository->findBy(["topic" => $topic]);
             $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
 
             return $this->render('project/activity_chat/index.html.twig', [
@@ -44,7 +45,8 @@ class ActivityChatController extends AbstractController
                 'form' => $form->createView(),
                 'edit' => $id,
                 'project' => $project,
-                'activity' => $activity,
+                'topic' => $topic,
+                'user' => $this->getUser(),
             ]);
         }
 
@@ -55,17 +57,17 @@ class ActivityChatController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $activityChat->setActivity($activity);
+            $activityChat->setTopic($topic);
             $activityChat->setPostedAt(new \DateTime());
             $activityChat->setPostedBy($this->getUser());
             $entityManager->persist($activityChat);
             $entityManager->flush();
             $this->addFlash("success","Registered activity chat successfully.");
 
-            return $this->redirectToRoute('activity_chat_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
+            return $this->redirectToRoute('activity_chat_index', ["project" => $project->getId(), "topic" => $topic->getId()]);
         }
 
-        $queryBuilder = $activityChatRepository->findBy(["activity" => $activity]);
+        $queryBuilder = $activityChatRepository->findBy(["topic" => $topic]);
         $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
 
         return $this->render('project/activity_chat/index.html.twig', [
@@ -73,17 +75,18 @@ class ActivityChatController extends AbstractController
             'form' => $form->createView(),
             'edit' => false,
             'project' => $project,
-            'activity' => $activity,
+            'topic' => $topic,
+            'user' => $this->getUser(),
         ]);
 
     }
 
     #[Route('/{id}', name: 'activity_chat_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, ActivityChat $activityChat): Response
+    public function delete(Request $request, ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, ActivityChat $activityChat): Response
     {
         $this->denyAccessUnlessGranted('activity_chat_delete');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
+        $topic = $projectCollaborationTopicRepository->findOneBy(['id' => $request->attributes->get('topic')]);
         if ($this->isCsrfTokenValid('delete'.$activityChat->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($activityChat);
@@ -91,6 +94,6 @@ class ActivityChatController extends AbstractController
         }
         $this->addFlash("success","Deleted activity chat successfully.");
 
-        return $this->redirectToRoute('activity_chat_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
+        return $this->redirectToRoute('activity_chat_index', ["project" => $project->getId(), "topic" => $topic->getId()]);
     }
 }

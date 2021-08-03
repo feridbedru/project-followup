@@ -62,13 +62,7 @@
 								</a>
 							</li>
 							<li class="nav-item">
-								<a href="#" class="nav-link">
-									<i class="fas fa-list-alt nav-icon"></i>
-									<p>Progress</p>
-								</a>
-							</li>
-							<li class="nav-item">
-								<a href="#" class="nav-link">
+								<a href="{{ path('project_collaboration_topic_index', {'project': project.id })}}" class="nav-link">
 									<i class="fas fa-list-alt nav-icon"></i>
 									<p>Collaboration</p>
 								</a>
@@ -81,7 +75,7 @@
 					<a href="#" class="nav-link">
 						<i class="nav-icon fas fa-tasks"></i>
 						<p>
-							My Tasks
+							My Projects
 						</p>
 					</a>
 				</li>
@@ -204,8 +198,14 @@
 						</li>
 						<li class="nav-item">
 							<a href="{{ path('sponsor_index')}}" class="nav-link">
-								<i class="fas fa-building nav-icon"></i>
+								<i class="fas fa-money-check nav-icon"></i>
 								<p>Sponsor</p>
+							</a>
+						</li>
+						<li class="nav-item">
+							<a href="{{ path('organization_unit_index')}}" class="nav-link">
+								<i class="fas fa-building nav-icon"></i>
+								<p>Organization Unit</p>
 							</a>
 						</li>
 					</ul>

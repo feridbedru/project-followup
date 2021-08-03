@@ -7,6 +7,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class ActivityProgressType extends AbstractType
 {
@@ -14,6 +15,9 @@ class ActivityProgressType extends AbstractType
     {
         $builder
             ->add('content')
+            ->add('completed_on', DateType::class, ['widget' => 'single_text'])
+            ->add('rating')
+            ->add('remark')
             ->add('file', FileType::class, array('data_class' => null,'required' => true))
         ;
     }

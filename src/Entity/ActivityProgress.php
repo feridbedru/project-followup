@@ -44,6 +44,21 @@ class ActivityProgress
      */
     private $created_at;
 
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $completed_on;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $rating;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $remark;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -105,6 +120,42 @@ class ActivityProgress
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getCompletedOn(): ?\DateTimeInterface
+    {
+        return $this->completed_on;
+    }
+
+    public function setCompletedOn(\DateTimeInterface $completed_on): self
+    {
+        $this->completed_on = $completed_on;
+
+        return $this;
+    }
+
+    public function getRating(): ?string
+    {
+        return $this->rating;
+    }
+
+    public function setRating(string $rating): self
+    {
+        $this->rating = $rating;
+
+        return $this;
+    }
+
+    public function getRemark(): ?string
+    {
+        return $this->remark;
+    }
+
+    public function setRemark(string $remark): self
+    {
+        $this->remark = $remark;
 
         return $this;
     }

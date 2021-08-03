@@ -62,7 +62,6 @@
 									<a href="{{ path('activity_files_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-success mr-2">{% trans %}Files{% endtrans %}</a>
 									<a href="{{ path('activity_progress_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-danger mr-2">{% trans %}Progress{% endtrans %}</a>
 									<a href="{{ path('activity_user_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-warning mr-2">{% trans %}Members{% endtrans %}</a>
-									<a href="{{ path('activity_chat_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-primary mr-2">{% trans %}Collaboration{% endtrans %}</a>
 								{# {% if is_granted("project_activity_show") %}
 									<a href="{{ path('project_activity_show', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-sm btn-primary">{% trans %}Show{% endtrans %}</a>
 								{% endif %}

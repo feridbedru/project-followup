@@ -1,12 +1,27 @@
 {{ form_start(form) }}
-    <div class="form-group col-md-12">
+    <div class="form-group">
         <label>{{ form_label(form.content) }}</label>
         {{ form_widget(form.content,{'attr':{'class':'form-control wyiswig'}}) }}
         <div class="help-block with-errors"></div>
     </div>
-    <div class="form-group col-md-12">
+    <div class="form-group">
         <label>{{ form_label(form.file) }}</label>
         {{ form_widget(form.file,{'attr':{'class':'form-control'}}) }}
+        <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group">
+        <label>{{ form_label(form.completed_on) }}</label>
+        {{ form_widget(form.completed_on,{'attr':{'class':'form-control'}}) }}
+        <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group">
+        <label>{{ form_label(form.rating) }}</label>
+        {{ form_widget(form.rating,{'attr':{'class':'form-control'}}) }}
+        <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group">
+        <label>{{ form_label(form.remark) }}</label>
+        {{ form_widget(form.remark,{'attr':{'class':'form-control wyiswig'}}) }}
         <div class="help-block with-errors"></div>
     </div>
 {% if not button_label is defined  %}

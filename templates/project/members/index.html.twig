@@ -70,7 +70,7 @@
 									<td>{{ i }}
 										{% set i = i+1 %}
 									</td>
-									<td>{{ project_member.user.username }}</td>
+									<td>{{ project_member.user.fullName }}</td>
 									<td>{{ project_member.role.name }}</td>
 									<td><button class="btn btn-sm btn-success">
 										{% if project_member.status == 1 %}

@@ -37,7 +37,6 @@ class DashboardController extends AbstractController
         $session->set('myprojects', $project_list);
 
         return $this->render('dashboard/index.html.twig', [
-            'controller_name' => 'DashboardController',
             'projects' => $project_list,
             'active_project' => $activeProject,
             'closed_project' => $closedProject,

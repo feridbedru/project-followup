@@ -22,6 +22,15 @@ class ActivityProgressController extends AbstractController
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
+        $reports = array();
+        $days = $activityProgressRepository->findReportDays($activity);
+        // dd($days);
+        foreach ($days as $day) {
+            $date = new \DateTime(date_format($day['date'], 'Y-m-d'));
+            $report = $activityProgressRepository->findReport($date);
+            $reports[date_format($day['date'], 'Y-m-d')] = $report;
+        }
+
         if ($request->request->get('edit')) {
 
             $id = $request->request->get('edit');
@@ -35,7 +44,6 @@ class ActivityProgressController extends AbstractController
 
                 return $this->redirectToRoute('activity_progress_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
             }
-
             $queryBuilder = $activityProgressRepository->findBy(["activity" => $activity]);
             $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 10);
 
@@ -45,6 +53,7 @@ class ActivityProgressController extends AbstractController
                 'edit' => $id,
                 'project' => $project,
                 'activity' => $activity,
+                'reports' => $reports,
             ]);
         }
 
@@ -79,6 +88,7 @@ class ActivityProgressController extends AbstractController
             'edit' => false,
             'project' => $project,
             'activity' => $activity,
+            'reports' => $reports,
         ]);
     }
 

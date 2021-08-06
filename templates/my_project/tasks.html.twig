@@ -1,0 +1,152 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}My Tasks
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item active">{% trans %}
+		My Tasks
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	My Tasks{% endtrans %}
+{% endblock %}
+{% block body %}
+	<div class="container-fluid">
+		<div class="row">
+			<div class="card card-primary col-md-4 px-0 mr-5">
+				<div class="card-header">
+					<h3 class="card-title">
+						To Do
+					</h3>
+				</div>
+				<div class="card-body">
+                    {% for todo in todo_list %}
+                    <div class="card card-light card-outline collapsed-card">
+						<div class="card-header">
+							<h5 class="card-title">
+                            {{ todo.activity.title }}
+                            </h5>
+							<div class="card-tools">
+								<a href="#" class="btn btn-tool btn-link">{{ todo.endDate ? todo.endDate|date('M d') : '' }}</a>
+								<button type="button" class="btn  btn-sm" data-card-widget="collapse">
+									<i class="fas fa-plus"></i>
+								</button>
+							</div>
+						</div>
+						<div class="card-body">
+							<p>
+								{{ todo.assignmentDescription|raw }}
+							</p>
+						</div>
+						<div class="card-footer">
+                        <div class="btn-group d-flex">
+							<button class="btn btn-primary">
+								Files
+							</button>
+
+							<button class="btn btn-warning">
+								Progress
+							</button>
+
+							<button class="btn btn-danger">
+								Members
+							</button>
+						</div>
+						</div>
+					</div>
+                {% endfor %}
+				</div>
+			</div><br>
+			<div class="card card-default col-md-4 px-0 mr-5">
+				<div class="card-header bg-info">
+					<h3 class="card-title">
+						Doing
+					</h3>
+				</div>
+				<div class="card-body">
+                {% for doing in doing_list %}
+                    <div class="card card-light card-outline collapsed-card">
+						<div class="card-header">
+							<h5 class="card-title">
+                            {{ doing.activity.title }}
+                            </h5>
+							<div class="card-tools">
+								<a href="#" class="btn btn-tool btn-link">{{ doing.endDate ? doing.endDate|date('M d') : '' }}</a>
+								<button type="button" class="btn  btn-sm" data-card-widget="collapse">
+									<i class="fas fa-plus"></i>
+								</button>
+							</div>
+						</div>
+						<div class="card-body">
+							<p>
+								{{ doing.assignmentDescription|raw }}
+							</p>
+						</div>
+						<div class="card-footer">
+                        <div class="btn-group d-flex">
+							<button class="btn btn-primary">
+								Files
+							</button>
+
+							<button class="btn btn-warning">
+								Progress
+							</button>
+
+							<button class="btn btn-danger">
+								Members
+							</button>
+						</div>
+						</div>
+					</div>
+                {% endfor %}
+				</div>
+			</div>
+			<div class="card card-success col-md-3 px-0">
+				<div class="card-header">
+					<h3 class="card-title">
+						Done
+					</h3>
+				</div>
+				<div class="card-body">
+					{% for done in done_list %}
+                    <div class="card card-light card-outline collapsed-card">
+						<div class="card-header">
+							<h5 class="card-title">
+                            {{ done.activity.title }}
+                            </h5>
+							<div class="card-tools">
+								<a href="#" class="btn btn-tool btn-link">{{ done.endDate ? done.endDate|date('M d') : '' }}</a>
+								<button type="button" class="btn  btn-sm" data-card-widget="collapse">
+									<i class="fas fa-plus"></i>
+								</button>
+							</div>
+						</div>
+						<div class="card-body">
+							<p>
+								{{ done.assignmentDescription|raw }}
+							</p>
+						</div>
+						<div class="card-footer">
+                        <div class="btn-group d-flex">
+							<button class="btn btn-primary">
+								Files
+							</button>
+
+							<button class="btn btn-warning">
+								Progress
+							</button>
+
+							<button class="btn btn-danger">
+								Members
+							</button>
+						</div>
+						</div>
+					</div>
+                {% endfor %}
+				</div>
+			</div>
+		</div>
+	</div>
+
+{% endblock %}

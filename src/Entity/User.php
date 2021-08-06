@@ -201,7 +201,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function __toString()
     {
-        return $this->username;
+        return $this->full_name;
     }
 
     public function getIsActive(): ?bool

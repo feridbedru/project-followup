@@ -70,7 +70,7 @@
 										{% set i = i+1 %}
 									</td>
 									<td>{{ project_milestone.name }}</td>
-									<td>{{ project_milestone.description }}</td>
+									<td> {{ project_milestone.description }} </td>
 									<td>{{ project_milestone.lastRevision ? project_milestone.lastRevision|date('Y-m-d') : '' }}</td>
 									<td>{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
 									<td>
@@ -78,7 +78,7 @@
 										{% if is_granted("project_milestone_edit") %}
 											<form class="d-inline" method="post">
 												<input type="hidden" name="edit" value="{{project_milestone.id}}">
-												<button class="btn btn-info btn-sm" title="Edit">
+												<button class="btn btn-warning btn-sm text-white" title="Edit">
 													<i class="fa fa-edit"></i>
 												</button>
 											</form>

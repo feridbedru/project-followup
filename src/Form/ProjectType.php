@@ -24,7 +24,7 @@ class ProjectType extends AbstractType
                 'required' => false,
                 'query_builder' => function (EntityRepository $er) {
                     $res = $er->createQueryBuilder('p')
-                        ->andWhere('p.status is NULL');
+                        ->andWhere('p.name is not NULL');
                     return $res;
                 }
             ])

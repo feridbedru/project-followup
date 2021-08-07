@@ -19,9 +19,9 @@ class ActivityProgressRepository extends ServiceEntityRepository
         parent::__construct($registry, ActivityProgress::class);
     }
 
-    public function findReport(\Datetime $date)
+    public function findReport( $date)
     {
-        $date   = new \DateTime($date->format("Y-m-d") . "");
+        // $date   = new \DateTime($date->format("Y-m-d") . "");
         return $this->createQueryBuilder("r")
             ->Where('r.created_at = :dt')
             ->setParameter('dt', $date)
@@ -35,6 +35,7 @@ class ActivityProgressRepository extends ServiceEntityRepository
             ->select('DISTINCT r.created_at')
             ->andWhere('r.activity = :val')
             ->setParameter('val', $activity)
+            ->orderBy('r.created_at', 'ASC')
             ->getQuery()
             ->getResult();
     }

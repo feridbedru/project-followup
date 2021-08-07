@@ -68,11 +68,6 @@ class Project
     private $program;
 
     /**
-     * @ORM\Column(type="text")
-     */
-    private $stakeholders;
-
-    /**
      * @ORM\Column(type="text", nullable=true)
      */
     private $outcome;
@@ -138,6 +133,11 @@ class Project
      */
     private $projectCollaborationTopics;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Stakeholder::class, mappedBy="project")
+     */
+    private $stakeholder;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
@@ -149,6 +149,7 @@ class Project
         $this->projectMembers = new ArrayCollection();
         $this->projectActivities = new ArrayCollection();
         $this->projectCollaborationTopics = new ArrayCollection();
+        $this->stakeholder = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -260,18 +261,6 @@ class Project
     public function setProgram(?Program $program): self
     {
         $this->program = $program;
-
-        return $this;
-    }
-
-    public function getStakeholders(): ?string
-    {
-        return $this->stakeholders;
-    }
-
-    public function setStakeholders(string $stakeholders): self
-    {
-        $this->stakeholders = $stakeholders;
 
         return $this;
     }
@@ -593,6 +582,36 @@ class Project
             // set the owning side to null (unless already changed)
             if ($projectCollaborationTopic->getProject() === $this) {
                 $projectCollaborationTopic->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Stakeholder[]
+     */
+    public function getStakeholder(): Collection
+    {
+        return $this->stakeholder;
+    }
+
+    public function addStakeholder(Stakeholder $stakeholder): self
+    {
+        if (!$this->stakeholder->contains($stakeholder)) {
+            $this->stakeholder[] = $stakeholder;
+            $stakeholder->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeStakeholder(Stakeholder $stakeholder): self
+    {
+        if ($this->stakeholder->removeElement($stakeholder)) {
+            // set the owning side to null (unless already changed)
+            if ($stakeholder->getProject() === $this) {
+                $stakeholder->setProject(null);
             }
         }
 

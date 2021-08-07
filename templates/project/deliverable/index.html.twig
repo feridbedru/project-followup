@@ -57,9 +57,10 @@
 						<thead>
 							<tr>
 								<th>#</th>
+								<th>{{ knp_pagination_sortable(project_deliverables, 'Milestone'|trans, 'p.milestone') }}</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Title'|trans, 'p.title') }}</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Planned Delivery Date'|trans, 'p.planned_delivery_date') }}</th>
-								<th>{{ knp_pagination_sortable(project_deliverables, 'Percentage'|trans, 'p.percentage') }}</th>
+								<th>{{ knp_pagination_sortable(project_deliverables, '%'|trans, 'p.percentage') }}</th>
 								<th>{{ knp_pagination_sortable(project_deliverables, 'Delivery Date'|trans, 'p.delivery_date') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
 							</tr>
@@ -71,6 +72,7 @@
 									<td>{{ i }}
 										{% set i = i+1 %}
 									</td>
+									<td>{{ project_deliverable.milestone.name }}</td>
 									<td>{{ project_deliverable.title }}</td>
 									<td>{{ project_deliverable.plannedDeliveryDate ? project_deliverable.plannedDeliveryDate|date('Y-m-d') : '' }}</td>
 									<td>{{ project_deliverable.percentage }}</td>
@@ -79,7 +81,7 @@
 										{% if is_granted("project_deliverable_edit") %}
 											<form class="d-inline" method="post">
 												<input type="hidden" name="edit" value="{{project_deliverable.id}}">
-												<button class="btn btn-info btn-sm" title="Edit">
+												<button class="btn btn-warning btn-sm text-white" title="Edit">
 													<i class="fa fa-edit"></i>
 												</button>
 											</form>

@@ -20,6 +20,7 @@ class ProjectMilestoneController extends AbstractController
     public function index(ProjectMilestoneRepository $projectMilestoneRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        // dd($project);
         if($request->request->get('edit')){
             
             $id = $request->request->get('edit');
@@ -52,6 +53,12 @@ class ProjectMilestoneController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            // $deliverables = $request->attributes->get('deliverable');
+            // $deliverables = $form->getData('deliverable')->getDeliverable();
+            // foreach ($deliverables as $deliverable) {
+            //     $projectMilestone->addDeliverable($deliverable);
+            // }
+            // // dd($deliverables);
             $projectMilestone->setCreatedAt(new \DateTime());
             $projectMilestone->setCreatedBy($this->getUser());
             $projectMilestone->setProject($project);
@@ -64,12 +71,12 @@ class ProjectMilestoneController extends AbstractController
 
         $queryBuilder = $projectMilestoneRepository->findBy(['project'=>$request->attributes->get('project')]);
         $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
-
+// dd($project);
         return $this->render('project/milestone/index.html.twig', [
             'project_milestones' => $data,
             'form' => $form->createView(),
             'edit' => false,
-            'project' => $project,
+            'project' => $project
         ]);
 
     }

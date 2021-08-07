@@ -72,14 +72,14 @@ class ProjectDeliverable
     private $project;
 
     /**
-     * @ORM\OneToMany(targetEntity=ProjectMilestone::class, mappedBy="deliverable")
+     * @ORM\ManyToOne(targetEntity=ProjectMilestone::class, inversedBy="projectDeliverables")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $projectMilestones;
+    private $milestone;
 
     public function __construct()
     {
         $this->projectDeliverableStatuses = new ArrayCollection();
-        $this->projectMilestones = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -225,38 +225,20 @@ class ProjectDeliverable
         return $this;
     }
 
-    /**
-     * @return Collection|ProjectMilestone[]
-     */
-    public function getProjectMilestones(): Collection
-    {
-        return $this->projectMilestones;
-    }
-
-    public function addProjectMilestone(ProjectMilestone $projectMilestone): self
-    {
-        if (!$this->projectMilestones->contains($projectMilestone)) {
-            $this->projectMilestones[] = $projectMilestone;
-            $projectMilestone->setDeliverable($this);
-        }
-
-        return $this;
-    }
-
-    public function removeProjectMilestone(ProjectMilestone $projectMilestone): self
-    {
-        if ($this->projectMilestones->removeElement($projectMilestone)) {
-            // set the owning side to null (unless already changed)
-            if ($projectMilestone->getDeliverable() === $this) {
-                $projectMilestone->setDeliverable(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function __toString()
     {
         return $this->title;
+    }
+
+    public function getMilestone(): ?ProjectMilestone
+    {
+        return $this->milestone;
+    }
+
+    public function setMilestone(?ProjectMilestone $milestone): self
+    {
+        $this->milestone = $milestone;
+
+        return $this;
     }
 }

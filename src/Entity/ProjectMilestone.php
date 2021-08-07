@@ -36,12 +36,6 @@ class ProjectMilestone
     private $project;
 
     /**
-     * @ORM\ManyToOne(targetEntity=ProjectDeliverable::class, inversedBy="projectMilestones")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $deliverable;
-
-    /**
      * @ORM\Column(type="date", nullable=true)
      */
     private $last_revision;
@@ -77,10 +71,16 @@ class ProjectMilestone
      */
     private $activities_equal_weight;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectDeliverable::class, mappedBy="milestone")
+     */
+    private $projectDeliverables;
+
     public function __construct()
     {
         $this->projectMilestoneStatuses = new ArrayCollection();
         $this->projectActivities = new ArrayCollection();
+        $this->projectDeliverables = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -120,18 +120,6 @@ class ProjectMilestone
     public function setProject(?Project $project): self
     {
         $this->project = $project;
-
-        return $this;
-    }
-
-    public function getDeliverable(): ?ProjectDeliverable
-    {
-        return $this->deliverable;
-    }
-
-    public function setDeliverable(?ProjectDeliverable $deliverable): self
-    {
-        $this->deliverable = $deliverable;
 
         return $this;
     }
@@ -257,6 +245,36 @@ class ProjectMilestone
     public function setActivitiesEqualWeight(bool $activities_equal_weight): self
     {
         $this->activities_equal_weight = $activities_equal_weight;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectDeliverable[]
+     */
+    public function getProjectDeliverables(): Collection
+    {
+        return $this->projectDeliverables;
+    }
+
+    public function addProjectDeliverable(ProjectDeliverable $projectDeliverable): self
+    {
+        if (!$this->projectDeliverables->contains($projectDeliverable)) {
+            $this->projectDeliverables[] = $projectDeliverable;
+            $projectDeliverable->setMilestone($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectDeliverable(ProjectDeliverable $projectDeliverable): self
+    {
+        if ($this->projectDeliverables->removeElement($projectDeliverable)) {
+            // set the owning side to null (unless already changed)
+            if ($projectDeliverable->getMilestone() === $this) {
+                $projectDeliverable->setMilestone(null);
+            }
+        }
 
         return $this;
     }

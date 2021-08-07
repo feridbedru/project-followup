@@ -22,15 +22,21 @@ class ActivityProgressController extends AbstractController
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
-        $reports = array();
+        // dd($activity);
+        $report_days = array();
         $days = $activityProgressRepository->findReportDays($activity);
         // dd($days);
         foreach ($days as $day) {
-            $date = new \DateTime(date_format($day['date'], 'Y-m-d'));
+            // $date = new \DateTime($day['created_at']);
+            $date = $day['created_at']->format('Y-m-d H:i:s');
+            // $date = date("Y-m-d", strtotime((string)$day['created_at']));
+            // $date = new \DateTime(date_format($day['created_at'], 'Y-m-d'));
+            // dd($date);
             $report = $activityProgressRepository->findReport($date);
-            $reports[date_format($day['date'], 'Y-m-d')] = $report;
+            // dd($report);
+            $report_days[date_format($day['created_at'], 'Y-m-d')] = $report;
         }
-
+// dd($report_days);
         if ($request->request->get('edit')) {
 
             $id = $request->request->get('edit');
@@ -53,7 +59,7 @@ class ActivityProgressController extends AbstractController
                 'edit' => $id,
                 'project' => $project,
                 'activity' => $activity,
-                'reports' => $reports,
+                'report_days' => $report_days,
             ]);
         }
 
@@ -88,7 +94,7 @@ class ActivityProgressController extends AbstractController
             'edit' => false,
             'project' => $project,
             'activity' => $activity,
-            'reports' => $reports,
+            'report_days' => $report_days,
         ]);
     }
 

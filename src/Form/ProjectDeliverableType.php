@@ -15,6 +15,7 @@ class ProjectDeliverableType extends AbstractType
         $builder
             ->add('title')
             ->add('description')
+            ->add('milestone')
             ->add('delivery_date', DateType::class, ['widget' => 'single_text'])
             ->add('percentage')
             ->add('planned_delivery_date', DateType::class, ['widget' => 'single_text'])

@@ -33,7 +33,7 @@ class ProjectType extends AbstractType
             ->add('amount')
             ->add('start_date', DateType::class, ['widget' => 'single_text'])
             ->add('end_date', DateType::class, ['widget' => 'single_text'])
-            ->add('stakeholders')
+            ->add('stakeholder')
             ->add('outcome')
             ->add('category')
             ->add('project_manager')

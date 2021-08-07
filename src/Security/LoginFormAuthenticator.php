@@ -1,8 +1,9 @@
 <?php
 
-// src/Security/LoginFormAuthenticator.php
 namespace App\Security;
 
+use App\Entity\ProjectMembers;
+use App\Entity\Project;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -77,7 +78,7 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
             throw new CustomUserMessageAuthenticationException('Email could not be found.');
         }
 
-        $this->user=$user;
+        $this->user = $user;
 
         return $user;
     }
@@ -97,42 +98,60 @@ class LoginFormAuthenticator extends AbstractFormLoginAuthenticator implements P
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
-        $user=$this->user;
+        $user = $this->user;
 
-            if(!$user->getLastLogin() | $user->getConfirmToken()=="reseted"){
-                return new RedirectResponse('login');
+        if (!$user->getLastLogin() | $user->getConfirmToken() == "reseted") {
+            return new RedirectResponse('login');
+        }
+        $this->user->setLastLogin(new \DateTime());
+
+        $this->entityManager->flush();
+        $permissions = [];
+
+        foreach ($user->getRoles() as $role) {
+            $permissions[] = $role;
+        }
+
+        $groups = $this->user->getUserGroup();
+        foreach ($groups as $key => $value) {
+
+            $permission = $value->getPermission();
+            foreach ($permission as $key => $value1) {
+                $permissions[] = $value1->getCode();
             }
-            $this->user->setLastLogin(new \DateTime());
-            
-            $this->entityManager->flush();
-                    $permissions=[];
-              
-                  foreach ($user->getRoles() as $role) {
-                    $permissions[]=$role;
-                     }
-              
-                    $groups=$this->user->getUserGroup();
-                    foreach ($groups as $key => $value) {
+        }
+        $request->getSession()->set(
+            "PERMISSION",
+            $permissions
+        );
 
-                    $permission=$value->getPermission();
-                    foreach ($permission as $key => $value1) {
-                        $permissions[]=$value1->getCode();
-                    }
+        $projectMembersRepository = $this->entityManager->getRepository(ProjectMembers::class);
+        $projectRepository = $this->entityManager->getRepository(Project::class);
+        $projectMember = $projectMembersRepository->findBy(['user' => $user, 'status' => 1]);
+        $projects = [];
+        $project_list = [];
+        foreach ($projectMember as $member) {
+            $project = $projectRepository->findOneBy(['id' => $member->getProject()->getId()]);
+            array_push($projects, $project);
+        }
+        foreach ($projects as $proj) {
+            if (!in_array($proj, $project_list)) {
+                $project_list[] = $proj;
+            }
+        }
 
-                    }
-    //    dd($permissions);
-         $request->getSession()->set(
-             "PERMISSION",
-             $permissions
-         );
+        $request->getSession()->set(
+            "myprojects",
+            $project_list
+        );
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
         }
-      // redirect to some "app_homepage" route - of wherever you want
-     return new RedirectResponse($this->urlGenerator->generate('dashboard'));
+        // redirect to some "app_homepage" route - of wherever you want
+        return new RedirectResponse($this->urlGenerator->generate('dashboard'));
         // For example : return new RedirectResponse($this->urlGenerator->generate('some_route'));
-        throw new \Exception('TODO: provide a valid redirect inside '.__FILE__);
+        throw new \Exception('TODO: provide a valid redirect inside ' . __FILE__);
     }
 
     protected function getLoginUrl(): string

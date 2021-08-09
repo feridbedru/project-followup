@@ -75,6 +75,18 @@ class ProjectMembersController extends AbstractController
         ]);
     }
 
+    #[Route('/{id}', name: 'member_status', methods: ['POST'])]
+    public function action(ProjectMembers $projectMember, ProjectRepository $projectRepository, Request $request)
+    {
+        $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $memberId = $request->request->get('memberId');
+        $em = $this->getDoctrine()->getManager();
+        $projectMember = $em->getRepository(ProjectMembers::class)->find(['id' => $memberId]);
+        $projectMember->setStatus($request->request->get('activateMember'));
+        $this->getDoctrine()->getManager()->flush();
+        return $this->redirectToRoute('project_members_index', ["project" => $project->getId()]);
+    }
+
     #[Route('/{id}', name: 'project_members_delete', methods: ['POST'])]
     public function delete(Request $request, ProjectRepository $projectRepository, ProjectMembers $projectMember): Response
     {

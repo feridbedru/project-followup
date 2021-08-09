@@ -45,12 +45,13 @@
 							<td>{{ program.currency.abbreviation }} {{ program.amount }}</td>
 						</tr>
 						<tr>
-							<th>{% trans %}Start Date{% endtrans %}</th>
-							<td>{{ program.startDate ? program.startDate|date('Y-m-d') : '' }}</td>
+							<th>{% trans %}Time Frame{% endtrans %}</th>
+							<td>From {{ program.startDate ? program.startDate|date('M Y') : '' }}
+								To {{ program.endDate ? program.endDate|date('M Y') : '' }}</td>
 						</tr>
 						<tr>
-							<th>{% trans %}End Date{% endtrans %}</th>
-							<td>{{ program.endDate ? program.endDate|date('Y-m-d') : '' }}</td>
+							<th>{% trans %}Program Manager{% endtrans %}</th>
+							<td>{{ program.programManager }}</td>
 						</tr>
 						<tr>
 							<th>{% trans %}Objective{% endtrans %}</th>
@@ -61,6 +62,8 @@
 							<td>
 								{% if program.status == 1 %}
 									Active
+								{% elseif program.status == 2 %}
+									Pending
 								{% else %}
 									Closed
 								{% endif %}
@@ -100,20 +103,31 @@
 					{% for project in projects %}
 						<tr>
 							<td>
-								<a href="{{ path('project_show', {'id': project.id })}}">{{ project.name }}</a>
+								<a href="{{ path('project_dashboard', {'id': project.id })}}">{{ project.name }}</a>
 							</td>
 							<td>{{ project.currency.abbreviation }} {{ project.amount }}</td>
 							<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
 							<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
 							<td class="text-center">
-								<a href="{{ path('project_dashboard', {'id': project.id })}}" class="btn btn-sm btn-primary mr-2">{% trans %}Dashboard{% endtrans %}</a>
-								<a href="#" class="btn btn-sm btn-success mr-2">{% trans %}Milestone{% endtrans %}</a>
-								<a href="{{ path('project_resource_index', {'project': project.id })}}" class="btn btn-sm btn-warning">{% trans %}Resources{% endtrans %}</a>
+								<a href="{{path('project_activity_index', {'project': project.id})}}" class="btn btn-sm btn-primary mr-2">{% trans %}Activity{% endtrans %}</a>
+								<a href="{{ path('project_milestone_index', {'project': project.id })}}" class="btn btn-sm btn-success mr-2">{% trans %}Milestone{% endtrans %}</a>
+								<a href="{{ path('project_members_index', {'project': project.id })}}" class="btn btn-sm btn-warning text-white">{% trans %}Members{% endtrans %}</a>
 							</td>
 						</tr>
+					{% else %}
+						<div class="container text-center">
+							<h3>
+								No Projects found.
+							</h3>
+						</div><br>
 					{% endfor %}
 				</tbody>
 			</table>
+
 		</div>
+		<a href="{{ path('project_new',{'program_id': program.id})}}" class="btn btn-success">
+			<i class="fas fa-plus"></i>
+			Create New Project
+		</a>
 	</div>
 {% endblock %}

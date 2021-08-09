@@ -41,11 +41,6 @@ class ProjectActivity
     private $status;
 
     /**
-     * @ORM\Column(type="date")
-     */
-    private $due_date;
-
-    /**
      * @ORM\Column(type="integer")
      */
     private $display_order;
@@ -54,11 +49,6 @@ class ProjectActivity
      * @ORM\Column(type="boolean")
      */
     private $is_active;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $can_be_concurrent;
 
     /**
      * @ORM\Column(type="float", nullable=true)
@@ -101,6 +91,21 @@ class ProjectActivity
      * @ORM\JoinColumn(nullable=false)
      */
     private $project;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=ProjectActivity::class)
+     */
+    private $parent;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $start_date;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $end_date;
 
     public function __construct()
     {
@@ -163,18 +168,6 @@ class ProjectActivity
         return $this;
     }
 
-    public function getDueDate(): ?\DateTimeInterface
-    {
-        return $this->due_date;
-    }
-
-    public function setDueDate(\DateTimeInterface $due_date): self
-    {
-        $this->due_date = $due_date;
-
-        return $this;
-    }
-
     public function getDisplayOrder(): ?int
     {
         return $this->display_order;
@@ -195,18 +188,6 @@ class ProjectActivity
     public function setIsActive(bool $is_active): self
     {
         $this->is_active = $is_active;
-
-        return $this;
-    }
-
-    public function getCanBeConcurrent(): ?bool
-    {
-        return $this->can_be_concurrent;
-    }
-
-    public function setCanBeConcurrent(bool $can_be_concurrent): self
-    {
-        $this->can_be_concurrent = $can_be_concurrent;
 
         return $this;
     }
@@ -375,6 +356,47 @@ class ProjectActivity
     public function setProject(?Project $project): self
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    public function getParent(): ?self
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?self $parent): self
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->display_order.' '.$this->title;
+    }
+
+    public function getStartDate(): ?\DateTimeInterface
+    {
+        return $this->start_date;
+    }
+
+    public function setStartDate(\DateTimeInterface $start_date): self
+    {
+        $this->start_date = $start_date;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTimeInterface
+    {
+        return $this->end_date;
+    }
+
+    public function setEndDate(\DateTimeInterface $end_date): self
+    {
+        $this->end_date = $end_date;
 
         return $this;
     }

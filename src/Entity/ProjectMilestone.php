@@ -76,6 +76,11 @@ class ProjectMilestone
      */
     private $projectDeliverables;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $weight;
+
     public function __construct()
     {
         $this->projectMilestoneStatuses = new ArrayCollection();
@@ -275,6 +280,18 @@ class ProjectMilestone
                 $projectDeliverable->setMilestone(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getWeight(): ?int
+    {
+        return $this->weight;
+    }
+
+    public function setWeight(int $weight): self
+    {
+        $this->weight = $weight;
 
         return $this;
     }

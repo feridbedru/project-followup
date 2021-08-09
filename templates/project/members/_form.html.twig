@@ -1,6 +1,6 @@
 {{ form_start(form) }}
 <div class="form-group">
-	<label>Employee</label> {{ form_widget(form.user,{'attr':{'class':'form-control select2'}}) }}
+	<label>Employee <span class="text-danger">*</span></label> {{ form_widget(form.user,{'attr':{'class':'form-control select2', 'placeholder':'choose a user'}}) }}
 	<div class="help-block with-errors"></div>
 </div>
 <div class="form-group">

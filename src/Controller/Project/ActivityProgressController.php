@@ -74,10 +74,12 @@ class ActivityProgressController extends AbstractController
             $activityProgress->setCreatedAt(new \DateTime());
             $activityProgress->setCreatedBy($this->getUser());
             $uploadedFile = $form['file']->getData();
-            $location = $this->getParameter('kernel.project_dir') . '/public/upload/progress';
-            $newFilename = uniqid() . '.' . $uploadedFile->getClientOriginalExtension();
-            $uploadedFile->move($location, $newFilename);
-            $activityProgress->setFile($newFilename);
+            if($uploadedFile){
+                $location = $this->getParameter('kernel.project_dir') . '/public/upload/progress';
+                $newFilename = uniqid() . '.' . $uploadedFile->getClientOriginalExtension();
+                $uploadedFile->move($location, $newFilename);
+                $activityProgress->setFile($newFilename);
+            }
             $entityManager->persist($activityProgress);
             $entityManager->flush();
             $this->addFlash("success", "Registered activity progress successfully.");

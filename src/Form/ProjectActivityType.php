@@ -3,10 +3,12 @@
 namespace App\Form;
 
 use App\Entity\ProjectActivity;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class ProjectActivityType extends AbstractType
 {
@@ -15,12 +17,13 @@ class ProjectActivityType extends AbstractType
         $builder
             ->add('title')
             ->add('description')
-            ->add('due_date', DateType::class, ['widget' => 'single_text'])
+            ->add('is_active')
             ->add('display_order')
-            ->add('can_be_concurrent')
             ->add('weight')
             ->add('milestone')
-        ;
+            ->add('parent')
+            ->add('start_date', DateType::class, ['widget' => 'single_text'])
+            ->add('end_date', DateType::class, ['widget' => 'single_text']);
     }
 
     public function configureOptions(OptionsResolver $resolver)

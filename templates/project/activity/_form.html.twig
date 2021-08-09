@@ -14,22 +14,32 @@
 	<div class="help-block with-errors"></div>
 </div>
 <div class="row">
-	<div class="form-group col-md-3">
-		<label>{{ form_label(form.due_date) }}</label> {{ form_widget(form.due_date,{'attr':{'class':'form-control'}}) }}
+	<div class="form-group col-md-4">
+		<label>{{ form_label(form.start_date) }}</label> {{ form_widget(form.start_date,{'attr':{'class':'form-control'}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
-	<div class="form-group col-md-3">
-		<label>Activity Order</label> {{ form_widget(form.display_order,{'attr':{'class':'form-control'}}) }}
+	<div class="form-group col-md-4">
+		<label>{{ form_label(form.end_date) }}</label> {{ form_widget(form.end_date,{'attr':{'class':'form-control'}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
-	<div class="form-group col-md-3">
+	<div class="form-group col-md-4">
 		<label>{{ form_label(form.weight) }}</label> {{ form_widget(form.weight,{'attr':{'class':'form-control'}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
-	<div class="form-group col-md-3">
-		<label class="control-label">{{ form_label(form.can_be_concurrent) }}</label> {{ form_widget(form.can_be_concurrent) }}
+</div>
+<div class="row">
+	<div class="form-group col-md-4">
+		<label>Activity Order</label> {{ form_widget(form.display_order,{'attr':{'class':'form-control'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-4">
+		<label>{{ form_label(form.parent) }}</label> {{ form_widget(form.parent,{'attr':{'class':'form-control select2'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
+	<div class="form-group col-md-4">
+		<label>{{ form_label(form.is_active) }}</label> {{ form_widget(form.is_active) }}
 		<div class="help-block with-errors"></div>
 	</div>
 </div>
-<br><button class="btn btn-primary">{{ button_label|default('Save') }}</button> 
+<button class="btn btn-primary">{{ button_label|default('Save') }}</button>
 {{ form_end(form) }}

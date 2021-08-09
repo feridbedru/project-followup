@@ -48,7 +48,19 @@
 						</tr>
 						<tr>
 							<th>{% trans %}Status{% endtrans %}</th>
-							<td>{{ project_activity.status }}</td>
+							<td>
+							{% if project_activity.status == 1 %}
+								Pending Assignment
+							{% elseif project_activity.status == 2 %}
+								Assigned
+							{% elseif project_activity.status == 3 %}
+								On Progress
+							{% elseif project_activity.status == 4 %}
+								Pending Verification
+							{% elseif project_activity.status == 5 %}
+								Completed
+							{% endif %}
+							</td>
 						</tr>
 						<tr>
 							<th>{% trans %}Due_date{% endtrans %}</th>

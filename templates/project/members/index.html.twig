@@ -38,8 +38,7 @@
 					<div class="card-body">
 						{% if edit  %}
 							{% set button_label = 'Update' %}
-						{% endif %}
-						{{ include('project/members/_form.html.twig') }}
+						{% endif %} {{ include('project/members/_form.html.twig') }}
 					</div>
 				</div>
 			{% endif %}
@@ -59,7 +58,7 @@
 								<th>{{ knp_pagination_sortable(project_members, 'Employee'|trans, 'p.user.username') }}</th>
 								<th>{{ knp_pagination_sortable(project_members, 'Role'|trans, 'p.role.name') }}</th>
 								<th>{{ knp_pagination_sortable(project_members, 'Status'|trans, 'p.status') }}</th>
-								<th>{{ knp_pagination_sortable(project_members, 'Working on Task'|trans, 'p.is_working_on_task') }}</th>
+								<th class="text-center">{{ knp_pagination_sortable(project_members, 'Open for Activity'|trans, 'p.is_working_on_task') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
@@ -72,15 +71,15 @@
 									</td>
 									<td>{{ project_member.user.fullName }}</td>
 									<td>{{ project_member.role.name }}</td>
-									<td><button class="btn btn-sm btn-success">
-										{% if project_member.status == 1 %}
-											Active
-										{% else %}
-											Closed
-										{% endif %}
-										</button>
+									<td>
+										<form class="d-inline" method="POST" action="{{ path('member_status',{'id':project_member.id, 'project':project.id})}}" onsubmit="return confirm('Are you sure you want to {{ project_member.status ? 'disable':'enable'}} this member?');">
+											<input name="activateMember" value="{{ project_member.status ? 0 : 1}}" hidden>
+											<input name="memberId" value="{{ project_member.id}}" hidden> {{ project_member.status ?  '<button class="btn btn-sm badge-success">Active</button>': '<button class="btn btn-sm btn-danger">Disabled</button>' }}
+										</form> 
 									</td>
-									<td>{{ project_member.isWorkingOnTask ? 'Yes' : 'No' }}</td>
+									<td class="text-center">
+										{{ project_member.isWorkingOnTask ? 'Yes' : 'No' }}
+									</td>
 									<td>
 
 										{% if is_granted("project_member_edit") %}

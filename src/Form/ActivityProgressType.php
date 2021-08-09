@@ -15,10 +15,11 @@ class ActivityProgressType extends AbstractType
     {
         $builder
             ->add('content')
-            ->add('completed_on', DateType::class, ['widget' => 'single_text'])
+            ->add('start_date', DateType::class, ['widget' => 'single_text'])
+            ->add('end_date', DateType::class, ['widget' => 'single_text'])
             ->add('rating')
             ->add('remark')
-            ->add('file', FileType::class, array('data_class' => null,'required' => true))
+            ->add('file', FileType::class, array('data_class' => null,'required' => false))
         ;
     }
 

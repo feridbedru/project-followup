@@ -50,6 +50,8 @@
 							<td>
 								{% if program.status == 1 %}
 									Active
+								{% elseif program.status == 2 %}
+									Pending
 								{% else %}
 									Closed
 								{% endif %}

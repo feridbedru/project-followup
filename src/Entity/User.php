@@ -103,6 +103,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $unit;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Organization::class, inversedBy="users")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $organization;
+
     public function __construct()
     {
     }
@@ -348,6 +354,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUnit(?OrganizationUnit $unit): self
     {
         $this->unit = $unit;
+
+        return $this;
+    }
+
+    public function getOrganization(): ?Organization
+    {
+        return $this->organization;
+    }
+
+    public function setOrganization(?Organization $organization): self
+    {
+        $this->organization = $organization;
 
         return $this;
     }

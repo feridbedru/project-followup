@@ -21,8 +21,7 @@
 
 				<div class="info-box-content">
 					<span class="info-box-text">Completed Projects</span>
-					<span class="info-box-number">
-						{{ closed_project|length }}
+					<span class="info-box-number"> {{ closed_project|length }}
 					</span>
 				</div>
 			</div>
@@ -36,8 +35,7 @@
 
 				<div class="info-box-content">
 					<span class="info-box-text">Ongoing Projects</span>
-					<span class="info-box-number">
-						{{ active_project|length }}
+					<span class="info-box-number"> {{ active_project|length }}
 					</span>
 				</div>
 			</div>
@@ -71,7 +69,7 @@
 		</div>
 	</div><br>
 	<div class="row">
-		<div class="col-md-6">
+		<div class="col-md-8">
 			<div class="card">
 				<div class="card-header border-0">
 					<h3 class="card-title">My Projects</h3>
@@ -96,15 +94,15 @@
 							{% for project in projects %}
 								<tr>
 									<td>
-										<a href="#">{{ project.name }}</a>
+										<a href="{{ path('project_dashboard', {'id': project.id })}}">{{ project.name }}</a>
 									</td>
 									<td>{{ project.currency.abbreviation }} {{ project.amount }}</td>
 									<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
 									<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
 									<td class="text-center">
-										<a href="{{ path('project_dashboard', {'id': project.id })}}" class="btn btn-sm btn-primary mr-2">{% trans %}Dashboard{% endtrans %}</a>
-										<a href="#" class="btn btn-sm btn-success mr-2">{% trans %}Milestone{% endtrans %}</a>
-										<a href="{{ path('project_resource_index', {'project': project.id })}}" class="btn btn-sm btn-warning">{% trans %}Resources{% endtrans %}</a>
+										<a href="{{path('project_activity_index', {'project': project.id})}}" class="btn btn-sm btn-primary mr-2">{% trans %}Activity{% endtrans %}</a>
+										<a href="{{ path('project_milestone_index', {'project': project.id })}}" class="btn btn-sm btn-success mr-2">{% trans %}Milestone{% endtrans %}</a>
+										<a href="{{ path('project_members_index', {'project': project.id })}}" class="btn btn-sm btn-warning text-white">{% trans %}Members{% endtrans %}</a>
 									</td>
 								</tr>
 							{% endfor %}
@@ -113,7 +111,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="col-md-6">
+		<div class="col-md-4">
 			<div class="card bg-gradient-success">
 				<div class="card-header border-0">
 
@@ -122,26 +120,12 @@
 						Calendar
 					</h3>
 					<div class="card-tools">
-						<div class="btn-group">
-							<button type="button" class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown" data-offset="-52">
-								<i class="fas fa-bars"></i>
-							</button>
-							<div class="dropdown-menu" role="menu">
-								<a href="#" class="dropdown-item">Add new event</a>
-								<a href="#" class="dropdown-item">Clear events</a>
-								<div class="dropdown-divider"></div>
-								<a href="#" class="dropdown-item">View calendar</a>
-							</div>
-						</div>
 						<button type="button" class="btn btn-success btn-sm" data-card-widget="collapse">
 							<i class="fas fa-minus"></i>
 						</button>
-						<button type="button" class="btn btn-success btn-sm" data-card-widget="remove">
-							<i class="fas fa-times"></i>
-						</button>
 					</div>
 				</div>
-				<div class="card-body pt-0">
+				<div class="card-body pt-0 text-center">
 					<div id="calendar" style="width: 100%"></div>
 				</div>
 			</div>
@@ -221,4 +205,13 @@
 			</div>
 		</div>
 	</div>
+{% endblock %}
+{% block javascripts %}
+	<script src="{{ asset('assets/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js')}}"></script>
+	<script>
+	  $('#calendar').datetimepicker({
+    format: 'L',
+    inline: true
+  })
+  </script>
 {% endblock %}

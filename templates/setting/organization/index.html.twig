@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Organization
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('organization_index')}}">{% trans %}
+			Organization
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		List
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Organization{% endtrans %}
+{% endblock %}
+{% block body %}
+	<div class="row">
+		<div class="col-md-4">
+			{% if is_granted("organization_create") %}
+				<div class="card card-info">
+					<div class="card-header">
+						<h3 class="card-title">
+							{% if edit %}
+								Edit
+							{% else %}
+								Add New
+							{% endif %}
+						</h3>
+					</div>
+					<div class="card-body">
+						{% if edit  %}
+							{% set button_label = 'Update' %}
+						{% endif %} {{ include('setting/organization/_form.html.twig') }}
+					</div>
+				</div>
+			{% endif %}
+		</div>
+		<div class="col-md-8">
+			<div class="card card-info">
+				<div class="card-header">
+					<h5 class="card-title">{% trans %}
+						Organization List{% endtrans %}</h5>
+					<div class="card-tools">
+						<form class="form-inline ml-3">
+							<div class="input-group input-group-sm">
+								<input class="form-control form-control-navbar" placeholder="Search" type="search" name="search">
+								<div class="input-group-append">
+									<button class="btn btn-secondary" type="submit">
+										<i class="fas fa-search"></i>
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+				<div class="card-body">
+					<table class="table table-hover">
+						<thead>
+							<tr>
+								<th>#</th>
+								<th>{{ knp_pagination_sortable(organizations, 'Name'|trans, 'o.name') }}</th>
+								<th>{{ knp_pagination_sortable(organizations, 'Description'|trans, 'o.description') }}</th>
+								<th>{% trans %}Actions{% endtrans %}</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% set i = 1 %}
+							{% for organization in organizations %}
+								<tr>
+									<td>{{ i }}
+										{% set i = i+1 %}
+									</td>
+									<td>{{ organization.name }}</td>
+									<td>{{ organization.description|raw }}</td>
+									<td>
+
+										{% if is_granted("organization_edit") %}
+											<form class="d-inline" method="post">
+												<input type="hidden" name="edit" value="{{organization.id}}">
+												<button class="btn btn-info btn-sm" title="Edit">
+													<i class="fa fa-edit"></i>
+												</button>
+											</form>
+										{% endif %}
+										{% if is_granted("organization_delete") %}
+											<form method="post" class="d-inline" action="{{ path('organization_delete', {'id': organization.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ organization.id) }}">
+												<button class="btn btn-danger btn-sm">
+													<span class="fa fa-trash"></span>
+												</button>
+											</form>
+										{% endif %}
+									</td>
+								</tr>
+							{% else %}
+								<tr>
+									<td colspan="4">{% trans %}no records found{% endtrans %}</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+					<div class="navigation">{{ knp_pagination_render(organizations) }}</div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+<script>
+  $(function () {
+    $('.wyiswig').summernote({
+		placeholder: 'Enter details here',
+        tabsize: 2,
+        height: 200
+	})
+  })
+</script>
+{% endblock %}

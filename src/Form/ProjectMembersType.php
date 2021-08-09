@@ -3,10 +3,14 @@
 namespace App\Form;
 
 use App\Entity\ProjectMembers;
+use App\Entity\ProjectRole;
+use App\Entity\User;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class ProjectMembersType extends AbstractType
 {
@@ -21,8 +25,26 @@ class ProjectMembersType extends AbstractType
                 'placeholder' => "Choose Status",
                 'required' => true,
             ])
-            ->add('user')
-            ->add('role')
+            ->add('user', EntityType::class, [
+                'class' => User::class,
+                'placeholder' => "Choose a user",
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    $res = $er->createQueryBuilder('u')
+                        ->andWhere('u.full_name is not NULL');
+                    return $res;
+                }
+            ])
+            ->add('role', EntityType::class, [
+                'class' => ProjectRole::class,
+                'placeholder' => "Choose a role",
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    $res = $er->createQueryBuilder('r')
+                        ->andWhere('r.name is not NULL');
+                    return $res;
+                }
+            ])
         ;
     }
 

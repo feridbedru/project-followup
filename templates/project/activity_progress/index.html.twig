@@ -69,7 +69,7 @@
 											<div class="timeline-body">
 												<div class="row">
 													<div class="col-md-4">
-														<p>Completed Date: {{ report.completedOn|date("m-d-Y") }}</p>
+														<p>Activity Period: {{ report.startDate|date("M d Y") }} - {{ report.endDate|date("M d Y") }}</p>
 													</div>
 													<div class="col-md-8">
 														<p>Rating : {{ report.rating }}</p>

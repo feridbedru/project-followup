@@ -4,6 +4,8 @@ namespace App\Controller\Project;
 
 use App\Entity\ActivityUser;
 use App\Entity\Log;
+use App\Entity\ProjectActivity;
+use App\Entity\ProjectMembers;
 use App\Form\ActivityUserType;
 use App\Repository\ActivityUserRepository;
 use App\Repository\ProjectRepository;
@@ -22,22 +24,22 @@ class ActivityUserController extends AbstractController
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
-        if($request->request->get('edit')){
-            
+        if ($request->request->get('edit')) {
+
             $id = $request->request->get('edit');
-            $activityUser = $activityUserRepository->findOneBy(['id'=>$id]);
+            $activityUser = $activityUserRepository->findOneBy(['id' => $id]);
             $form = $this->createForm(ActivityUserType::class, $activityUser);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $this->getDoctrine()->getManager()->flush();
-                $this->addFlash("success","Updated activity user successfully.");
+                $this->addFlash("success", "Updated activity user successfully.");
 
                 return $this->redirectToRoute('activity_user_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
             }
 
             $queryBuilder = $activityUserRepository->findBy(["activity" => $activity]);
-            $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
+            $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 10);
 
             return $this->render('project/activity_user/index.html.twig', [
                 'activity_users' => $data,
@@ -48,12 +50,12 @@ class ActivityUserController extends AbstractController
             ]);
         }
 
-        
         $activityUser = new ActivityUser();
         $form = $this->createForm(ActivityUserType::class, $activityUser);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // $memberId = $form->get('user')->getData()->getId();
             $entityManager = $this->getDoctrine()->getManager();
             $activityUser->setActivity($activity);
             $activityUser->setAssignedAt(new \DateTime());
@@ -61,13 +63,26 @@ class ActivityUserController extends AbstractController
             $activityUser->setStatus(1);
             $entityManager->persist($activityUser);
             $entityManager->flush();
-            $this->addFlash("success","Registered activity user successfully.");
+            if ($activity->getStatus() == 1) {
+                $activity->setStatus(2);
+                $entityManager->flush();
+                $entityManager->clear();
+            }
+
+            // $member = $entityManager->getRepository(ProjectMembers::class)->findOneBy(['id' => $memberId]);
+            // if ($member->getIsWorkingOnTask() == false) {
+            //     $member->setIsWorkingOnTask(true);
+            //     $entityManager->flush();
+            //     $entityManager->clear();
+            // }
+
+            $this->addFlash("success", "Registered activity user successfully.");
 
             return $this->redirectToRoute('activity_user_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
         }
 
         $queryBuilder = $activityUserRepository->findBy(["activity" => $activity]);
-        $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
+        $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 10);
 
         return $this->render('project/activity_user/index.html.twig', [
             'activity_users' => $data,
@@ -76,7 +91,6 @@ class ActivityUserController extends AbstractController
             'project' => $project,
             'activity' => $activity,
         ]);
-
     }
 
     #[Route('/{id}', name: 'activity_user_delete', methods: ['POST'])]
@@ -85,12 +99,12 @@ class ActivityUserController extends AbstractController
         $this->denyAccessUnlessGranted('activity_user_delete');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
-        if ($this->isCsrfTokenValid('delete'.$activityUser->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $activityUser->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($activityUser);
             $entityManager->flush();
         }
-        $this->addFlash("success","Deleted activity user successfully.");
+        $this->addFlash("success", "Deleted activity user successfully.");
 
         return $this->redirectToRoute('activity_user_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
     }

@@ -43,8 +43,7 @@
 					<div class="card-body">
 						{% if edit  %}
 							{% set button_label = 'Update' %}
-						{% endif %}
-						{{ include('project/activity_user/_form.html.twig') }}
+						{% endif %} {{ include('project/activity_user/_form.html.twig') }}
 					</div>
 				</div>
 			{% endif %}
@@ -90,7 +89,40 @@
 									<td>{{ activity_user.user }}</td>
 									<td>{{ activity_user.startDate ? activity_user.startDate|date('Y-m-d') : '' }}</td>
 									<td>{{ activity_user.endDate ? activity_user.endDate|date('Y-m-d') : '' }}</td>
-									<td>{{ activity_user.status }}</td>
+									<td>
+										{% if activity_user.status == 1 %}
+											Assigned
+										{% elseif activity_user.status == 2 %}
+											On Progress
+										{% elseif activity_user.status == 3 %}
+											Pending Verification
+										{% elseif activity_user.status == 4 %}
+											Completed
+										{% endif %}
+
+										{% set difference = date(activity_user.endDate).diff(date(activity_user.startDate)) %}
+										{% set leftDays = difference.days / 3 %}
+										{% set p1 = leftDays * 1 %}
+										{% set p1 = '+' ~ p1|round ~' day' %}
+										{% set first = activity_user.startDate|date_modify(p1)|date('Y-m-d') %} 
+										{% set p2 = leftDays * 2 %}
+										{% set p2 = '+' ~ p2|round ~' day' %}
+										{% set second = activity_user.startDate|date_modify(p2)|date('Y-m-d') %} 
+										{% set p3 = leftDays * 3 %}
+										{% set p3 = '+' ~ p3|round ~' day' %}
+										{% set third = activity_user.startDate|date_modify(p3)|date('Y-m-d') %} 
+										{% set today = "now"|date("Y-m-d") %}
+										{% if today < first %}
+											<span class="badge badge-secondary">Initial</span>
+										{% elseif today > first and today < second %}
+											<span class="badge badge-success">Halfway</span>
+										{% elseif today > second and today < third %}
+											<span class="badge badge-warning">Almost Done</span>
+										{% elseif today > third %}
+											<span class="badge badge-danger">Delayed</span>
+										{% endif %}
+
+									</td>
 									<td>
 
 										{% if is_granted("activity_user_edit") %}
@@ -125,17 +157,13 @@
 	</div>
 {% endblock %}
 {% block stylesheets %}
-<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+	<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
 {% endblock %}
 {% block javascripts %}
-<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
-<script>
-  $(function () {
-    $('.wyiswig').summernote({
-		placeholder: 'Enter details here',
-        tabsize: 2,
-        height: 200
-	})
-  })
-</script>
+	<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+	<script>
+		$(function () {
+$('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height: 200})
+})
+	</script>
 {% endblock %}

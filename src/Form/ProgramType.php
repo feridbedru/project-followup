@@ -25,7 +25,8 @@ class ProgramType extends AbstractType
             ->add('status', ChoiceType::class, [
                 'choices' => [
                     'Active' => '1',
-                    'Closed' => '2',
+                    'Pending' => '2',
+                    'Closed' => '3',
                 ],
                 'placeholder' => "Choose Status",
                 'required' => true,

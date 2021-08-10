@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class MyProjectController extends AbstractController
 {
     #[Route('/', name: 'my_project')]
-    public function index(ProjectRepository $projectRepository, ProjectMembersRepository $projectMembersRepository): Response
+    public function index(ProjectRepository $projectRepository, ProjectMembersRepository $projectMembersRepository, Request $request): Response
     {
         $projectMember = $projectMembersRepository->findBy(['user' => $this->getUser(), 'status' => 1]);
         $projects = [];
@@ -29,8 +29,15 @@ class MyProjectController extends AbstractController
             }
         }
 
+        $project = NULL;
+        $projectId = $request->attributes->get('project');
+        if($projectId){
+            $project = $projectRepository->findOneBy(['id' => $projectId]);
+        }
+        
         return $this->render('my_project/index.html.twig', [
             'projects' => $project_list,
+            'project' => $project,
         ]);
     }
 

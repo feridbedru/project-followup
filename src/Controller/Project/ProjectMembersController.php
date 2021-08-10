@@ -7,11 +7,14 @@ use App\Entity\Log;
 use App\Form\ProjectMembersType;
 use App\Repository\ProjectRepository;
 use App\Repository\ProjectMembersRepository;
+use App\Repository\EmailTemplateRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use App\Services\MailerService;
 
 #[Route('project/{project}/members')]
 class ProjectMembersController extends AbstractController
@@ -76,14 +79,27 @@ class ProjectMembersController extends AbstractController
     }
 
     #[Route('/{id}', name: 'member_status', methods: ['POST'])]
-    public function action(ProjectMembers $projectMember, ProjectRepository $projectRepository, Request $request)
+    public function action(ProjectMembers $projectMember, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $template = $emailTemplateRepository->findOneBy(['code' => 'add_individual_to_project']);
         $memberId = $request->request->get('memberId');
         $em = $this->getDoctrine()->getManager();
         $projectMember = $em->getRepository(ProjectMembers::class)->find(['id' => $memberId]);
         $projectMember->setStatus($request->request->get('activateMember'));
         $this->getDoctrine()->getManager()->flush();
+        $this->addFlash("success", "Updated member status successfully.");
+        $user = $projectMember->getUser()->getFullName();
+        $myporject = $projectMember->getProject()->getName();
+        $role = $projectMember->getRole()->getName();
+
+        $message =  $template->getContent();
+        $message = str_replace('$user', $user, $message);
+        $message = str_replace('$myproject', $myporject, $message);
+        $message = str_replace('$role', $role, $message);
+        $reciever = 'ferid.bedru@gmail.com';
+
+        $sent =  $mservice->sendEmail($mailer, $reciever ,$template->getName(), $message);
         return $this->redirectToRoute('project_members_index', ["project" => $project->getId()]);
     }
 

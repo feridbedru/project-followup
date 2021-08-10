@@ -39,7 +39,7 @@
 					<tr>
 						<th>#</th>
 						<th>{{ knp_pagination_sortable(project_activities, 'Title'|trans, 'p.title') }}</th>
-						<th>{{ knp_pagination_sortable(project_activities, 'Due Date'|trans, 'p.due_date') }}</th>
+						<th>{{ knp_pagination_sortable(project_activities, 'Due Date'|trans, 'p.end_date') }}</th>
 						<th>{{ knp_pagination_sortable(project_activities, 'Status'|trans, 'p.status') }}</th>
 						<th>{{ knp_pagination_sortable(project_activities, 'Active'|trans, 'p.is_active') }}</th>
 						<th>{% trans %}Actions{% endtrans %}</th>
@@ -55,7 +55,7 @@
 							<td>
 								<a href="{{ path('project_activity_show', {'id': project_activity.id, 'project': project.id}) }}" >{{ project_activity.title }}</a>
 							</td>
-							<td>{{ project_activity.dueDate ? project_activity.dueDate|date('Y-m-d') : '' }}</td>
+							<td>{{ project_activity.endDate ? project_activity.endDate|date('Y-m-d') : '' }}</td>
 							<td>
 							{% if project_activity.status == 1 %}
 								Pending Assignment
@@ -69,7 +69,7 @@
 								Completed
 							{% endif %}
 
-							{% set difference = date(project_activity.dueDate).diff(date(project_activity.createdAt)) %}
+							{% set difference = date(project_activity.endDate).diff(date(project_activity.createdAt)) %}
 							{% set leftDays = difference.days / 3 %}
 							{% set p1 = leftDays * 1 %}
 							{% set p1 = '+' ~ p1|round ~' day' %}

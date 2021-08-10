@@ -31,7 +31,7 @@ class SecurityController extends AbstractController
     #[Route('/gen', name: 'generate')]
     public function generate()
     {
-        $entity_name = 'Organization';
+        $entity_name = 'Email Template';
         $entity_small = preg_replace('/\s+/', '_', strtolower($entity_name));
         echo "INSERT INTO `permission`(`name`, `code`, `description`) VALUES ('".$entity_name." Create','".$entity_small."_create', 'Allows users to create ".$entity_name."');";
         echo "INSERT INTO `permission`(`name`, `code`, `description`) VALUES ('".$entity_name." Edit','".$entity_small."_edit', 'Allows users to edit ".$entity_name."');";

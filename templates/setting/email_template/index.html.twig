@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Email Template index
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('email_template_index')}}">{% trans %}
+			Email Template
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		List
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Email Template{% endtrans %}
+{% endblock %}
+{% block body %}
+	<div class="card card-info">
+		<div class="card-header">
+			<h3>{% trans %}
+				Email Template
+				{% endtrans %}</h3>
+		</div>
+		<div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>{{ knp_pagination_sortable(email_templates, 'Name'|trans, 'e.name') }}</th>
+						<th>{{ knp_pagination_sortable(email_templates, 'Code'|trans, 'e.code') }}</th>
+						<th>{{ knp_pagination_sortable(email_templates, 'Description'|trans, 'e.description') }}</th>
+						<th>{{ knp_pagination_sortable(email_templates, 'Is_active'|trans, 'e.is_active') }}</th>
+						<th>{% trans %}Actions{% endtrans %}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% set i = 1 %}
+					{% for email_template in email_templates %}
+						<tr>
+							<td>{{ i }}
+								{% set i = i+1 %}
+							</td>
+							<td>{{ email_template.name }}</td>
+							<td>{{ email_template.code }}</td>
+							<td>{{ email_template.description }}</td>
+							<td>{{ email_template.isActive ? 'Yes' : 'No' }}</td>
+							<td>
+								{% if is_granted("email_template_show") %}
+									<a href="{{ path('email_template_show', {'id': email_template.id}) }}" class="btn btn-sm btn-primary">{% trans %}Show{% endtrans %}</a>
+								{% endif %}
+								{% if is_granted("email_template_edit") %}
+									<a href="{{ path('email_template_edit', {'id': email_template.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+								{% endif %}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="7">{% trans %}no records found{% endtrans %}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<div class="navigation">{{ knp_pagination_render(email_templates) }}</div>
+		</div>
+	</div>
+	{% if is_granted("email_template_create") %}
+		<a href="{{ path('email_template_new') }}" class="btn btn-sm btn-success">
+			<span class="fa fa-plus"></span>
+			{% trans %}Create new{% endtrans %}</a>
+	{% endif %}
+	<br>
+{% endblock %}

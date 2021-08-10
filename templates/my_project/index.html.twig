@@ -12,44 +12,61 @@
 	My Projects{% endtrans %}
 {% endblock %}
 {% block body %}
-	<div class="card">
-		<div class="card-header border-0">
-			<h3 class="card-title">My Projects</h3>
-			<div class="card-tools">
-				<a href="#" class="btn btn-tool btn-sm">
-					<i class="fas fa-bars"></i>
-				</a>
+	<div class="row">
+		<div class="col-md-4">
+			<div class="card">
+				<div class="card-header border-0">
+					<h3 class="card-title">My Projects</h3>
+					<div class="card-tools">
+						<a href="#" class="btn btn-tool btn-sm">
+							<i class="fas fa-bars"></i>
+						</a>
+					</div>
+				</div>
+				<div class="card-body table-responsive p-0">
+					<table class="table table-striped table-valign-middle">
+						<thead>
+							<tr>
+								<th>Name</th>
+								<th class="text-center">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{% for project in projects %}
+								<tr>
+									<td>
+										<a href="{{ path('project_dashboard', {'id': project.id })}}">{{ project.name }}</a>
+									</td>
+									<td class="text-center">
+										<a href="{{ path('my_project',{'project':project.id})}}" class="btn btn-sm btn-primary mr-2">{% trans %}Dashboard{% endtrans %}</a>
+										<a href="{{ path('user_activity_index', {'project': project.id})}}" class="btn btn-sm btn-success mr-2">{% trans %}Tasks{% endtrans %}</a>
+										<a href="{{ path('project_resource_index', {'project': project.id })}}" class="btn btn-sm btn-warning text-white">{% trans %}Knowledge{% endtrans %}</a>
+									</td>
+								</tr>
+							{% endfor %}
+						</tbody>
+					</table>
+				</div>
 			</div>
 		</div>
-		<div class="card-body table-responsive p-0">
-			<table class="table table-striped table-valign-middle">
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Amount</th>
-						<th>Start Date</th>
-						<th>End Date</th>
-						<th class="text-center">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{% for project in projects %}
-						<tr>
-							<td>
-								<a href="#">{{ project.name }}</a>
-							</td>
-							<td>{{ project.currency.abbreviation }} {{ project.amount }}</td>
-							<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
-							<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
-							<td class="text-center">
-								<a href="{{ path('project_dashboard', {'id': project.id })}}" class="btn btn-sm btn-primary mr-2">{% trans %}Dashboard{% endtrans %}</a>
-								<a href="{{ path('user_activity_index', {'project': project.id})}}" class="btn btn-sm btn-success mr-2">{% trans %}Tasks{% endtrans %}</a>
-								<a href="{{ path('project_resource_index', {'project': project.id })}}" class="btn btn-sm btn-warning">{% trans %}Resources{% endtrans %}</a>
-							</td>
-						</tr>
-					{% endfor %}
-				</tbody>
-			</table>
+		<div class="col-md-8">
+			<div class="card">
+				<div class="card-header border-0">
+					<h3 class="card-title">My Projects</h3>
+					<div class="card-tools">
+						<a href="#" class="btn btn-tool btn-sm">
+							<i class="fas fa-bars"></i>
+						</a>
+					</div>
+				</div>
+				<div class="card-body ">
+					Dashboard per project
+					{% if project is not null %}
+						{% set project = app.request.query.get('project') %}
+						{% include "project/dashboard.html.twig" with {'project':project} %}
+					{% endif %}
+				</div>
+			</div>
 		</div>
 	</div>
 {% endblock %}

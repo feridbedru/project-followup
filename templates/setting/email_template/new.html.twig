@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Email Template
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('email_template_index')}}">{% trans %}
+			Email Template
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		New
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	New Email Template
+	{% endtrans %}
+{% endblock %}
+{% block body %}
+	{% if is_granted("email_template_create") %}
+		<div class="card card-info">
+			<div class="card-header">
+				<h3>{% trans %}
+					New Email Template{% endtrans %}</h3>
+			</div>
+			<div class="card-body"> {{ include('setting/email_template/_form.html.twig') }}
+			</div>
+		</div>
+		<br>
+	{% endif %}
+{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+<script>
+  $(function () {
+    $('.wyiswig').summernote({
+		placeholder: 'Enter details here',
+        tabsize: 2,
+        height: 200
+	})
+  })
+</script>
+{% endblock %}

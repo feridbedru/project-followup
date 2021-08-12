@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EmailTemplateRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -41,6 +43,16 @@ class EmailTemplate
      * @ORM\Column(type="text")
      */
     private $content;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=ProjectStructure::class, mappedBy="email_template")
+     */
+    private $projectStructures;
+
+    public function __construct()
+    {
+        $this->projectStructures = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -105,5 +117,37 @@ class EmailTemplate
         $this->content = $content;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|ProjectStructure[]
+     */
+    public function getProjectStructures(): Collection
+    {
+        return $this->projectStructures;
+    }
+
+    public function addProjectStructure(ProjectStructure $projectStructure): self
+    {
+        if (!$this->projectStructures->contains($projectStructure)) {
+            $this->projectStructures[] = $projectStructure;
+            $projectStructure->addEmailTemplate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectStructure(ProjectStructure $projectStructure): self
+    {
+        if ($this->projectStructures->removeElement($projectStructure)) {
+            $projectStructure->removeEmailTemplate($this);
+        }
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
     }
 }

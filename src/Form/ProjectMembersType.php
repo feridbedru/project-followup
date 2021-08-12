@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use App\Entity\ProjectMembers;
-use App\Entity\ProjectRole;
+use App\Entity\ProjectStructure;
 use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
@@ -36,7 +36,7 @@ class ProjectMembersType extends AbstractType
                 }
             ])
             ->add('role', EntityType::class, [
-                'class' => ProjectRole::class,
+                'class' => ProjectStructure::class,
                 'placeholder' => "Choose a role",
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) {

@@ -24,12 +24,6 @@ class ProjectMembers
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity=ProjectRole::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $role;
-
-    /**
      * @ORM\Column(type="integer")
      */
     private $status;
@@ -56,6 +50,12 @@ class ProjectMembers
      */
     private $project;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=ProjectStructure::class, inversedBy="projectMembers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $role;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -69,18 +69,6 @@ class ProjectMembers
     public function setUser(?User $user): self
     {
         $this->user = $user;
-
-        return $this;
-    }
-
-    public function getRole(): ?ProjectRole
-    {
-        return $this->role;
-    }
-
-    public function setRole(?ProjectRole $role): self
-    {
-        $this->role = $role;
 
         return $this;
     }
@@ -146,6 +134,18 @@ class ProjectMembers
     public function setProject(?Project $project): self
     {
         $this->project = $project;
+
+        return $this;
+    }
+
+    public function getRole(): ?ProjectStructure
+    {
+        return $this->role;
+    }
+
+    public function setRole(?ProjectStructure $role): self
+    {
+        $this->role = $role;
 
         return $this;
     }

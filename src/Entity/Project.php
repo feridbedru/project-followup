@@ -138,6 +138,11 @@ class Project
      */
     private $stakeholder;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectStructure::class, mappedBy="project")
+     */
+    private $projectStructures;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
@@ -150,6 +155,7 @@ class Project
         $this->projectActivities = new ArrayCollection();
         $this->projectCollaborationTopics = new ArrayCollection();
         $this->stakeholder = new ArrayCollection();
+        $this->projectStructures = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -612,6 +618,36 @@ class Project
             // set the owning side to null (unless already changed)
             if ($stakeholder->getProject() === $this) {
                 $stakeholder->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectStructure[]
+     */
+    public function getProjectStructures(): Collection
+    {
+        return $this->projectStructures;
+    }
+
+    public function addProjectStructure(ProjectStructure $projectStructure): self
+    {
+        if (!$this->projectStructures->contains($projectStructure)) {
+            $this->projectStructures[] = $projectStructure;
+            $projectStructure->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectStructure(ProjectStructure $projectStructure): self
+    {
+        if ($this->projectStructures->removeElement($projectStructure)) {
+            // set the owning side to null (unless already changed)
+            if ($projectStructure->getProject() === $this) {
+                $projectStructure->setProject(null);
             }
         }
 

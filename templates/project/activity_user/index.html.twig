@@ -28,8 +28,8 @@
 {% endblock %}
 {% block body %}
 	<div class="row">
-		<div class="col-md-4">
-			{% if is_granted("activity_user_create") %}
+		{% if is_granted("activity_user_create") and activity.isActive == 1 %}
+			<div class="col-md-4">
 				<div class="card card-info">
 					<div class="card-header">
 						<h3 class="card-title">
@@ -46,8 +46,8 @@
 						{% endif %} {{ include('project/activity_user/_form.html.twig') }}
 					</div>
 				</div>
-			{% endif %}
-		</div>
+			</div>
+		{% endif %}
 		<div class="col-md-8">
 			<div class="card card-info">
 				<div class="card-header">
@@ -59,7 +59,7 @@
 							<div class="input-group input-group-sm">
 								<input class="form-control form-control-navbar" placeholder="Search" type="search" name="search">
 								<div class="input-group-append">
-									<button class="btn btn-navbar" type="submit">
+									<button class="btn btn-secondary" type="submit">
 										<i class="fas fa-search"></i>
 									</button>
 								</div>
@@ -104,13 +104,13 @@
 										{% set leftDays = difference.days / 3 %}
 										{% set p1 = leftDays * 1 %}
 										{% set p1 = '+' ~ p1|round ~' day' %}
-										{% set first = activity_user.startDate|date_modify(p1)|date('Y-m-d') %} 
+										{% set first = activity_user.startDate|date_modify(p1)|date('Y-m-d') %}
 										{% set p2 = leftDays * 2 %}
 										{% set p2 = '+' ~ p2|round ~' day' %}
-										{% set second = activity_user.startDate|date_modify(p2)|date('Y-m-d') %} 
+										{% set second = activity_user.startDate|date_modify(p2)|date('Y-m-d') %}
 										{% set p3 = leftDays * 3 %}
 										{% set p3 = '+' ~ p3|round ~' day' %}
-										{% set third = activity_user.startDate|date_modify(p3)|date('Y-m-d') %} 
+										{% set third = activity_user.startDate|date_modify(p3)|date('Y-m-d') %}
 										{% set today = "now"|date("Y-m-d") %}
 										{% if today < first %}
 											<span class="badge badge-secondary">Initial</span>

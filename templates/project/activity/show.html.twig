@@ -44,7 +44,7 @@
 						</tr>
 						<tr>
 							<th>{% trans %}Description{% endtrans %}</th>
-							<td>{{ project_activity.description }}</td>
+							<td>{{ project_activity.description|raw }}</td>
 						</tr>
 						<tr>
 							<th>{% trans %}Status{% endtrans %}</th>
@@ -63,20 +63,16 @@
 							</td>
 						</tr>
 						<tr>
-							<th>{% trans %}Due_date{% endtrans %}</th>
-							<td>{{ project_activity.dueDate ? project_activity.dueDate|date('Y-m-d') : '' }}</td>
+							<th>{% trans %}Duration{% endtrans %}</th>
+							<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }} - {{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
 						</tr>
 						<tr>
-							<th>{% trans %}Display_order{% endtrans %}</th>
+							<th>{% trans %}Display Order{% endtrans %}</th>
 							<td>{{ project_activity.displayOrder }}</td>
 						</tr>
 						<tr>
-							<th>{% trans %}Is_active{% endtrans %}</th>
+							<th>{% trans %}Is Active{% endtrans %}</th>
 							<td>{{ project_activity.isActive ? 'Yes' : 'No' }}</td>
-						</tr>
-						<tr>
-							<th>{% trans %}Can_be_concurrent{% endtrans %}</th>
-							<td>{{ project_activity.canBeConcurrent ? 'Yes' : 'No' }}</td>
 						</tr>
 						<tr>
 							<th>{% trans %}Weight{% endtrans %}</th>

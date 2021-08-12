@@ -74,7 +74,7 @@
 									<td>{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
 									<td>{{ project_milestone.lastRevision ? project_milestone.lastRevision|date('Y-m-d') : '' }}</td>
 									<td>
-
+										<a href="{{ path('project_deliverable_index', {'project': project.id, 'milestone':project_milestone.id}) }}" class="btn btn-sm btn-success mr-2">Deliverables</a>
 										{% if is_granted("project_milestone_edit") %}
 											<form class="d-inline" method="post">
 												<input type="hidden" name="edit" value="{{project_milestone.id}}">

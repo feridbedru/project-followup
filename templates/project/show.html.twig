@@ -51,25 +51,35 @@
 								<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
 								<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
 								<td>
-									{{ project.stakeholders|raw }}
+								{# stakeholder #}
 								</td>
 								<td>
 									{% if project.status == 1 %}
-										Active
+										Planning
+									{% elseif project.status == 2 %}
+										Plan Approval Requested
+									{% elseif project.status == 3 %}
+										Plan Approved
+									{% elseif project.status == 4 %}
+										On Implementation
+									{% elseif project.status == 5 %}
+										Completed
+									{% elseif project.status == 6 %}
+										Terminated
 									{% else %}
-										Closed
+										Unknown
 									{% endif %}
 								</td>
 							</tr>
 							<tr>
-								<th>Category</th>
+								{# <th>Category</th> #}
 								<th>Project Manager</th>
 								<th>Program</th>
 							</tr>
 							<tr>
-								<td>
+								{# <td>
 									{{ project.category.name }}
-								</td>
+								</td> #}
 								<td>{{ project.projectManager.username }}</td>
 								<td>
 									{% if project.program is not null  %}

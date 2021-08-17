@@ -13,7 +13,9 @@ class OrganizationUnitType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('description')
+            ->add('acronym')
+            ->add('head')
+            ->add('reportsTo')
         ;
     }
 

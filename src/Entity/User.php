@@ -97,18 +97,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $full_name;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=OrganizationUnit::class, inversedBy="users")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $unit;
-
-    /**
-     * @ORM\ManyToOne(targetEntity=Organization::class, inversedBy="users")
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $organization;
-
     public function __construct()
     {
     }
@@ -342,30 +330,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setFullName(string $full_name): self
     {
         $this->full_name = $full_name;
-
-        return $this;
-    }
-
-    public function getUnit(): ?OrganizationUnit
-    {
-        return $this->unit;
-    }
-
-    public function setUnit(?OrganizationUnit $unit): self
-    {
-        $this->unit = $unit;
-
-        return $this;
-    }
-
-    public function getOrganization(): ?Organization
-    {
-        return $this->organization;
-    }
-
-    public function setOrganization(?Organization $organization): self
-    {
-        $this->organization = $organization;
 
         return $this;
     }

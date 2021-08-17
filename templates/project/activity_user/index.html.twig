@@ -27,6 +27,7 @@
 	Assigned Members{% endtrans %}
 {% endblock %}
 {% block body %}
+	{% if project.status == 4 %}
 	<div class="row">
 		{% if is_granted("activity_user_create") and activity.isActive == 1 %}
 			<div class="col-md-4">
@@ -155,6 +156,15 @@
 			</div>
 		</div>
 	</div>
+	{% else %}
+		<div class="jumbotron jumbotron-fluid">
+			<div class="container text-center">
+				<i class="fas fa-7x fa-exclamation-circle text-danger mb-2"></i>
+				<h1 class="display-4">Operation Not Permitted</h1>
+				<p class="lead">You can not perform this operation until the project plan is approved and implementation is started.</p>
+			</div>
+		</div>
+	{% endif %}
 {% endblock %}
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">

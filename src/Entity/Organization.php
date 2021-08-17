@@ -25,18 +25,23 @@ class Organization
     private $name;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\OneToMany(targetEntity=OrganizationUnit::class, mappedBy="organization")
      */
-    private $description;
+    private $organizationUnits;
 
     /**
-     * @ORM\OneToMany(targetEntity=User::class, mappedBy="organization")
+     * @ORM\Column(type="string", length=15, nullable=true)
      */
-    private $users;
+    private $acronym;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $logo;
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->organizationUnits = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -56,44 +61,56 @@ class Organization
         return $this;
     }
 
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    public function setDescription(?string $description): self
-    {
-        $this->description = $description;
-
-        return $this;
-    }
-
     /**
-     * @return Collection|User[]
+     * @return Collection|OrganizationUnit[]
      */
-    public function getUsers(): Collection
+    public function getOrganizationUnits(): Collection
     {
-        return $this->users;
+        return $this->organizationUnits;
     }
 
-    public function addUser(User $user): self
+    public function addOrganizationUnit(OrganizationUnit $organizationUnit): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->setOrganization($this);
+        if (!$this->organizationUnits->contains($organizationUnit)) {
+            $this->organizationUnits[] = $organizationUnit;
+            $organizationUnit->setOrganization($this);
         }
 
         return $this;
     }
 
-    public function removeUser(User $user): self
+    public function removeOrganizationUnit(OrganizationUnit $organizationUnit): self
     {
-        if ($this->users->removeElement($user)) {
+        if ($this->organizationUnits->removeElement($organizationUnit)) {
             // set the owning side to null (unless already changed)
-            if ($user->getOrganization() === $this) {
-                $user->setOrganization(null);
+            if ($organizationUnit->getOrganization() === $this) {
+                $organizationUnit->setOrganization(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getAcronym(): ?string
+    {
+        return $this->acronym;
+    }
+
+    public function setAcronym(?string $acronym): self
+    {
+        $this->acronym = $acronym;
+
+        return $this;
+    }
+
+    public function getLogo(): ?string
+    {
+        return $this->logo;
+    }
+
+    public function setLogo(?string $logo): self
+    {
+        $this->logo = $logo;
 
         return $this;
     }

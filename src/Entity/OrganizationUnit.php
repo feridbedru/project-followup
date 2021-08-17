@@ -25,18 +25,34 @@ class OrganizationUnit
     private $name;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\ManyToOne(targetEntity=Organization::class, inversedBy="organizationUnits")
+     * @ORM\JoinColumn(nullable=false)
      */
-    private $description;
+    private $organization;
 
     /**
-     * @ORM\OneToMany(targetEntity=User::class, mappedBy="unit")
+     * @ORM\Column(type="string", length=15, nullable=true)
      */
-    private $users;
+    private $acronym;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=User::class)
+     */
+    private $head;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=OrganizationUnit::class)
+     */
+    private $reportsTo;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Project::class, mappedBy="unit")
+     */
+    private $projects;
 
     public function __construct()
     {
-        $this->users = new ArrayCollection();
+        $this->projects = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -56,42 +72,83 @@ class OrganizationUnit
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getOrganization(): ?Organization
     {
-        return $this->description;
+        return $this->organization;
     }
 
-    public function setDescription(?string $description): self
+    public function setOrganization(?Organization $organization): self
     {
-        $this->description = $description;
+        $this->organization = $organization;
 
         return $this;
     }
 
-    /**
-     * @return Collection|User[]
-     */
-    public function getUsers(): Collection
+    public function getAcronym(): ?string
     {
-        return $this->users;
+        return $this->acronym;
     }
 
-    public function addUser(User $user): self
+    public function setAcronym(?string $acronym): self
     {
-        if (!$this->users->contains($user)) {
-            $this->users[] = $user;
-            $user->setUnit($this);
+        $this->acronym = $acronym;
+
+        return $this;
+    }
+
+    public function getHead(): ?User
+    {
+        return $this->head;
+    }
+
+    public function setHead(?User $head): self
+    {
+        $this->head = $head;
+
+        return $this;
+    }
+
+    public function getReportsTo(): ?self
+    {
+        return $this->reportsTo;
+    }
+
+    public function setReportsTo(?self $reportsTo): self
+    {
+        $this->reportsTo = $reportsTo;
+
+        return $this;
+    }
+
+    public function __toString()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return Collection|Project[]
+     */
+    public function getProjects(): Collection
+    {
+        return $this->projects;
+    }
+
+    public function addProject(Project $project): self
+    {
+        if (!$this->projects->contains($project)) {
+            $this->projects[] = $project;
+            $project->setUnit($this);
         }
 
         return $this;
     }
 
-    public function removeUser(User $user): self
+    public function removeProject(Project $project): self
     {
-        if ($this->users->removeElement($user)) {
+        if ($this->projects->removeElement($project)) {
             // set the owning side to null (unless already changed)
-            if ($user->getUnit() === $this) {
-                $user->setUnit(null);
+            if ($project->getUnit() === $this) {
+                $project->setUnit(null);
             }
         }
 

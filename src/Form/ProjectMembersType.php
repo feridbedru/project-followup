@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\Query\Expr\Join;
 
 class ProjectMembersType extends AbstractType
 {
@@ -31,7 +32,9 @@ class ProjectMembersType extends AbstractType
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) {
                     $res = $er->createQueryBuilder('u')
-                        ->andWhere('u.full_name is not NULL');
+                        // ->from('u')
+                        // ->join('')
+                        ->leftJoin(ProjectMembers::class, 'p', Join::WITH, 'p.user=u.id');
                     return $res;
                 }
             ])
@@ -43,9 +46,9 @@ class ProjectMembersType extends AbstractType
                     $res = $er->createQueryBuilder('r')
                         ->andWhere('r.name is not NULL');
                     return $res;
+                    dd($res);
                 }
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

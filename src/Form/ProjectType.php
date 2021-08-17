@@ -35,16 +35,9 @@ class ProjectType extends AbstractType
             ->add('end_date', DateType::class, ['widget' => 'single_text'])
             ->add('stakeholder')
             ->add('outcome')
-            ->add('category')
+            ->add('baseline')
+            ->add('unit')
             ->add('project_manager')
-            ->add('status', ChoiceType::class, [
-                'choices' => [
-                    'Active' => '1',
-                    'Closed' => '2',
-                ],
-                'placeholder' => "Choose Status",
-                'required' => true,
-            ])
         ;
     }
 

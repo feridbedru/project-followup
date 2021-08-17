@@ -49,6 +49,13 @@ class OrganizationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $uploadedFile = $form['logo']->getData();
+            if($uploadedFile){
+                $location = $this->getParameter('kernel.project_dir') . '/public/upload/logo';
+                $newFilename = uniqid() . '.' . $uploadedFile->getClientOriginalExtension();
+                $uploadedFile->move($location, $newFilename);
+                $organization->setLogo($newFilename);
+            }
             $entityManager->persist($organization);
             $entityManager->flush();
             $this->addFlash("success","Registered organization successfully.");

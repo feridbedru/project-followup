@@ -23,7 +23,6 @@ class ProjectMembersController extends AbstractController
     public function index(ProjectMembersRepository $projectMembersRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        // dd($project);
         if ($request->request->get('edit')) {
 
             $id = $request->request->get('edit');
@@ -78,8 +77,8 @@ class ProjectMembersController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'member_status', methods: ['POST'])]
-    public function action(ProjectMembers $projectMember, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    #[Route('/{id}/status', name: 'member_status', methods: ['POST'])]
+    public function action(ProjectMembersRepository $projectMembersRepository, ProjectMembers $projectMember, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $template = $emailTemplateRepository->findOneBy(['code' => 'add_individual_to_project']);
@@ -97,18 +96,26 @@ class ProjectMembersController extends AbstractController
         $message = str_replace('$user', $user, $message);
         $message = str_replace('$myproject', $myporject, $message);
         $message = str_replace('$role', $role, $message);
-        $reciever = 'ferid.bedru@gmail.com';
-
-        $sent =  $mservice->sendEmail($mailer, $reciever ,$template->getName(), $message);
+        $roles = array();
+        foreach ($template->getProjectStructures() as $structure) {
+            array_push($roles, $structure->getId());
+        }
+        $members = $projectMembersRepository->findBy(['role' => $roles]);
+        $recievers = array();
+        foreach ($members as $member) {
+            $email = $member->getUser()->getEmail();
+            array_push($recievers, $email);
+        }
+        $sent =  $mservice->sendEmail($mailer, $recievers, $template->getName(), $message);
         return $this->redirectToRoute('project_members_index', ["project" => $project->getId()]);
     }
 
-    #[Route('/{id}', name: 'project_members_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'project_members_delete', methods: ['POST'])]
     public function delete(Request $request, ProjectRepository $projectRepository, ProjectMembers $projectMember): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
 
-        $this->denyAccessUnlessGranted('project_members_delete');
+        $this->denyAccessUnlessGranted('project_member_delete');
         if ($this->isCsrfTokenValid('delete' . $projectMember->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectMember);

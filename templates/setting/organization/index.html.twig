@@ -62,7 +62,8 @@
 							<tr>
 								<th>#</th>
 								<th>{{ knp_pagination_sortable(organizations, 'Name'|trans, 'o.name') }}</th>
-								<th>{{ knp_pagination_sortable(organizations, 'Description'|trans, 'o.description') }}</th>
+								<th>{{ knp_pagination_sortable(organizations, 'Logo'|trans, 'o.logo') }}</th>
+								<th>{{ knp_pagination_sortable(organizations, 'Acronym'|trans, 'o.acronym') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
@@ -74,9 +75,14 @@
 										{% set i = i+1 %}
 									</td>
 									<td>{{ organization.name }}</td>
-									<td>{{ organization.description|raw }}</td>
 									<td>
-
+									{% if organization.logo %}
+									<a href="{{ asset('upload/logo/')}}{{ organization.logo }}" target="_blank" class="btn btn-sm btn-primary">View Logo</a>
+									{% endif %}
+									</td>
+									<td>{{ organization.acronym }}</td>
+									<td>
+										<a href="{{ path('organization_unit_index', {'organization': organization.id})}}" class="btn btn-sm btn-success">Units</a>
 										{% if is_granted("organization_edit") %}
 											<form class="d-inline" method="post">
 												<input type="hidden" name="edit" value="{{organization.id}}">

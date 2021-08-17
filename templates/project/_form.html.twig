@@ -18,8 +18,8 @@
 </div>
 <div class="row">
 	<div class="form-group col-md-4">
-		<label>{{ form_label(form.category) }}</label>
-		{{ form_widget(form.category,{'attr':{'class':'form-control select2'}}) }}
+		<label>{{ form_label(form.unit) }}</label>
+		{{ form_widget(form.unit,{'attr':{'class':'form-control select2'}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
 	<div class="form-group col-md-4">
@@ -38,15 +38,20 @@
 	{{ form_widget(form.description,{'attr':{'class':'form-control wyiswig'}}) }}
 	<div class="help-block with-errors"></div>
 </div>
+	<div class="form-group">
+		<label>{{ form_label(form.outcome) }}</label>
+		{{ form_widget(form.outcome,{'attr':{'class':'form-control wyiswig'}}) }}
+		<div class="help-block with-errors"></div>
+	</div>
 <div class="row">
 	<div class="form-group col-md-6">
 		<label>{{ form_label(form.stakeholder) }}</label>
 		{{ form_widget(form.stakeholder,{'attr':{'class':'form-control select2', 'multiple':'multiple'}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
-	<div class="form-group col-md-6">
-		<label>{{ form_label(form.outcome) }}</label>
-		{{ form_widget(form.outcome,{'attr':{'class':'form-control wyiswig'}}) }}
+	<div class="form-group col-md-3">
+		<label>{{ form_label(form.baseline) }}</label>
+		{{ form_widget(form.baseline,{'attr':{'class':'form-control'}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
 </div>
@@ -59,11 +64,6 @@
 	<div class="form-group col-md-4">
 		<label>{{ form_label(form.end_date) }}</label>
 		{{ form_widget(form.end_date,{'attr':{'class':'form-control'}}) }}
-		<div class="help-block with-errors"></div>
-	</div>
-	<div class="form-group col-md-4">
-		<label>{{ form_label(form.status) }}</label>
-		{{ form_widget(form.status,{'attr':{'class':'form-control select2'}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
 </div><br>

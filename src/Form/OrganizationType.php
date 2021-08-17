@@ -6,6 +6,7 @@ use App\Entity\Organization;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
 
 class OrganizationType extends AbstractType
 {
@@ -13,7 +14,8 @@ class OrganizationType extends AbstractType
     {
         $builder
             ->add('name')
-            ->add('description')
+            ->add('logo', FileType::class, array('data_class' => null,'required' => false))
+            ->add('acronym')
         ;
     }
 

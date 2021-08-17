@@ -30,12 +30,6 @@ class Project
     private $description;
 
     /**
-     * @ORM\ManyToOne(targetEntity=ProjectCategory::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $category;
-
-    /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
      */
@@ -143,6 +137,21 @@ class Project
      */
     private $projectStructures;
 
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $baseline;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=OrganizationUnit::class, inversedBy="projects")
+     */
+    private $unit;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ActivityChat::class, mappedBy="project")
+     */
+    private $activityChats;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
@@ -156,6 +165,7 @@ class Project
         $this->projectCollaborationTopics = new ArrayCollection();
         $this->stakeholder = new ArrayCollection();
         $this->projectStructures = new ArrayCollection();
+        $this->activityChats = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -183,18 +193,6 @@ class Project
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getCategory(): ?ProjectCategory
-    {
-        return $this->category;
-    }
-
-    public function setCategory(?ProjectCategory $category): self
-    {
-        $this->category = $category;
 
         return $this;
     }
@@ -648,6 +646,60 @@ class Project
             // set the owning side to null (unless already changed)
             if ($projectStructure->getProject() === $this) {
                 $projectStructure->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getBaseline(): ?string
+    {
+        return $this->baseline;
+    }
+
+    public function setBaseline(?string $baseline): self
+    {
+        $this->baseline = $baseline;
+
+        return $this;
+    }
+
+    public function getUnit(): ?OrganizationUnit
+    {
+        return $this->unit;
+    }
+
+    public function setUnit(?OrganizationUnit $unit): self
+    {
+        $this->unit = $unit;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ActivityChat[]
+     */
+    public function getActivityChats(): Collection
+    {
+        return $this->activityChats;
+    }
+
+    public function addActivityChat(ActivityChat $activityChat): self
+    {
+        if (!$this->activityChats->contains($activityChat)) {
+            $this->activityChats[] = $activityChat;
+            $activityChat->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeActivityChat(ActivityChat $activityChat): self
+    {
+        if ($this->activityChats->removeElement($activityChat)) {
+            // set the owning side to null (unless already changed)
+            if ($activityChat->getProject() === $this) {
+                $activityChat->setProject(null);
             }
         }
 

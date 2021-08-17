@@ -27,9 +27,9 @@
 				</span>
 
 				<div class="info-box-content">
-					<span class="info-box-text">Total Tasks</span>
+					<span class="info-box-text">Total Activity</span>
 					<span class="info-box-number">
-						2
+						{{ project.projectActivities|length }}
 					</span>
 				</div>
 			</div>
@@ -38,13 +38,13 @@
 		<div class="col-12 col-sm-6 col-md-3">
 			<div class="info-box mb-3">
 				<span class="info-box-icon bg-danger elevation-1">
-					<i class="fas fa-milestone"></i>
+					<i class="fas fa-map-pin"></i>
 				</span>
 
 				<div class="info-box-content">
 					<span class="info-box-text">Total Milestones</span>
 					<span class="info-box-number">
-						4
+						{{ project.projectMilestones|length }}
 					</span>
 				</div>
 			</div>
@@ -59,8 +59,10 @@
 				</span>
 
 				<div class="info-box-content">
-					<span class="info-box-text">total teams</span>
-					<span class="info-box-number">20</span>
+					<span class="info-box-text">Total Deliverables</span>
+					<span class="info-box-number">
+						{{ project.projectDeliverables|length }}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -72,7 +74,9 @@
 
 				<div class="info-box-content">
 					<span class="info-box-text">total members</span>
-					<span class="info-box-number">7</span>
+					<span class="info-box-number">
+						{{ project.projectMembers|length }}
+					</span>
 				</div>
 			</div>
 		</div>
@@ -120,13 +124,15 @@
 									</td>
 								</tr>
 								<tr>
-									<th>Category</th>
+									<th>Unit</th>
 									<th>Project Manager</th>
 									<th>Program</th>
 								</tr>
 								<tr>
 									<td>
-										{{ project.category.name }}
+									{% if project.unit %}
+										{{ project.unit.name }}
+									{% endif %}
 									</td>
 									<td>{{ project.projectManager.username }}</td>
 									<td>

@@ -46,12 +46,11 @@
 								<td>
 									<a href="#">{{ project.name }}</a>
 								</td>
-								<td>{{ project.currency.abbreviation }}
-									{{ project.amount }}</td>
+								<td>{{ project.currency.abbreviation }} {{ project.amount }}</td>
 								<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
 								<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
 								<td>
-								{# stakeholder #}
+									{# stakeholder #}
 								</td>
 								<td>
 									{% if project.status == 1 %}
@@ -72,18 +71,51 @@
 								</td>
 							</tr>
 							<tr>
-								{# <th>Category</th> #}
 								<th>Project Manager</th>
 								<th>Program</th>
+								<th>Actions</th>
 							</tr>
 							<tr>
-								{# <td>
-									{{ project.category.name }}
-								</td> #}
 								<td>{{ project.projectManager.username }}</td>
 								<td>
-									{% if project.program is not null  %}
-										{{ project.program.name }}
+									{% if project.program is not null  %} {{ project.program.name }}
+									{% endif %}
+								</td>
+								<td>
+									<a href="#" class="btn btn-primary mr-3">Export Plan</a>
+									{% if project.status == 1 %}
+										<button type="button" class="btn btn-success" data-toggle="modal" data-target="#submitPlan">
+											Submit Plan
+										</button>
+										<div class="modal fade" id="submitPlan" tabindex="-1" role="dialog" aria-labelledby="submitPlanLabel" aria-hidden="true">
+											<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title" id="submitPlanLabel">Submit Plan</h5>
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="modal-body">
+														<p>Are you sure you want to submit the project plan? Once you submit you will not be able to modify the following.</p>
+														<ul>
+															<li>Structure: {{ project.projectStructures|length}}</li>
+															<li>Knowledge: {{ project.projectResources|length}}</li>
+															<li>Milestones: {{ project.projectMilestones|length}}</li>
+															<li>Deliverable: {{ project.projectDeliverables|length}}</li>
+															<li>Activity: {{ project.projectActivities|length}}</li>
+														</ul>
+														<p>To complete please enter the project name that is
+															<code>{{ project.name}}</code>
+															exactly as it is.</p>
+													</div>
+													<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_approve_request',{'id':project.id})}}">
+														{# <input type="text" id="project_id" value="{{project.id}}" required hidden> #}
+														<button type="submit" class="btn btn-success btn-block">I Understand, proceed with the submission.</button>
+													</form> {{ include('project/js.html.twig') }}
+												</div>
+											</div>
+										</div>
 									{% endif %}
 								</td>
 							</tr>
@@ -93,75 +125,76 @@
 			</div>
 		</div>
 	</div><br>
-	<h3>Resources</h3>
 	<div class="row">
-		<div class="col-md-3">
-			<div class="card card-outline card-primary">
-				<div class="card-body">
-					<h2 class="text-center">
-						<span class="fa fa-plus fa-2x"></span>
-					</h2>
-					<h4 class="text-center">Add New</h4>
-
+		<div class="col-md-4 col-6">
+			<div class="small-box bg-info">
+				<div class="inner">
+					<h3>Structure</h3>
+					<p>&nbsp;</p>
 				</div>
+				<div class="icon">
+					<i class="fas">{{ project.projectStructures|length}}</i>
+				</div>
+				<a href="{{ path('project_structure_index', {'project': project.id })}}" class="small-box-footer">More info
+					<i class="fas fa-arrow-circle-right"></i>
+				</a>
 			</div>
 		</div>
-		{% for resource in resources %}
-			<div class="col-md-3">
-				<div class="card card-outline card-primary">
-					<div class="">
-						<div class="card-tools float-right">
-							<div class="dropdown">
-								<button class="btn dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"></button>
-								<div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-									<a class="dropdown-item" href="#">Edit</a>
-									<a class="dropdown-item" href="#">Delete</a>
-									<a class="dropdown-item" href="#">Download</a>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="card-body">
-						<h2 class="text-center">{{ resource.file|split('.')|last|upper }}</h2>
-						<h4 class="text-center">{{ resource.title }}</h4>
-					</div>
+		<div class="col-md-4 col-6">
+			<div class="small-box bg-warning">
+				<div class="inner">
+					<h3>Knowledge</h3>
+					<p>&nbsp;</p>
 				</div>
-			</div>
-		{% endfor %}
-		<div class="mx-auto d-block">
-			<a class="btn btn-primary text-center" href="{{ path('project_resource_index', {'project': project.id })}}">View All</a>
-		</div>
-	</div><br>
-	<h3>Members</h3>
-	<div class="row">
-		<div class="col-md-12 col-sm-6">
-			<div class="card card-primary card-outline card-outline-tabs">
-				<div class="card-header p-0 border-bottom-0">
-					<ul
-						class="nav nav-tabs" id="custom-tabs-four-tab" role="tablist">{# {% for team in teams %}
-														<li class="nav-item">
-															<a class="nav-link {% if loop.first %} active {% endif %}" id="custom-{{ team.id }}-tab" data-toggle="pill" href="#custom-tabs-{{ team.id }}" role="tab" aria-controls="custom-tabs-{{ team.id }}" aria-selected="false">{{ team.name }}</a>
-														</li>
-													{% endfor %} #}
-					</ul>
+				<div class="icon">
+					<i class="fas">{{ project.projectResources|length}}</i>
 				</div>
-				<div class="card-body">
-					<div
-						class="tab-content" id="custom-tabs-four-tabContent">{# {% for team in teams %}
-														<div class="tab-pane fade show {% if loop.first %} active {% endif %}" id="custom-tabs-{{ team.id }}" role="tabpanel" aria-labelledby="custom-{{ team.id }}-tab">
-															{% for member in team.projectMembers %}
-																{{ member.user.username }}
-															{% else %}
-																No members found
-															{% endfor %}
-														</div>
-													{% endfor %} #}
-					</div>
-				</div>
+				<a href="{{ path('project_resource_index', {'project': project.id })}}" class="small-box-footer">More info
+					<i class="fas fa-arrow-circle-right"></i>
+				</a>
 			</div>
 		</div>
-		<div class="mx-auto d-block">
-			<a class="btn btn-primary text-center" href="{{ path('project_members_index', {'project': project.id })}}">View All</a>
+		<div class="col-md-4 col-6">
+			<div class="small-box bg-success">
+				<div class="inner">
+					<h3>Milestone</h3>
+					<p>&nbsp;</p>
+				</div>
+				<div class="icon">
+					<i class="fas">{{ project.projectMilestones|length}}</i>
+				</div>
+				<a href="{{ path('project_milestone_index', {'project': project.id })}}" class="small-box-footer">More info
+					<i class="fas fa-arrow-circle-right"></i>
+				</a>
+			</div>
 		</div>
-	</div><br>
+		<div class="col-md-4 col-6">
+			<div class="small-box bg-danger">
+				<div class="inner">
+					<h3>Deliverable</h3>
+					<p>&nbsp;</p>
+				</div>
+				<div class="icon">
+					<i class="fas">{{ project.projectDeliverables|length}}</i>
+				</div>
+				<a href="{{ path('project_deliverable_index', {'project': project.id })}}" class="small-box-footer">More info
+					<i class="fas fa-arrow-circle-right"></i>
+				</a>
+			</div>
+		</div>
+		<div class="col-md-4 col-6">
+			<div class="small-box bg-info">
+				<div class="inner">
+					<h3>Activity</h3>
+					<p>&nbsp;</p>
+				</div>
+				<div class="icon">
+					<i class="fas">{{ project.projectActivities|length}}</i>
+				</div>
+				<a href="{{path('project_activity_index', {'project': project.id})}}" class="small-box-footer">More info
+					<i class="fas fa-arrow-circle-right"></i>
+				</a>
+			</div>
+		</div>
+	</div>
 {% endblock %}

@@ -22,6 +22,7 @@
 	Project Structure{% endtrans %}
 {% endblock %}
 {% block body %}
+	{% if project.status == 1 or project.status == 4 %}
 	<div class="row">
 		<div class="col-md-4">
 			{% if is_granted("project_structure_create") %}
@@ -75,7 +76,7 @@
 										{% if is_granted("project_structure_edit") %}
 											<form class="d-inline" method="post">
 												<input type="hidden" name="edit" value="{{project_structure.id}}">
-												<button class="btn btn-info btn-sm" title="Edit">
+												<button class="btn btn-warning btn-sm text-white" title="Edit">
 													<i class="fa fa-edit"></i>
 												</button>
 											</form>
@@ -102,4 +103,28 @@
 			</div>
 		</div>
 	</div>
+	{% else %}
+		<div class="jumbotron jumbotron-fluid">
+			<div class="container text-center">
+				<i class="fas fa-7x fa-exclamation-circle text-danger mb-2"></i>
+				<h1 class="display-4">Operation Not Permitted</h1>
+				<p class="lead">You can not perform this operation until the project plan is approved and implementation is started.</p>
+			</div>
+		</div>
+	{% endif %}
+{% endblock %}
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+<script>
+  $(function () {
+    $('.wyiswig').summernote({
+		placeholder: 'Enter details here',
+        tabsize: 2,
+        height: 200
+	})
+  })
+</script>
 {% endblock %}

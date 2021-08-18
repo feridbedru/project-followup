@@ -2,6 +2,7 @@
 
 namespace App\Form;
 
+use App\Entity\OrganizationUnit;
 use App\Entity\Project;
 use App\Entity\Program;
 use Doctrine\ORM\EntityRepository;
@@ -36,7 +37,10 @@ class ProjectType extends AbstractType
             ->add('stakeholder')
             ->add('outcome')
             ->add('baseline')
-            ->add('unit')
+            ->add('unit', EntityType::class, [
+                'class' => OrganizationUnit::class,
+                'required' => true
+                ])
             ->add('project_manager')
         ;
     }

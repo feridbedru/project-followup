@@ -100,7 +100,6 @@
 										{% elseif activity_user.status == 4 %}
 											Completed
 										{% endif %}
-
 										{% set difference = date(activity_user.endDate).diff(date(activity_user.startDate)) %}
 										{% set leftDays = difference.days / 3 %}
 										{% set p1 = leftDays * 1 %}
@@ -122,10 +121,8 @@
 										{% elseif today > third %}
 											<span class="badge badge-danger">Delayed</span>
 										{% endif %}
-
 									</td>
 									<td>
-
 										{% if is_granted("activity_user_edit") %}
 											<form class="d-inline" method="post">
 												<input type="hidden" name="edit" value="{{activity_user.id}}">

@@ -6,12 +6,15 @@ use App\Entity\Project;
 use App\Entity\Log;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
+use App\Repository\EmailTemplateRepository;
 use App\Repository\ProjectResourceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use App\Services\MailerService;
 
 #[Route('/project')]
 class ProjectController extends AbstractController
@@ -70,6 +73,15 @@ class ProjectController extends AbstractController
             'project' => $project,
             'resources' => $projectResource,
         ]);
+    }
+    #[Route('/{id}/status', name: 'plan_approve_request', methods: ['POST'])]
+    public function action( Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    {
+        // $project = $request->attributes->get('project');
+        $project->setStatus(2);
+        $this->getDoctrine()->getManager()->flush();
+        $this->addFlash("success", "Project plan submitted successfully.");
+        return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
     }
 
     #[Route('/{id}/edit', name: 'project_edit', methods: ['GET', 'POST'])]

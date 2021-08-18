@@ -49,22 +49,23 @@
 						<tr>
 							<th>{% trans %}Status{% endtrans %}</th>
 							<td>
-							{% if project_activity.status == 1 %}
-								Pending Assignment
-							{% elseif project_activity.status == 2 %}
-								Assigned
-							{% elseif project_activity.status == 3 %}
-								On Progress
-							{% elseif project_activity.status == 4 %}
-								Pending Verification
-							{% elseif project_activity.status == 5 %}
-								Completed
-							{% endif %}
+								{% if project_activity.status == 1 %}
+									Pending Assignment
+								{% elseif project_activity.status == 2 %}
+									Assigned
+								{% elseif project_activity.status == 3 %}
+									On Progress
+								{% elseif project_activity.status == 4 %}
+									Pending Verification
+								{% elseif project_activity.status == 5 %}
+									Completed
+								{% endif %}
 							</td>
 						</tr>
 						<tr>
 							<th>{% trans %}Duration{% endtrans %}</th>
-							<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }} - {{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
+							<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }}
+								- {{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
 						</tr>
 						<tr>
 							<th>{% trans %}Display Order{% endtrans %}</th>
@@ -80,9 +81,9 @@
 						</tr>
 					</tbody>
 				</table>
-
-				<a href="{{ path('project_activity_edit', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
-				{{ include('project/activity/_delete_form.html.twig') }}
+				{% if project.status == 1 %}
+					<a href="{{ path('project_activity_edit', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-warning text-white">{% trans %}Edit{% endtrans %}</a> {{ include('project/activity/_delete_form.html.twig') }}
+				{% endif %}
 			</div>
 		</div>
 		<br>

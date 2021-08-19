@@ -19,6 +19,115 @@
 {% endblock %}
 {% block body %}
 	<div class="row">
+		<div class="col-md-4">
+			<a href="#" class="btn btn-primary btn-block">Export Plan</a>
+		</div>
+		{% if project.status == 1 %}
+			<div class="col-md-4">
+				<button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#submitPlan">
+					Submit Plan
+				</button>
+				<div class="modal fade" id="submitPlan" tabindex="-1" role="dialog" aria-labelledby="submitPlanLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="submitPlanLabel">Submit Plan</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<p>Are you sure you want to submit the project plan? Once you submit you will not be able to modify the following.</p>
+								<ul>
+									<li>Structure: {{ project.projectStructures|length}}</li>
+									<li>Knowledge: {{ project.projectResources|length}}</li>
+									<li>Milestones: {{ project.projectMilestones|length}}</li>
+									<li>Deliverable: {{ project.projectDeliverables|length}}</li>
+									<li>Activity: {{ project.projectActivities|length}}</li>
+								</ul>
+								<p>To complete please enter the project name that is
+									<code>{{ project.name}}</code>
+									exactly as it is.</p>
+							</div>
+							<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_approve_request',{'id':project.id})}}">
+								<div class="form-group">
+									<label>Revision ID<span class="text-danger">
+											*</span>
+									</label>
+									<input type="text" name="revision_id" class="form-control" required="required">
+								</div>
+								<div class="form-group">
+									<label>Revision Detail<span class="text-danger">
+											*</span>
+									</label>
+									<textarea name="revision_detail" class="form-control" required="required"></textarea>
+								</div>
+								<button type="submit" class="btn btn-success btn-block">I Understand, proceed with the submission.</button>
+							</form> {{ include('project/js.html.twig') }}
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+		{% if project.status == 2 %}
+			<div class="col-md-4">
+				<button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#decidePlan">
+					Approve / Reject Plan
+				</button>
+				<div class="modal fade" id="decidePlan" tabindex="-1" role="dialog" aria-labelledby="decidePlanLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="decidePlanLabel">Approve / Reject Plan</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<p>Once you proceed with this action, you can not undo it. Here is a summary of the project.</p>
+								<ul>
+									<li>Structure: {{ project.projectStructures|length}}</li>
+									<li>Knowledge: {{ project.projectResources|length}}</li>
+									<li>Milestones: {{ project.projectMilestones|length}}</li>
+									<li>Deliverable: {{ project.projectDeliverables|length}}</li>
+									<li>Activity: {{ project.projectActivities|length}}</li>
+								</ul>
+							</div>
+							<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_approve_reject',{'id':project.id})}}">
+								<div class="form-group">
+									<label>Decision<span class="text-danger">
+											*</span>
+									</label>
+									<select name="decision" id="decision" class="form-control" required="required" placeholder="choose one">
+										<option value="" disabled selected>Select your option</option>
+										<option value="1">Reject</option>
+										<option value="3">Accept</option>
+									</select>
+								</div>
+								<div class="form-group d-none" id="reason">
+									<label>Justification<span class="text-danger">
+											*</span>
+									</label>
+									<textarea name="justification" class="form-control"></textarea>
+								</div>
+								<button type="submit" id="submit" class="btn btn-success btn-block">
+									Approve\Reject Project Plan</button>
+							</form> {{ include('project/js.html.twig') }}
+						</div>
+					</div>
+				</div>
+			</div>
+		{% endif %}
+		{% if project.status == 3 %}
+		<div class="col-md-4">
+			<form class="d-inline" method="POST" action="{{ path('project_start_implementation',{'id':project.id})}}" onsubmit="return confirm('Are you sure you want to start the implementation of this project?');">
+				<input name="decision" value="4" hidden>
+				<button class="btn btn-block btn-success">Start Implementation</button>
+			</form>
+			</div>
+		{% endif %}
+	</div><br>
+	<div class="row">
 		<div class="col-md-12">
 			<div class="card">
 				<div class="card-header border-0">
@@ -73,49 +182,11 @@
 							<tr>
 								<th>Project Manager</th>
 								<th>Program</th>
-								<th>Actions</th>
 							</tr>
 							<tr>
 								<td>{{ project.projectManager.username }}</td>
 								<td>
 									{% if project.program is not null  %} {{ project.program.name }}
-									{% endif %}
-								</td>
-								<td>
-									<a href="#" class="btn btn-primary mr-3">Export Plan</a>
-									{% if project.status == 1 %}
-										<button type="button" class="btn btn-success" data-toggle="modal" data-target="#submitPlan">
-											Submit Plan
-										</button>
-										<div class="modal fade" id="submitPlan" tabindex="-1" role="dialog" aria-labelledby="submitPlanLabel" aria-hidden="true">
-											<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-												<div class="modal-content">
-													<div class="modal-header">
-														<h5 class="modal-title" id="submitPlanLabel">Submit Plan</h5>
-														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-															<span aria-hidden="true">&times;</span>
-														</button>
-													</div>
-													<div class="modal-body">
-														<p>Are you sure you want to submit the project plan? Once you submit you will not be able to modify the following.</p>
-														<ul>
-															<li>Structure: {{ project.projectStructures|length}}</li>
-															<li>Knowledge: {{ project.projectResources|length}}</li>
-															<li>Milestones: {{ project.projectMilestones|length}}</li>
-															<li>Deliverable: {{ project.projectDeliverables|length}}</li>
-															<li>Activity: {{ project.projectActivities|length}}</li>
-														</ul>
-														<p>To complete please enter the project name that is
-															<code>{{ project.name}}</code>
-															exactly as it is.</p>
-													</div>
-													<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_approve_request',{'id':project.id})}}">
-														{# <input type="text" id="project_id" value="{{project.id}}" required hidden> #}
-														<button type="submit" class="btn btn-success btn-block">I Understand, proceed with the submission.</button>
-													</form> {{ include('project/js.html.twig') }}
-												</div>
-											</div>
-										</div>
 									{% endif %}
 								</td>
 							</tr>
@@ -197,4 +268,22 @@
 			</div>
 		</div>
 	</div>
+{% endblock %}
+{% block javascripts %}
+	<script>
+		$('#decision').change(function () {
+		var val = $(this).val();
+			if (val == 1) {
+				$("#reason").removeClass("d-none");
+				$('#submit').text('Reject Plan');
+				$('#submit').removeClass("btn-success");
+				$('#submit').addClass("btn-danger");
+			} else {
+				$("#reason").addClass("d-none");
+				 $('#submit').text('Approve Plan');
+				$('#submit').removeClass("btn-danger");
+				$('#submit').addClass("btn-success");
+			}
+		});
+	</script>
 {% endblock %}

@@ -152,6 +152,16 @@ class Project
      */
     private $activityChats;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectPlanRevision::class, mappedBy="project")
+     */
+    private $projectPlanRevisions;
+
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectPlanStatus::class, mappedBy="project")
+     */
+    private $projectPlanStatuses;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
@@ -166,6 +176,8 @@ class Project
         $this->stakeholder = new ArrayCollection();
         $this->projectStructures = new ArrayCollection();
         $this->activityChats = new ArrayCollection();
+        $this->projectPlanRevisions = new ArrayCollection();
+        $this->projectPlanStatuses = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -700,6 +712,66 @@ class Project
             // set the owning side to null (unless already changed)
             if ($activityChat->getProject() === $this) {
                 $activityChat->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectPlanRevision[]
+     */
+    public function getProjectPlanRevisions(): Collection
+    {
+        return $this->projectPlanRevisions;
+    }
+
+    public function addProjectPlanRevision(ProjectPlanRevision $projectPlanRevision): self
+    {
+        if (!$this->projectPlanRevisions->contains($projectPlanRevision)) {
+            $this->projectPlanRevisions[] = $projectPlanRevision;
+            $projectPlanRevision->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectPlanRevision(ProjectPlanRevision $projectPlanRevision): self
+    {
+        if ($this->projectPlanRevisions->removeElement($projectPlanRevision)) {
+            // set the owning side to null (unless already changed)
+            if ($projectPlanRevision->getProject() === $this) {
+                $projectPlanRevision->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectPlanStatus[]
+     */
+    public function getProjectPlanStatuses(): Collection
+    {
+        return $this->projectPlanStatuses;
+    }
+
+    public function addProjectPlanStatus(ProjectPlanStatus $projectPlanStatus): self
+    {
+        if (!$this->projectPlanStatuses->contains($projectPlanStatus)) {
+            $this->projectPlanStatuses[] = $projectPlanStatus;
+            $projectPlanStatus->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removeProjectPlanStatus(ProjectPlanStatus $projectPlanStatus): self
+    {
+        if ($this->projectPlanStatuses->removeElement($projectPlanStatus)) {
+            // set the owning side to null (unless already changed)
+            if ($projectPlanStatus->getProject() === $this) {
+                $projectPlanStatus->setProject(null);
             }
         }
 

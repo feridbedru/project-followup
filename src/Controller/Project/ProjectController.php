@@ -4,6 +4,8 @@ namespace App\Controller\Project;
 
 use App\Entity\Project;
 use App\Entity\Log;
+use App\Entity\ProjectPlanRevision;
+use App\Entity\ProjectPlanStatus;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
 use App\Repository\EmailTemplateRepository;
@@ -64,7 +66,7 @@ class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'project_show', methods: ['GET'])]
+    #[Route('/{id}/show', name: 'project_show', methods: ['GET','POST'])]
     public function show(Project $project, ProjectResourceRepository $projectResourceRepository): Response
     {
         $this->denyAccessUnlessGranted('project_show');
@@ -75,15 +77,108 @@ class ProjectController extends AbstractController
         ]);
     }
     #[Route('/{id}/status', name: 'plan_approve_request', methods: ['POST'])]
-    public function action( Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    public function requestApproval( Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
     {
-        // $project = $request->attributes->get('project');
+        $revision_id =  $request->request->get('revision_id');
+        $revision_detail = $request->request->get('revision_detail');
+        $entityManager = $this->getDoctrine()->getManager();
+        $projectPlanRevision = new ProjectPlanRevision();
+        $projectPlanRevision->setProject($project);
+        $projectPlanRevision->setRevisionId($revision_id);
+        $projectPlanRevision->setRevisionDetails($revision_detail);
+        $projectPlanRevision->setCreatedAt(new \DateTime());
+        $projectPlanRevision->setCreatedBy($this->getUser());
+        $entityManager->persist($projectPlanRevision);
+        $entityManager->flush();
         $project->setStatus(2);
         $this->getDoctrine()->getManager()->flush();
+        $emailTemplate = $emailTemplateRepository->findOneBy(['code' => 'project_plan_submitted']);
+        $message = $emailTemplate->getContent();
+        $projectName = $project->getName();
+        $message = str_replace('$project', $projectName, $message);
+        $recievers = array();
+        $reciever = $project->getUnit()->getHead()->getEmail();
+        array_push($recievers, $reciever);
+        $mservice->sendEmail($mailer, $recievers, $emailTemplate->getName(), $message);
+
         $this->addFlash("success", "Project plan submitted successfully.");
         return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
     }
 
+    #[Route('/{id}/approve', name: 'plan_approve_reject', methods: ['POST'])]
+    public function approvePlan( Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    {
+        $decision = $request->request->get('decision');
+        $justification = $request->request->get('justification');
+        $entityManager = $this->getDoctrine()->getManager();
+        $projectPlanStatus = new ProjectPlanStatus();
+        $projectPlanStatus->setProject($project);
+        $projectPlanStatus->setJustification($justification);
+        $projectPlanStatus->setDecision($decision);
+        $projectPlanStatus->setCreatedBy($this->getUser());
+        $projectPlanStatus->setCreatedAt(new \DateTime());
+        $entityManager->persist($projectPlanStatus);
+        $entityManager->flush();
+        $project->setStatus($decision);
+        $this->getDoctrine()->getManager()->flush();
+        $status = '';
+        if($decision == 1){
+            $status = 'REJECTED';
+        }
+        else{
+            $status = 'APPROVED';
+        }
+        $emailTemplate = $emailTemplateRepository->findOneBy(['code' => 'project_plan_status_update']);
+        $message = $emailTemplate->getContent();
+        $projectName = $project->getName();
+        $message = str_replace('$project', $projectName, $message);
+        $stat = '';
+        if ($decision == 1) {
+            $stat = $status. ' for the following reason. '.$justification;
+        }
+        else{
+            $stat = $status;
+        }
+        $message = str_replace('$status', $stat, $message);
+        $recievers = array();
+        $reciever1 = $project->getUnit()->getHead()->getEmail();
+        array_push($recievers, $reciever1);
+        $reciever2 = $project->getProjectManager()->getEmail();
+        array_push($recievers, $reciever2);
+        $mservice->sendEmail($mailer, $recievers, $emailTemplate->getName(), $message);
+
+        $this->addFlash("success", "Project plan $status successfully.");
+        return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
+    }
+
+    #[Route('/{id}/implementation', name: 'project_start_implementation', methods: ['POST'])]
+    public function startImplementation( Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    {
+        $decision = $request->request->get('decision');
+        $entityManager = $this->getDoctrine()->getManager();
+        $projectPlanStatus = new ProjectPlanStatus();
+        $projectPlanStatus->setProject($project);
+        $projectPlanStatus->setDecision($decision);
+        $projectPlanStatus->setCreatedBy($this->getUser());
+        $projectPlanStatus->setCreatedAt(new \DateTime());
+        $entityManager->persist($projectPlanStatus);
+        $entityManager->flush();
+        $project->setStatus($decision);
+        $this->getDoctrine()->getManager()->flush();
+        $emailTemplate = $emailTemplateRepository->findOneBy(['code' => 'project_implementation_started']);
+        $message = $emailTemplate->getContent();
+        $projectName = $project->getName();
+        $message = str_replace('$project', $projectName, $message);
+        $recievers = array();
+        $reciever1 = $project->getUnit()->getHead()->getEmail();
+        array_push($recievers, $reciever1);
+        $reciever2 = $project->getProjectManager()->getEmail();
+        array_push($recievers, $reciever2);
+        $mservice->sendEmail($mailer, $recievers, $emailTemplate->getName(), $message);
+
+        $this->addFlash("success", "Started project implementation successfully.");
+        return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
+    }
     #[Route('/{id}/edit', name: 'project_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Project $project): Response
     {
@@ -104,7 +199,7 @@ class ProjectController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'project_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'project_delete', methods: ['POST'])]
     public function delete(Request $request, Project $project): Response
     {
         $this->denyAccessUnlessGranted('project_delete');

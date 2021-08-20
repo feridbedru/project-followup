@@ -21,7 +21,7 @@ class ProjectActivityController extends AbstractController
     {
         $this->denyAccessUnlessGranted('project_activity_index');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        $projectActivities = $paginator->paginate($projectActivityRepository->findAll(), $request->query->getInt('page', 1), 10);
+        $projectActivities = $paginator->paginate($projectActivityRepository->findBy(['project' => $project]), $request->query->getInt('page', 1), 10);
         return $this->render('project/activity/index.html.twig', [
             'project_activities' => $projectActivities,
             'project' => $project

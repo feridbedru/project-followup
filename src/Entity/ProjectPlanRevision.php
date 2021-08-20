@@ -29,7 +29,7 @@ class ProjectPlanRevision
     private $revision_id;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $revision_details;
 

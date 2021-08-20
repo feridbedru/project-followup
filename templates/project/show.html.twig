@@ -22,62 +22,15 @@
 		<div class="col-md-4">
 			<a href="#" class="btn btn-primary btn-block">Export Plan</a>
 		</div>
-		{% if project.status == 1 %}
+		{% if project.status == 2 and is_granted("manage_project_plan") %}
 			<div class="col-md-4">
-				<button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#submitPlan">
-					Submit Plan
-				</button>
-				<div class="modal fade" id="submitPlan" tabindex="-1" role="dialog" aria-labelledby="submitPlanLabel" aria-hidden="true">
-					<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-						<div class="modal-content">
-							<div class="modal-header">
-								<h5 class="modal-title" id="submitPlanLabel">Submit Plan</h5>
-								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-									<span aria-hidden="true">&times;</span>
-								</button>
-							</div>
-							<div class="modal-body">
-								<p>Are you sure you want to submit the project plan? Once you submit you will not be able to modify the following.</p>
-								<ul>
-									<li>Structure: {{ project.projectStructures|length}}</li>
-									<li>Knowledge: {{ project.projectResources|length}}</li>
-									<li>Milestones: {{ project.projectMilestones|length}}</li>
-									<li>Deliverable: {{ project.projectDeliverables|length}}</li>
-									<li>Activity: {{ project.projectActivities|length}}</li>
-								</ul>
-								<p>To complete please enter the project name that is
-									<code>{{ project.name}}</code>
-									exactly as it is.</p>
-							</div>
-							<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_approve_request',{'id':project.id})}}">
-								<div class="form-group">
-									<label>Revision ID<span class="text-danger">
-											*</span>
-									</label>
-									<input type="text" name="revision_id" class="form-control" required="required">
-								</div>
-								<div class="form-group">
-									<label>Revision Detail<span class="text-danger">
-											*</span>
-									</label>
-									<textarea name="revision_detail" class="form-control" required="required"></textarea>
-								</div>
-								<button type="submit" class="btn btn-success btn-block">I Understand, proceed with the submission.</button>
-							</form> {{ include('project/js.html.twig') }}
-						</div>
-					</div>
-				</div>
-			</div>
-		{% endif %}
-		{% if project.status == 2 %}
-			<div class="col-md-4">
-				<button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#decidePlan">
+				<button type="button" class="btn btn-success btn-block small-box-footer" data-toggle="modal" data-target="#decidePlan">
 					Approve / Reject Plan
 				</button>
 				<div class="modal fade" id="decidePlan" tabindex="-1" role="dialog" aria-labelledby="decidePlanLabel" aria-hidden="true">
 					<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
 						<div class="modal-content">
-							<div class="modal-header">
+							<div class="modal-header bg-primary">
 								<h5 class="modal-title" id="decidePlanLabel">Approve / Reject Plan</h5>
 								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 									<span aria-hidden="true">&times;</span>
@@ -101,7 +54,7 @@
 									<select name="decision" id="decision" class="form-control" required="required" placeholder="choose one">
 										<option value="" disabled selected>Select your option</option>
 										<option value="1">Reject</option>
-										<option value="3">Accept</option>
+										<option value="4">Accept</option>
 									</select>
 								</div>
 								<div class="form-group d-none" id="reason">
@@ -116,14 +69,6 @@
 						</div>
 					</div>
 				</div>
-			</div>
-		{% endif %}
-		{% if project.status == 3 %}
-		<div class="col-md-4">
-			<form class="d-inline" method="POST" action="{{ path('project_start_implementation',{'id':project.id})}}" onsubmit="return confirm('Are you sure you want to start the implementation of this project?');">
-				<input name="decision" value="4" hidden>
-				<button class="btn btn-block btn-success">Start Implementation</button>
-			</form>
 			</div>
 		{% endif %}
 	</div><br>
@@ -196,94 +141,288 @@
 			</div>
 		</div>
 	</div><br>
-	<div class="row">
-		<div class="col-md-4 col-6">
-			<div class="small-box bg-info">
-				<div class="inner">
-					<h3>Structure</h3>
-					<p>&nbsp;</p>
+	{% if project.status == 2 %}
+		<div class="row">
+			<div class="col-md-12">
+				<div class="card card-primary card-tabs">
+					<div class="card-header p-0 pt-1">
+						<ul class="nav nav-tabs nav-fill" id="custom-tabs-one-tab" role="tablist">
+							<li class="nav-item">
+								<a class="nav-link active" id="activity-tab" data-toggle="pill" href="#activity" role="tab" aria-controls="activity" aria-selected="true">Activity</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="milestone-tab" data-toggle="pill" href="#milestone" role="tab" aria-controls="milestone" aria-selected="false">Milestone</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="deliverable-tab" data-toggle="pill" href="#deliverable" role="tab" aria-controls="deliverable" aria-selected="false">Deliverable</a>
+							</li>
+						</ul>
+					</div>
+					<div class="card-body">
+						<div class="tab-content" id="custom-tabs-one-tabContent">
+							<div class="tab-pane fade show active" id="activity" role="tabpanel" aria-labelledby="activity-tab">
+								<table class="table">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Title</th>
+											<th>Description</th>
+											<th>Duration</th>
+											<th>Weight</th>
+											<th>{% trans %}Actions{% endtrans %}</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% set i = 1 %}
+										{% for project_activity in project.projectActivities %}
+											<tr>
+												<td>{{ i }}
+													{% set i = i+1 %}
+												</td>
+												<td> {{ project_activity.title }}
+												</td>
+												<td> {{ project_activity.description|raw }}
+												</td>
+												<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }}
+													- {{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
+												<td>{{ project_activity.weight }}</td>
+												<td></td>
+											</tr>
+										{% else %}
+											<tr>
+												<td colspan="9">{% trans %}no records found{% endtrans %}</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+							<div class="tab-pane fade" id="milestone" role="tabpanel" aria-labelledby="milestone-tab">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Name</th>
+											<th>Weight</th>
+											<th>Activities are Equal</th>
+											<th>{% trans %}Actions{% endtrans %}</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% set i = 1 %}
+										{% for project_milestone in project.projectMilestones %}
+											<tr>
+												<td>{{ i }}
+													{% set i = i+1 %}
+												</td>
+												<td>{{ project_milestone.name }}</td>
+												<td>{{ project_milestone.weight }}</td>
+												<td>{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
+												<td></td>
+											</tr>
+										{% else %}
+											<tr>
+												<td colspan="7">{% trans %}no records found{% endtrans %}</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+							<div class="tab-pane fade" id="deliverable" role="tabpanel" aria-labelledby="deliverable-tab">
+								<table class="table table-hover">
+									<thead>
+										<tr>
+											<th>#</th>
+											<th>Milestone</th>
+											<th>Title</th>
+											<th>Planned Delivery Date</th>
+											<th>Percentage</th>
+											<th>{% trans %}Actions{% endtrans %}</th>
+										</tr>
+									</thead>
+									<tbody>
+										{% set i = 1 %}
+										{% for project_deliverable in project.projectDeliverables %}
+											<tr>
+												<td>{{ i }}
+													{% set i = i+1 %}
+												</td>
+												<td>{{ project_deliverable.milestone.name }}</td>
+												<td>{{ project_deliverable.title }}</td>
+												<td>{{ project_deliverable.plannedDeliveryDate ? project_deliverable.plannedDeliveryDate|date('M d Y') : '' }}</td>
+												<td>{{ project_deliverable.percentage }}</td>
+												<td></td>
+											</tr>
+										{% else %}
+											<tr>
+												<td colspan="10">{% trans %}no records found{% endtrans %}</td>
+											</tr>
+										{% endfor %}
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
 				</div>
-				<div class="icon">
-					<i class="fas">{{ project.projectStructures|length}}</i>
-				</div>
-				<a href="{{ path('project_structure_index', {'project': project.id })}}" class="small-box-footer">More info
-					<i class="fas fa-arrow-circle-right"></i>
-				</a>
 			</div>
 		</div>
-		<div class="col-md-4 col-6">
-			<div class="small-box bg-warning">
-				<div class="inner">
-					<h3>Knowledge</h3>
-					<p>&nbsp;</p>
+	{% else %}
+		<div class="row">
+			<div class="col-md-4 col-6">
+				<div class="small-box bg-info">
+					<div class="inner">
+						<h3>Milestone</h3>
+						<p>&nbsp;</p>
+					</div>
+					<div class="icon">
+						<i class="fas">{{ project.projectMilestones|length}}</i>
+					</div>
+					<a href="{{ path('project_milestone_index', {'project': project.id })}}" class="small-box-footer">More info
+						<i class="fas fa-arrow-circle-right"></i>
+					</a>
 				</div>
-				<div class="icon">
-					<i class="fas">{{ project.projectResources|length}}</i>
+			</div>
+			<div class="col-md-4 col-6">
+				<div class="small-box bg-info">
+					<div class="inner">
+						<h3>Deliverable</h3>
+						<p>&nbsp;</p>
+					</div>
+					<div class="icon">
+						<i class="fas">{{ project.projectDeliverables|length}}</i>
+					</div>
+					<a href="{{ path('project_deliverable_index', {'project': project.id })}}" class="small-box-footer">More info
+						<i class="fas fa-arrow-circle-right"></i>
+					</a>
 				</div>
-				<a href="{{ path('project_resource_index', {'project': project.id })}}" class="small-box-footer">More info
-					<i class="fas fa-arrow-circle-right"></i>
-				</a>
+			</div>
+			<div class="col-md-4 col-6">
+				<div class="small-box bg-info">
+					<div class="inner">
+						<h3>Activity</h3>
+						<p>&nbsp;</p>
+					</div>
+					<div class="icon">
+						<i class="fas">{{ project.projectActivities|length}}</i>
+					</div>
+					<a href="{{path('project_activity_index', {'project': project.id})}}" class="small-box-footer">More info
+						<i class="fas fa-arrow-circle-right"></i>
+					</a>
+				</div>
+			</div>
+			<div class="col-md-4 col-6">
+				<div class="small-box bg-info">
+					<div class="inner">
+						<h3>Structure</h3>
+						<p>&nbsp;</p>
+					</div>
+					<div class="icon">
+						<i class="fas">{{ project.projectStructures|length}}</i>
+					</div>
+					<a href="{{ path('project_structure_index', {'project': project.id })}}" class="small-box-footer">More info
+						<i class="fas fa-arrow-circle-right"></i>
+					</a>
+				</div>
+			</div>
+			<div class="col-md-4 col-6">
+				<div class="small-box bg-info">
+					<div class="inner">
+						<h3>Knowledge</h3>
+						<p>&nbsp;</p>
+					</div>
+					<div class="icon">
+						<i class="fas">{{ project.projectResources|length}}</i>
+					</div>
+					<a href="{{ path('project_resource_index', {'project': project.id })}}" class="small-box-footer">More info
+						<i class="fas fa-arrow-circle-right"></i>
+					</a>
+				</div>
+			</div>
+			<div class="col-md-4 col-6">
+				<div class="small-box bg-info">
+					<div class="inner">
+						<h3>Action</h3>
+						<p>&nbsp;</p>
+					</div>
+					{% if project.status == 1 and project.projectActivities|length > 0 and  project.projectMilestones|length > 0 and project.projectDeliverables|length > 0%}
+						<div class="text-dark">
+							<button type="button" class="btn btn-success btn-block small-box-footer" data-toggle="modal" data-target="#submitPlan">
+								Submit Plan
+							</button>
+							<div class="modal fade" id="submitPlan" tabindex="-1" role="dialog" aria-labelledby="submitPlanLabel" aria-hidden="true">
+								<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+									<div class="modal-content">
+										<div class="modal-header bg-primary">
+											<h5 class="modal-title" id="submitPlanLabel">Submit Plan</h5>
+											<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+												<span aria-hidden="true">&times;</span>
+											</button>
+										</div>
+										<div class="modal-body container-fluid">
+											<p>Are you sure you want to submit the project plan? Once you submit you will not be able to modify the following.</p>
+											<ul>
+												<li>Milestones: {{ project.projectMilestones|length}}</li>
+												<li>Deliverable: {{ project.projectDeliverables|length}}</li>
+												<li>Activity: {{ project.projectActivities|length}}</li>
+											</ul>
+										</div>
+										<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_approve_request',{'id':project.id})}}">
+											<div class="form-group">
+												<label>Revision ID<span class="text-danger">
+														*</span>
+												</label>
+												<input type="text" name="revision_id" class="form-control" required="required" placeholder="enter the revision id">
+											</div>
+											<div class="form-group">
+												<label>Revision Detail</label>
+												<textarea name="revision_detail" class="form-control" placeholder="briefly describe the revision details"></textarea>
+											</div>
+											<input type="checkbox" id="confirmation" name="confirmation" value="true" required="required">
+											<label for="confirmation">
+												I Understand, proceed with the submission.</label>
+											<span class="text-danger">
+												*</span>
+											<div class="row">
+												<div class="col-md-6">
+													<a href="#" class="btn btn-primary btn-block">Export Plan</a>
+												</div>
+												<div class="col-md-6">
+													<button type="submit" class="btn btn-success btn-block">Submit</button>
+												</div>
+											</div>
+										</form> {{ include('project/js.html.twig') }}
+									</div>
+								</div>
+							</div>
+						</div>
+					{% endif %}
+					{% if project.status == 3 %}
+						<div class="text-dark">
+							<form class="d-inline" method="POST" action="{{ path('project_start_implementation',{'id':project.id})}}" onsubmit="return confirm('Are you sure you want to start the implementation of this project?');">
+								<input name="decision" value="4" hidden>
+								<button class="btn btn-block btn-success">Start Implementation</button>
+							</form>
+						</div>
+					{% endif %}
+				</div>
 			</div>
 		</div>
-		<div class="col-md-4 col-6">
-			<div class="small-box bg-success">
-				<div class="inner">
-					<h3>Milestone</h3>
-					<p>&nbsp;</p>
-				</div>
-				<div class="icon">
-					<i class="fas">{{ project.projectMilestones|length}}</i>
-				</div>
-				<a href="{{ path('project_milestone_index', {'project': project.id })}}" class="small-box-footer">More info
-					<i class="fas fa-arrow-circle-right"></i>
-				</a>
-			</div>
-		</div>
-		<div class="col-md-4 col-6">
-			<div class="small-box bg-danger">
-				<div class="inner">
-					<h3>Deliverable</h3>
-					<p>&nbsp;</p>
-				</div>
-				<div class="icon">
-					<i class="fas">{{ project.projectDeliverables|length}}</i>
-				</div>
-				<a href="{{ path('project_deliverable_index', {'project': project.id })}}" class="small-box-footer">More info
-					<i class="fas fa-arrow-circle-right"></i>
-				</a>
-			</div>
-		</div>
-		<div class="col-md-4 col-6">
-			<div class="small-box bg-info">
-				<div class="inner">
-					<h3>Activity</h3>
-					<p>&nbsp;</p>
-				</div>
-				<div class="icon">
-					<i class="fas">{{ project.projectActivities|length}}</i>
-				</div>
-				<a href="{{path('project_activity_index', {'project': project.id})}}" class="small-box-footer">More info
-					<i class="fas fa-arrow-circle-right"></i>
-				</a>
-			</div>
-		</div>
-	</div>
+	{% endif %}
 {% endblock %}
 {% block javascripts %}
 	<script>
 		$('#decision').change(function () {
-		var val = $(this).val();
-			if (val == 1) {
-				$("#reason").removeClass("d-none");
-				$('#submit').text('Reject Plan');
-				$('#submit').removeClass("btn-success");
-				$('#submit').addClass("btn-danger");
-			} else {
-				$("#reason").addClass("d-none");
-				 $('#submit').text('Approve Plan');
-				$('#submit').removeClass("btn-danger");
-				$('#submit').addClass("btn-success");
-			}
-		});
+var val = $(this).val();
+if (val == 1) {
+$("#reason").removeClass("d-none");
+$('#submit').text('Reject Plan');
+$('#submit').removeClass("btn-success");
+$('#submit').addClass("btn-danger");
+} else {
+$("#reason").addClass("d-none");
+$('#submit').text('Approve Plan');
+$('#submit').removeClass("btn-danger");
+$('#submit').addClass("btn-success");
+}
+});
 	</script>
 {% endblock %}

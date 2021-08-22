@@ -186,7 +186,7 @@
 												<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }}
 													- {{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
 												<td>{{ project_activity.weight }}</td>
-												<td></td>
+												<td><button class="btn btn-sm btn-success">Comment</button></td>
 											</tr>
 										{% else %}
 											<tr>
@@ -217,7 +217,7 @@
 												<td>{{ project_milestone.name }}</td>
 												<td>{{ project_milestone.weight }}</td>
 												<td>{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
-												<td></td>
+												<td><button class="btn btn-sm btn-success">Comment</button></td>
 											</tr>
 										{% else %}
 											<tr>
@@ -250,7 +250,7 @@
 												<td>{{ project_deliverable.title }}</td>
 												<td>{{ project_deliverable.plannedDeliveryDate ? project_deliverable.plannedDeliveryDate|date('M d Y') : '' }}</td>
 												<td>{{ project_deliverable.percentage }}</td>
-												<td></td>
+												<td><button class="btn btn-sm btn-success">Comment</button></td>
 											</tr>
 										{% else %}
 											<tr>

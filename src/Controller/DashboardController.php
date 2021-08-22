@@ -13,7 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
 class DashboardController extends AbstractController
 {
     #[Route('/dashboard', name: 'dashboard')]
-    public function index(ProjectRepository $projectRepository, Request $request, ProjectMembersRepository $projectMembersRepository, ProjectMilestoneRepository $projectMilestoneRepository): Response
+    public function index(ProjectRepository $projectRepository, Request $request, ProjectMembersRepository $projectMembersRepository): Response
     {
         $projectMember = $projectMembersRepository->findBy(['user' => $this->getUser(), 'status' => 1]);
         $projects = [];
@@ -22,12 +22,15 @@ class DashboardController extends AbstractController
             $project = $projectRepository->findOneBy(['id' => $member->getProject()->getId()]);
             array_push($projects, $project);
         }
+        $managingProjects = $projectRepository->findBy(['project_manager' => $this->getUser()]);
+        foreach ($managingProjects as $projectr) {
+            array_push($projects, $projectr);
+        }
         foreach ($projects as $proj) {
             if (!in_array($proj, $project_list)) {
                 $project_list[] = $proj;
             }
         }
-
         $activeProject = $projectRepository->findBy(['id' => $project_list, 'status' => 1]);
         $closedProject = $projectRepository->findBy(['id' => $project_list, 'status' => 2]);
         $session = $this->get('session');

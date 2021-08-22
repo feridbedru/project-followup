@@ -42,6 +42,7 @@ class ProjectType extends AbstractType
                 'required' => true
                 ])
             ->add('project_manager')
+            ->add('planned_value')
         ;
     }
 

@@ -81,8 +81,8 @@
 						</tr>
 					</tbody>
 				</table>
-				{% if project.status == 1 %}
-					<a href="{{ path('project_activity_edit', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-warning text-white">{% trans %}Edit{% endtrans %}</a> {{ include('project/activity/_delete_form.html.twig') }}
+				{% if project.status == 1 or is_granted("manage_project_plan") and project.status == 2 %}
+					<a href="{{ path('project_activity_edit', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a> {{ include('project/activity/_delete_form.html.twig') }}
 				{% endif %}
 			</div>
 		</div>

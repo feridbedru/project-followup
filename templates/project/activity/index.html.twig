@@ -93,6 +93,9 @@
 							</td>
 							<td>{{ project_activity.isActive ? 'Yes' : 'No' }}</td>
 							<td>
+							{% if project.status == 1 or is_granted("manage_project_plan") and project.status == 2 %}
+					<a href="{{ path('project_activity_edit', {'id': project_activity.id, 'project': project.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a> {{ include('project/activity/_delete_form.html.twig') }}
+				{% endif %}
 							{% if project.status == 3 %}
 								<a href="{{ path('activity_files_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-success mr-2">{% trans %}Deliverables{% endtrans %}</a>
 								<a href="{{ path('activity_progress_index', {'activity': project_activity.id, 'project': project.id}) }}" class="btn btn-outline-danger mr-2">{% trans %}Progress{% endtrans %}</a>
@@ -110,7 +113,7 @@
 			<div class="navigation">{{ knp_pagination_render(project_activities) }}</div>
 		</div>
 	</div>
-	{% if is_granted("project_activity_create") and project.status == 1 %}
+	{% if is_granted("project_activity_create") and project.status == 1 or is_granted("manage_project_plan") and project.status == 2 %}
 		<a href="{{ path('project_activity_new', {'project': project.id}) }}" class="btn btn-sm btn-success">
 			<span class="fa fa-plus"></span>
 			{% trans %}Create new{% endtrans %}</a>

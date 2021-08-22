@@ -37,12 +37,14 @@
 									<p>Structure</p>
 								</a>
 							</li>
-							<li class="nav-item">
-								<a href="{{ path('project_members_index', {'project': project.id })}}" class="nav-link">
-									<i class="fas fa-list-alt nav-icon"></i>
-									<p>Members</p>
-								</a>
-							</li>
+							{% if project.status >= 3 %}
+								<li class="nav-item">
+									<a href="{{ path('project_members_index', {'project': project.id })}}" class="nav-link">
+										<i class="fas fa-list-alt nav-icon"></i>
+										<p>Members</p>
+									</a>
+								</li>
+							{% endif %}
 							<li class="nav-item">
 								<a href="{{ path('project_resource_index', {'project': project.id })}}" class="nav-link">
 									<i class="fas fa-list-alt nav-icon"></i>

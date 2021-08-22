@@ -162,6 +162,11 @@ class Project
      */
     private $projectPlanStatuses;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $planned_value;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
@@ -774,6 +779,18 @@ class Project
                 $projectPlanStatus->setProject(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getPlannedValue(): ?int
+    {
+        return $this->planned_value;
+    }
+
+    public function setPlannedValue(int $planned_value): self
+    {
+        $this->planned_value = $planned_value;
 
         return $this;
     }

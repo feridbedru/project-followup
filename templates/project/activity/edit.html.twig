@@ -27,7 +27,7 @@
 	Edit Project Activity{% endtrans %}
 {% endblock %}
 {% block body %}
-	{% if is_granted("project_activity_edit") and project.status == 1 %}
+	{% if is_granted("project_activity_edit") and project.status == 1 or is_granted("manage_project_plan") and project.status == 2 %}
 		<div class="card card-info">
 			<div class="card-header">
 				<h5>{% trans %}

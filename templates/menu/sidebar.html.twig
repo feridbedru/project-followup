@@ -1,5 +1,5 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
-	<a href="#" class="brand-link text-center">
+	<a href="{{ path('dashboard')}}" class="brand-link text-center">
 		<span class="brand-text font-weight-light ">Project Followup</span>
 	</a>
 
@@ -93,14 +93,14 @@
 						</p>
 					</a>
 				</li>
-				<li class="nav-item">
+				{# <li class="nav-item">
 					<a href="{{ path('calendar_index')}}" class="nav-link">
 						<i class="nav-icon fas fa-calendar"></i>
 						<p>
 							Calendar
 						</p>
 					</a>
-				</li>
+				</li> #}
 				<hr>
 				{% if is_granted("project_index") %}
 				<li class="nav-item has-treeview">

@@ -114,3 +114,13 @@
 		</div>
 	</div>
 {% endblock %}
+{% block javascripts %}
+<script>
+	$('#project_milestone_start_date').change( function() {
+		var val = $(this).val();
+		$("#project_milestone_end_date").attr({
+		"min" : val
+		});
+	});
+</script>
+{% endblock %}

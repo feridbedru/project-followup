@@ -173,4 +173,12 @@
 $('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height: 200})
 })
 	</script>
+	<script>
+		$('#activity_user_start_date').change( function() {
+			var val = $(this).val();
+			$("#activity_user_end_date").attr({
+			"min" : val
+			});
+		});
+	</script>
 {% endblock %}

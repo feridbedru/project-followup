@@ -9,11 +9,11 @@
 </div>
 <div class="row">
 	<div class="form-group col-md-6">
-		<label>{{ form_label(form.start_date) }}</label> {{ form_widget(form.start_date,{'attr':{'class':'form-control'}}) }}
+		<label>{{ form_label(form.start_date) }}</label> {{ form_widget(form.start_date,{'attr':{'class':'form-control', "min":activity.startDate|date("Y-m-d"), "max":activity.endDate|date("Y-m-d")}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
 	<div class="form-group col-md-6">
-		<label>{{ form_label(form.end_date) }}</label> {{ form_widget(form.end_date,{'attr':{'class':'form-control'}}) }}
+		<label>{{ form_label(form.end_date) }}</label> {{ form_widget(form.end_date,{'attr':{'class':'form-control', "max":activity.endDate|date("Y-m-d")}}) }}
 		<div class="help-block with-errors"></div>
 	</div>
 </div>

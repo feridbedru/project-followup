@@ -62,11 +62,6 @@ class ProjectMilestone
     private $projectActivities;
 
     /**
-     * @ORM\Column(type="date")
-     */
-    private $planned_delivery_date;
-
-    /**
      * @ORM\Column(type="boolean")
      */
     private $activities_equal_weight;
@@ -80,6 +75,16 @@ class ProjectMilestone
      * @ORM\Column(type="integer")
      */
     private $weight;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $start_date;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    private $end_date;
 
     public function __construct()
     {
@@ -230,18 +235,6 @@ class ProjectMilestone
         return $this->name;
     }
 
-    public function getPlannedDeliveryDate(): ?\DateTimeInterface
-    {
-        return $this->planned_delivery_date;
-    }
-
-    public function setPlannedDeliveryDate(\DateTimeInterface $planned_delivery_date): self
-    {
-        $this->planned_delivery_date = $planned_delivery_date;
-
-        return $this;
-    }
-
     public function getActivitiesEqualWeight(): ?bool
     {
         return $this->activities_equal_weight;
@@ -292,6 +285,30 @@ class ProjectMilestone
     public function setWeight(int $weight): self
     {
         $this->weight = $weight;
+
+        return $this;
+    }
+
+    public function getStartDate(): ?\DateTimeInterface
+    {
+        return $this->start_date;
+    }
+
+    public function setStartDate(\DateTimeInterface $start_date): self
+    {
+        $this->start_date = $start_date;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTimeInterface
+    {
+        return $this->end_date;
+    }
+
+    public function setEndDate(\DateTimeInterface $end_date): self
+    {
+        $this->end_date = $end_date;
 
         return $this;
     }

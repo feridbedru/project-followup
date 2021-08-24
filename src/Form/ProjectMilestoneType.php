@@ -17,8 +17,10 @@ class ProjectMilestoneType extends AbstractType
             ->add('description')
             ->add('activities_equal_weight')
             ->add('weight')
-            ->add('planned_delivery_date', DateType::class, ['widget' => 'single_text'])
-        ;
+            ->add('start_date', DateType::class, ['widget' => 'single_text'])
+            ->add('end_date', DateType::class, [
+                'widget' => 'single_text'
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

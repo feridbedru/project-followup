@@ -23,6 +23,10 @@ class MyProjectController extends AbstractController
             $project = $projectRepository->findOneBy(['id' => $member->getProject()->getId()]);
             array_push($projects, $project);
         }
+        $managingProjects = $projectRepository->findBy(['project_manager' => $this->getUser()]);
+        foreach ($managingProjects as $projectr) {
+            array_push($projects, $projectr);
+        }
         foreach ($projects as $proj ) {
             if ( ! in_array($proj, $project_list)) {
                 $project_list[] = $proj;

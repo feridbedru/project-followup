@@ -10,9 +10,14 @@
         <div class="help-block with-errors"></div>
     </div>
     <div class="row">
-    <div class="form-group col-md-8">
-        <label>{{ form_label(form.planned_delivery_date) }}</label>
-        {{ form_widget(form.planned_delivery_date,{'attr':{'class':'form-control'}}) }}
+    <div class="form-group col-md-4">
+        <label>{{ form_label(form.start_date) }}</label>
+        {{ form_widget(form.start_date,{'attr':{'class':'form-control', "min": project.startDate|date("Y-m-d"), "max": project.endDate|date("Y-m-d") }}) }}
+        <div class="help-block with-errors"></div>
+    </div>
+    <div class="form-group col-md-4">
+        <label>{{ form_label(form.end_date) }}</label>
+        {{ form_widget(form.end_date,{'attr':{'class':'form-control', "max": project.endDate|date("Y-m-d")}}) }}
         <div class="help-block with-errors"></div>
     </div>
     <div class="form-group col-md-4">

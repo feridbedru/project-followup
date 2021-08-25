@@ -63,10 +63,11 @@
 							<tr>
 								<th>#</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Name'|trans, 'p.name') }}</th>
+								<th>{{ knp_pagination_sortable(project_milestones, 'Duration'|trans, 'p.duration') }}</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Weight'|trans, 'p.weight') }}</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Activities are Equal'|trans, 'p.tasks_are_equal') }}</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Last Revision'|trans, 'p.last_revision') }}</th>
-								<th>{% trans %}Actions{% endtrans %}</th>
+								<th class="text-center">{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -77,9 +78,10 @@
 										{% set i = i+1 %}
 									</td>
 									<td>{{ project_milestone.name }}</td>
-									<td> {{ project_milestone.weight }}
+									<td>{{ project_milestone.startDate|date("M Y")}} - {{ project_milestone.endDate|date("M Y")}}</td>
+									<td class="text-center"> {{ project_milestone.weight }}
 									</td>
-									<td>{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
+									<td class="text-center">{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
 									<td>{{ project_milestone.lastRevision ? project_milestone.lastRevision|date('Y-m-d') : '' }}</td>
 									<td>
 										<a href="{{ path('project_deliverable_index', {'project': project.id, 'milestone':project_milestone.id}) }}" class="btn btn-sm btn-success mr-2">Deliverables</a>

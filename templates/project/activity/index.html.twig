@@ -15,7 +15,7 @@
 	</li>
 	<li class="breadcrumb-item">
 		<a href="{{path('project_activity_index', {'project': project.id})}}">{% trans %}
-			Project Activity
+			Activity
 			{% endtrans %}</a>
 	</li>
 	<li class="breadcrumb-item active">{% trans %}
@@ -24,13 +24,13 @@
 {% endblock %}
 {% block pagetitle %}
 	{% trans %}
-	Project Activity{% endtrans %}
+	Activity{% endtrans %}
 {% endblock %}
 {% block body %}
 	<div class="card card-info">
 		<div class="card-header">
 			<h5>{% trans %}
-				Project Activity
+				Activity List
 				{% endtrans %}</h5>
 		</div>
 		<div class="card-body">
@@ -39,7 +39,8 @@
 					<tr>
 						<th>#</th>
 						<th>{{ knp_pagination_sortable(project_activities, 'Title'|trans, 'p.title') }}</th>
-						<th>{{ knp_pagination_sortable(project_activities, 'Due Date'|trans, 'p.end_date') }}</th>
+						<th>{{ knp_pagination_sortable(project_activities, 'Milestone'|trans, 'p.milestone') }}</th>
+						<th>{{ knp_pagination_sortable(project_activities, 'Duration'|trans, 'p.end_date') }}</th>
 						<th>{{ knp_pagination_sortable(project_activities, 'Status'|trans, 'p.status') }}</th>
 						<th>{{ knp_pagination_sortable(project_activities, 'Active'|trans, 'p.is_active') }}</th>
 						<th>{% trans %}Actions{% endtrans %}</th>
@@ -55,7 +56,8 @@
 							<td>
 								<a href="{{ path('project_activity_show', {'id': project_activity.id, 'project': project.id}) }}">{{ project_activity.title }}</a>
 							</td>
-							<td>{{ project_activity.endDate ? project_activity.endDate|date('Y-m-d') : '' }}</td>
+							<td>{{ project_activity.milestone.name }}</td>
+							<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }} - {{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
 							<td>
 								{% if project_activity.status == 1 %}
 									Pending Assignment

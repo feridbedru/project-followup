@@ -35,7 +35,7 @@ class ProjectDeliverable
     private $delivery_date;
 
     /**
-     * @ORM\Column(type="float", nullable=true)
+     * @ORM\Column(type="float")
      */
     private $percentage;
 

@@ -20,7 +20,15 @@ class ProjectMilestoneController extends AbstractController
     public function index(ProjectMilestoneRepository $projectMilestoneRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        // dd($project);
+        $milestones = $projectMilestoneRepository->findBy(['project' => $project]);
+        $sum = array();
+        foreach ($milestones as $milestone) {
+           $weight = $milestone->getWeight();
+           array_push($sum, $weight);
+        }
+
+        $sum = array_sum($sum);
+        $total = 100 - $sum;
         if ($request->request->get('edit')) {
 
             $id = $request->request->get('edit');
@@ -43,6 +51,7 @@ class ProjectMilestoneController extends AbstractController
                 'form' => $form->createView(),
                 'edit' => $id,
                 'project' => $project,
+                'max' => $total,
             ]);
         }
 
@@ -69,7 +78,8 @@ class ProjectMilestoneController extends AbstractController
             'project_milestones' => $data,
             'form' => $form->createView(),
             'edit' => false,
-            'project' => $project
+            'project' => $project,
+            'max' => $total,
         ]);
     }
 
@@ -88,20 +98,23 @@ class ProjectMilestoneController extends AbstractController
         return $this->redirectToRoute('project_milestone_index', ["project" => $project->getId()]);
     }
 
-    #[Route('/{id}/dates', name: 'project_milestone_dates', methods: ['POST'])]
-    public function dates(ProjectMilestoneRepository $projectMilestoneRepository, Request $request): Response
+    #[Route('/{id}/data', name: 'project_milestone_data', methods: ['POST'])]
+    public function data(ProjectMilestoneRepository $projectMilestoneRepository, Request $request): Response
     {
         $routeParams = $request->attributes->get('_route_params');
         $id = $routeParams['id'];
         $milestone = $projectMilestoneRepository->find($id);
-        $dates = array();
+        $data = array();
         $start_date = $milestone->getStartDate();
         $start_date = date_format($start_date, "Y-m-d");
-        array_push($dates, $start_date);
+        array_push($data, $start_date);
         $end_date = $milestone->getEndDate();
         $end_date = date_format($end_date, "Y-m-d");
-        array_push($dates, $end_date);
+        array_push($data, $end_date);
+        $activityweight = $milestone->getActivitiesEqualWeight();
+        array_push($data, $activityweight);
 
-        return new Response(json_encode($dates));
+        return new Response(json_encode($data));
     }
+
 }

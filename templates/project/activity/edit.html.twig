@@ -62,7 +62,7 @@ $('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height:
 		$('#project_activity_milestone').on('select2:select', function (e) {
 			var milestone_id = e.params.data.id;
 			var project = {{ project.id }}
-			var url = "{{ path('project_milestone_dates', {'project': project.id, 'id': 'milestone_id'})}}";
+			var url = "{{ path('project_milestone_data', {'project': project.id, 'id': 'milestone_id'})}}";
 			url = url.replace("milestone_id", milestone_id);
 			$.ajax({
 				type: "POST",

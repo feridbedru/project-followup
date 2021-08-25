@@ -20,11 +20,20 @@ class ProjectDeliverableController extends AbstractController
     public function index(ProjectDeliverableRepository $projectDeliverableRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $deliverables = $projectDeliverableRepository->findBy(['project' => $project]);
+        $sum = array();
+        foreach ($deliverables as $deliverable) {
+           $weight = $deliverable->getPercentage();
+           array_push($sum, $weight);
+        }
+
+        $sum = array_sum($sum);
+        $total = 100 - $sum;
         if ($request->request->get('edit')) {
 
             $id = $request->request->get('edit');
             $projectDeliverable = $projectDeliverableRepository->findOneBy(['id' => $id]);
-            $form = $this->createForm(ProjectDeliverableType::class, $projectDeliverable);
+            $form = $this->createForm(ProjectDeliverableType::class, $projectDeliverable, array('project' => $project->getId()));
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
@@ -41,13 +50,14 @@ class ProjectDeliverableController extends AbstractController
                 'project_deliverables' => $data,
                 'form' => $form->createView(),
                 'edit' => $id,
-                'project' => $project
+                'project' => $project,
+                'max' => $total
             ]);
         }
 
 
         $projectDeliverable = new ProjectDeliverable();
-        $form = $this->createForm(ProjectDeliverableType::class, $projectDeliverable);
+        $form = $this->createForm(ProjectDeliverableType::class, $projectDeliverable, array('project' => $project->getId()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -70,7 +80,8 @@ class ProjectDeliverableController extends AbstractController
             'project_deliverables' => $data,
             'form' => $form->createView(),
             'edit' => false,
-            'project' => $project
+            'project' => $project,
+            'max' => $total
         ]);
     }
 

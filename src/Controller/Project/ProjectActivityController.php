@@ -34,7 +34,7 @@ class ProjectActivityController extends AbstractController
         $this->denyAccessUnlessGranted('project_activity_create');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $projectActivity = new ProjectActivity();
-        $form = $this->createForm(ProjectActivityType::class, $projectActivity);
+        $form = $this->createForm(ProjectActivityType::class, $projectActivity, array('project' => $project->getId()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -74,7 +74,7 @@ class ProjectActivityController extends AbstractController
     {
         $this->denyAccessUnlessGranted('project_activity_edit');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        $form = $this->createForm(ProjectActivityType::class, $projectActivity);
+        $form = $this->createForm(ProjectActivityType::class, $projectActivity, array('project' => $project->getId()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -105,5 +105,23 @@ class ProjectActivityController extends AbstractController
         $this->addFlash("success","Deleted project activity successfully.");
 
         return $this->redirectToRoute('project_activity_index', ["project" => $project->getId()]);
+    }
+
+
+    #[Route('/{id}/weight', name: 'project_activity_data', methods: ['POST','GET'])]
+    public function weight(Request $request, ProjectActivityRepository $projectActivityRepository): Response
+    {
+        $routeParams = $request->attributes->get('_route_params');
+        $id = $routeParams['id'];
+        $activities = $projectActivityRepository->findBy(['milestone' => $id]);
+        $sum = array();
+        foreach ($activities as $activity) {
+           $weight = $activity->getWeight();
+           array_push($sum, $weight);
+        }
+
+        $sum = array_sum($sum);
+        $total = 100 - $sum;
+        return new Response(json_encode($total));
     }
 }

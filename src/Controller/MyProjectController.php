@@ -34,7 +34,7 @@ class MyProjectController extends AbstractController
         }
 
         $project = NULL;
-        $projectId = $request->attributes->get('project');
+        $projectId = $request->query->get('project');
         if($projectId){
             $project = $projectRepository->findOneBy(['id' => $projectId]);
         }

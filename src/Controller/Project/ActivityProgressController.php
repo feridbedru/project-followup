@@ -22,21 +22,13 @@ class ActivityProgressController extends AbstractController
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
-        // dd($activity);
         $report_days = array();
         $days = $activityProgressRepository->findReportDays($activity);
-        // dd($days);
         foreach ($days as $day) {
-            // $date = new \DateTime($day['created_at']);
             $date = $day['created_at']->format('Y-m-d H:i:s');
-            // $date = date("Y-m-d", strtotime((string)$day['created_at']));
-            // $date = new \DateTime(date_format($day['created_at'], 'Y-m-d'));
-            // dd($date);
             $report = $activityProgressRepository->findReport($date);
-            // dd($report);
             $report_days[date_format($day['created_at'], 'Y-m-d')] = $report;
         }
-// dd($report_days);
         if ($request->request->get('edit')) {
 
             $id = $request->request->get('edit');

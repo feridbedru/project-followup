@@ -29,11 +29,11 @@ class ProjectActivityController extends AbstractController
     }
 
     #[Route('/new', name: 'project_activity_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProjectRepository $projectRepository): Response
+    public function new(Request $request, ProjectRepository $projectRepository, ProjectActivityRepository $projectActivityRepository): Response
     {
         $this->denyAccessUnlessGranted('project_activity_create');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        $projectActivity = new ProjectActivity();
+        $projectActivity = new ProjectActivity(); 
         $form = $this->createForm(ProjectActivityType::class, $projectActivity, array('project' => $project->getId()));
         $form->handleRequest($request);
 

@@ -59,6 +59,7 @@
 	</div>
 {% endblock %}
 {% block javascripts %}
+{% if project is not null %}
 <script src="{{ asset('assets/plugins/highchart/highcharts.js')}}"></script>
 <script src="{{ asset('assets/plugins/highchart/sunburst.js')}}"></script>
 <script src="{{ asset('assets/plugins/highchart/exporting.js')}}"></script>
@@ -152,9 +153,8 @@ Highcharts.chart('container', {
             }
         }]
 
-    }],
-
-    
+    }], 
 });
 		</script>
+        {% endif %}
 {% endblock %}

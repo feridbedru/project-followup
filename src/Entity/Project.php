@@ -167,6 +167,11 @@ class Project
      */
     private $planned_value;
 
+    /**
+     * @ORM\OneToMany(targetEntity=ProjectPlanComment::class, mappedBy="project")
+     */
+    private $planComments;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
@@ -183,6 +188,7 @@ class Project
         $this->activityChats = new ArrayCollection();
         $this->projectPlanRevisions = new ArrayCollection();
         $this->projectPlanStatuses = new ArrayCollection();
+        $this->planComments = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -791,6 +797,36 @@ class Project
     public function setPlannedValue(int $planned_value): self
     {
         $this->planned_value = $planned_value;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|ProjectPlanComment[]
+     */
+    public function getPlanComments(): Collection
+    {
+        return $this->planComments;
+    }
+
+    public function addPlanComment(ProjectPlanComment $planComment): self
+    {
+        if (!$this->planComments->contains($planComment)) {
+            $this->planComments[] = $planComment;
+            $planComment->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlanComment(ProjectPlanComment $planComment): self
+    {
+        if ($this->planComments->removeElement($planComment)) {
+            // set the owning side to null (unless already changed)
+            if ($planComment->getProject() === $this) {
+                $planComment->setProject(null);
+            }
+        }
 
         return $this;
     }

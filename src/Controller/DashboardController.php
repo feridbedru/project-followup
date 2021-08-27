@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Repository\ProjectRepository;
 use App\Repository\ProjectMembersRepository;
 use App\Repository\ActivityUserRepository;
+use App\Repository\ObjectiveRepository;
+use App\Repository\OrganizationUnitRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -100,4 +102,18 @@ class DashboardController extends AbstractController
             'done_list' => $done,
         ]);
     }
+
+    #[Route('/alignmentmatrix', name: 'alignment_matrix')]
+    public function alignmentMatrix(OrganizationUnitRepository $organizationUnitRepository, ProjectRepository $projectRepository, ObjectiveRepository $objectiveRepository): Response
+    {
+        $units = $organizationUnitRepository->findAll();
+        $projects = $projectRepository->findAll();
+        $objectives = $objectiveRepository->findAll();
+
+        return $this->render('dashboard/alignmentmatrix.html.twig', [
+            'projects' => $projects,
+            'units' => $units,
+            'objectives' => $objectives,
+        ]);
+    } 
 }

@@ -77,7 +77,7 @@
 									</td>
 									<td>{{ organization_unit.name }}</td>
 									<td>{{ organization_unit.acronym }}</td>
-									<td>{{ organization_unit.head.fullName }}</td>
+									<td>{{ organization_unit.head ? organization_unit.head.fullName : ''  }}</td>
 									<td>{{ organization_unit.reportsTo }}</td>
 									<td>
 

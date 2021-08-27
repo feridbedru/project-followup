@@ -1,0 +1,46 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Alignment Matrix
+{% endblock %}
+
+{% block body %}
+	<table class="table table-hover">
+		<thead>
+			<tr>
+				<th scope="col">Objectives</th>
+				{% for unit in units %}
+					<th scope="col" id="{{ unit.name }}">{{ unit.name }}</th>
+				{% endfor %}
+			</tr>
+		</thead>
+		<tbody>
+			{% for objective in objectives %}
+				<tr>
+					<th scope="row" header="{{ objective.name }}">{{ objective.name }}</td>
+					{% for project in projects %}
+						{% if project.objective.id == objective.id %}
+							<td headers="{{ project.unit.name }} {{ project.objective.name }}"> {{ project.name }}</td>
+            {# {% else %}
+            <td headers=""></td> #}
+						{% endif %}
+					{% endfor %}
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+
+  <table>
+  <tr>
+    <th id="name">Name</th>
+    <th id="email">Email</th>
+    <th id="phone">Phone</th>
+    <th id="addr">Address</th>
+  </tr>
+  <tr>
+    <td headers="name">John Doe</td>
+    <td headers="phone">+45342323</td>
+    <td headers="email">someone@example.com</td>
+    <td headers="addr">Rosevn 56,4300 Sandnes,Norway</td>
+  </tr>
+</table>
+{% endblock %}

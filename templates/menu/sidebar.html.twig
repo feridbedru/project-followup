@@ -191,7 +191,7 @@
 					</ul>
 				</li>
 				{% endif %}
-				{% if is_granted("currency_index") or is_granted("resource_type_index") or is_granted("sponsor_index") or is_granted("organization_index") or is_granted("organization_unit_index") or is_granted("stakeholder_index") or is_granted("email_template_index") or is_granted("goal_index")%}
+				{% if is_granted("currency_index") or is_granted("resource_type_index") or is_granted("sponsor_index") or is_granted("organization_index") or is_granted("organization_unit_index") or is_granted("email_template_index") or is_granted("goal_index")%}
 				<li class="nav-item has-treeview">
 					<a href="#" class="nav-link "> 
 						<i class="nav-icon fas fa-cog"></i>
@@ -233,18 +233,10 @@
 							</a>
 						</li>
 						{% endif %}
-						{% if is_granted("stakeholder_index") %}
-						<li class="nav-item">
-							<a href="{{ path('stakeholder_index')}}" class="nav-link">
-								<i class="fas fa-hands-helping nav-icon"></i>
-								<p>Stakeholder</p>
-							</a>
-						</li>
-						{% endif %}
 						{% if is_granted("email_template_index") %}
 						<li class="nav-item">
 							<a href="{{ path('email_template_index')}}" class="nav-link">
-								<i class="fas fa-at nav-icon"></i>
+								<i class="fas fa-mail-bulk nav-icon"></i>
 								<p>Email Template</p>
 							</a>
 						</li>
@@ -252,7 +244,7 @@
 						{% if is_granted("goal_index") %}
 						<li class="nav-item">
 							<a href="{{ path('goal_index')}}" class="nav-link">
-								<i class="fas fa-goal nav-icon"></i>
+								<i class="fas fa-bullseye nav-icon"></i>
 								<p>Goal</p>
 							</a>
 						</li>

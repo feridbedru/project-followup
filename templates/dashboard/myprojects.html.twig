@@ -84,7 +84,8 @@ var data = [{
     id: '{{ project.id }}.{{ milestone.id }}.1.{{ activity.id }}',
     parent: '{{ project.id }}.{{ milestone.id }}',
     name: '{{ activity.title }}',
-    value: {{ activity.weight ? activity.weight : 20 }}
+    value: {{ activity.weight ? activity.weight : 20 }},
+    // color: '{% set difference = date(activity.endDate).diff(date(activity.startDate)) %}{% set leftDays = difference.days / 3 %}{% set p1 = leftDays * 1 %}{% set p1 = '+' ~ p1|round ~' day' %}{% set first = activity.startDate|date_modify(p1)|date('Y-m-d') %}{% set p2 = leftDays * 2 %}{% set p2 = '+' ~ p2|round ~' day' %}{% set second = activity.startDate|date_modify(p2)|date('Y-m-d') %}{% set p3 = leftDays * 3 %}{% set p3 = '+' ~ p3|round ~' day' %}{% set third = activity.startDate|date_modify(p3)|date('Y-m-d') %}{% set today = "now"|date("Y-m-d") %}{% if today < first %}#808080{% elseif today > first and today < second %}#00FF00{% elseif today > second and today < third %}#FFFF00{% elseif today > third %}#FF0000{% endif %}'
 },
 {% endfor %}
 {% endfor %}

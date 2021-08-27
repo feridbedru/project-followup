@@ -58,23 +58,23 @@
 						{% endtrans %}</h3>
 				</div>
 				<div class="card-body">
-					<table class="table table-hover">
+					<table class="table table-hover" id="mytable">
 						<thead>
 							<tr>
-								<th>#</th>
+								<th class="actions">#</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Name'|trans, 'p.name') }}</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Duration'|trans, 'p.duration') }}</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Weight'|trans, 'p.weight') }}</th>
 								<th>{{ knp_pagination_sortable(project_milestones, 'Activities are Equal'|trans, 'p.tasks_are_equal') }}</th>
-								<th>{{ knp_pagination_sortable(project_milestones, 'Last Revision'|trans, 'p.last_revision') }}</th>
-								<th class="text-center">{% trans %}Actions{% endtrans %}</th>
+								<th class="actions">{{ knp_pagination_sortable(project_milestones, 'Last Revision'|trans, 'p.last_revision') }}</th>
+								<th class="text-center actions">{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
 						<tbody>
 							{% set i = 1 %}
 							{% for project_milestone in project_milestones %}
 								<tr>
-									<td>{{ i }}
+									<td class="actions">{{ i }}
 										{% set i = i+1 %}
 									</td>
 									<td>{{ project_milestone.name }}</td>
@@ -82,8 +82,8 @@
 									<td class="text-center"> {{ project_milestone.weight }}
 									</td>
 									<td class="text-center">{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
-									<td>{{ project_milestone.lastRevision ? project_milestone.lastRevision|date('Y-m-d') : '' }}</td>
-									<td>
+									<td class="actions">{{ project_milestone.lastRevision ? project_milestone.lastRevision|date('Y-m-d') : '' }}</td>
+									<td class="actions">
 										<a href="{{ path('project_deliverable_index', {'project': project.id, 'milestone':project_milestone.id}) }}" class="btn btn-sm btn-success mr-2">Deliverables</a>
 										{% if is_granted("project_milestone_edit") and project.status == 1 or is_granted("manage_project_plan") and project.status == 2 %}
 											<form class="d-inline" method="post">
@@ -113,8 +113,33 @@
 					<div class="navigation">{{ knp_pagination_render(project_milestones) }}</div>
 				</div>
 			</div>
+			<table id="milestone" class="table d-none">
+				<tr>
+					<th>Milestone Name</th>
+					<td>Description</td>
+					<td>Start Date</td>
+					<td>End Date</td>
+					<td>Weight</td>
+					<td>Activities are Equal</td>
+				</tr>
+				{% set i = 1 %}
+				{% for project_milestone in project.projectMilestones %}
+				<tr>
+					<td>{{ project_milestone.name }}</td>
+					<td>{{ project_milestone.description|raw }}</td>
+					<td>{{ project_milestone.startDate|date("d M Y") }}</td>
+					<td>{{ project_milestone.endDate|date("d M Y") }}</td>
+					<td class="center">{{ project_milestone.weight }}</td>
+					<td class="center">{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+		 <button class="btn btn-primary float-right" id="dwnld"><i class="fa fa-download"></i> Download</button>
 		</div>
 	</div>
+{% endblock %}
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
 {% endblock %}
 {% block javascripts %}
 <script>
@@ -123,6 +148,25 @@
 		$("#project_milestone_end_date").attr({
 		"min" : val
 		});
+	});
+</script>
+<script src="{{ asset('assets/plugins/table2excel/jquery.table2excel.min.js')}}"></script>
+<script>
+    $('#dwnld').on('click', function(){
+        
+        $("#milestone").table2excel({
+            exclude: ".actions",
+            name: "Worksheet Name",
+            filename: "{{ project.name }} Milestones.xls",
+            preserveColors: false
+        });
+    
+    });
+</script>
+<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+<script>
+	$(function () {
+		$('.wyiswig').summernote({placeholder: 'Enter description', tabsize: 2, height: 200})
 	});
 </script>
 {% endblock %}

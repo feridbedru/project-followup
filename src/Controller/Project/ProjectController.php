@@ -4,11 +4,15 @@ namespace App\Controller\Project;
 
 use App\Entity\Project;
 use App\Entity\Log;
+use App\Entity\PlanModificationRequest;
 use App\Entity\ProjectPlanRevision;
 use App\Entity\ProjectPlanStatus;
+use App\Entity\ProjectPlanComment;
 use App\Form\ProjectType;
 use App\Repository\ProjectRepository;
 use App\Repository\EmailTemplateRepository;
+use App\Repository\PlanModificationRequestRepository;
+use App\Repository\ProjectPlanCommentRepository;
 use App\Repository\ProjectResourceRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,13 +71,17 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/show', name: 'project_show', methods: ['GET','POST'])]
-    public function show(Project $project, ProjectResourceRepository $projectResourceRepository): Response
+    public function show(Project $project, ProjectResourceRepository $projectResourceRepository, ProjectPlanCommentRepository $projectPlanCommentRepository, PlanModificationRequestRepository $planModificationRequestRepository): Response
     {
         $this->denyAccessUnlessGranted('project_show');
         $projectResource = $projectResourceRepository->findBy(['project'=>$project]);
+        $comments = $projectPlanCommentRepository->findBy(['project'=>$project]);
+        $modificationRequest = $planModificationRequestRepository->findOneBy(['project'=>$project,'status'=>1]);
         return $this->render('project/show.html.twig', [
             'project' => $project,
             'resources' => $projectResource,
+            'comments' => $comments,
+            'mod' => $modificationRequest
         ]);
     }
     #[Route('/{id}/status', name: 'plan_approve_request', methods: ['POST'])]
@@ -179,6 +187,98 @@ class ProjectController extends AbstractController
         $this->addFlash("success", "Started project implementation successfully.");
         return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
     }
+
+    #[Route('/{id}/requestModification', name: 'plan_modification_request', methods: ['POST'])]
+    public function requestModification( Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    {
+        $comment = $request->request->get('comment');
+        $entityManager = $this->getDoctrine()->getManager();
+        $planModificationRequest = new PlanModificationRequest();
+        $planModificationRequest->setProject($project);
+        $planModificationRequest->setComment($comment);
+        $planModificationRequest->setCreatedBy($this->getUser());
+        $planModificationRequest->setCreatedAt(new \DateTime());
+        $planModificationRequest->setStatus(1);
+        $entityManager->persist($planModificationRequest);
+        $entityManager->flush();
+        $emailTemplate = $emailTemplateRepository->findOneBy(['code' => 'plan_modification_request']);
+        $message = $emailTemplate->getContent();
+        $projectName = $project->getName();
+        $message = str_replace('$project', $projectName, $message);
+        $message = str_replace('$comment', $comment, $message);
+        $recievers = array();
+        $reciever1 = $project->getUnit()->getHead()->getEmail();
+        array_push($recievers, $reciever1);
+        $reciever2 = $project->getProjectManager()->getEmail();
+        array_push($recievers, $reciever2);
+        $mservice->sendEmail($mailer, $recievers, $emailTemplate->getName(), $message);
+
+        $this->addFlash("success", "Submitted plan modification request successfully.");
+        return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
+    }
+
+    #[Route('/{id}/approveRequestMod', name: 'plan_modification_approve', methods: ['POST'])]
+    public function approveRequestMod( Project $project, PlanModificationRequestRepository $planModificationRequestRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    {
+        $comment = $request->request->get('approver_comment');
+        $req_id = $request->request->get('req_id');
+        $status = $request->request->get('status');
+        $decision = '';
+        if($status == 2){
+            $decision = 'ACCEPTED';
+        }
+        else{
+            $decision = 'REJECTED';
+        }
+        $planModificationRequest = $planModificationRequestRepository->findOneBy(['id' => $req_id]);
+        $entityManager = $this->getDoctrine()->getManager();
+        $planModificationRequest->setApproverComment($comment);
+        $planModificationRequest->setApprovedBy($this->getUser());
+        $planModificationRequest->setApprovedAt(new \DateTime());
+        $planModificationRequest->setStatus($status);
+        $entityManager->persist($planModificationRequest);
+        $entityManager->flush();
+        if($status == 2){
+            $project->setStatus(1);
+        }
+        $emailTemplate = $emailTemplateRepository->findOneBy(['code' => 'plan_modification_status_update']);
+        $message = $emailTemplate->getContent();
+        $projectName = $project->getName();
+        $message = str_replace('$project', $projectName, $message);
+        $message = str_replace('$reason', $comment, $message);
+        $message = str_replace('$decision', $decision, $message);
+        $recievers = array();
+        $reciever1 = $planModificationRequest->getCreatedBy()->getEmail();
+        array_push($recievers, $reciever1);
+        $mservice->sendEmail($mailer, $recievers, $emailTemplate->getName(), $message);
+
+        $this->addFlash("success", "Plan modification request updated successfully.");
+        return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
+    }
+
+    #[Route('/{id}/comment', name: 'project_plan_comment', methods: ['POST'])]
+    public function submitComment( Project $project, Request $request)
+    {
+        $comment = $request->request->get('comment');
+        $entity = $request->request->get('entity');
+        $data = $request->request->get('data');
+        $data_id = $request->request->get('data_id');
+        $entityManager = $this->getDoctrine()->getManager();
+        $projectPlanComment = new ProjectPlanComment();
+        $projectPlanComment->setProject($project);
+        $projectPlanComment->setEntity($entity);
+        $projectPlanComment->setData($data);
+        $projectPlanComment->setDataId($data_id);
+        $projectPlanComment->setComment($comment);
+        $projectPlanComment->setCreatedBy($this->getUser());
+        $projectPlanComment->setCreatedAt(new \DateTime());
+        $entityManager->persist($projectPlanComment);
+        $entityManager->flush();
+
+        $this->addFlash("success", "Added plan comment successfully.");
+        return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
+    }
+
     #[Route('/{id}/edit', name: 'project_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Project $project): Response
     {

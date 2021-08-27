@@ -71,17 +71,17 @@
 									Completed
 								{% endif %}
 
-								{% set difference = date(project_activity.endDate).diff(date(project_activity.createdAt)) %}
+								{% set difference = date(project_activity.endDate).diff(date(project_activity.startDate)) %}
 								{% set leftDays = difference.days / 3 %}
 								{% set p1 = leftDays * 1 %}
 								{% set p1 = '+' ~ p1|round ~' day' %}
-								{% set first = project_activity.createdAt|date_modify(p1)|date('Y-m-d') %}
+								{% set first = project_activity.startDate|date_modify(p1)|date('Y-m-d') %}
 								{% set p2 = leftDays * 2 %}
 								{% set p2 = '+' ~ p2|round ~' day' %}
-								{% set second = project_activity.createdAt|date_modify(p2)|date('Y-m-d') %}
+								{% set second = project_activity.startDate|date_modify(p2)|date('Y-m-d') %}
 								{% set p3 = leftDays * 3 %}
 								{% set p3 = '+' ~ p3|round ~' day' %}
-								{% set third = project_activity.createdAt|date_modify(p3)|date('Y-m-d') %}
+								{% set third = project_activity.startDate|date_modify(p3)|date('Y-m-d') %}
 								{% set today = "now"|date("Y-m-d") %}
 								{% if today < first %}
 									<span class="badge badge-secondary">Initial</span>
@@ -113,12 +113,56 @@
 				</tbody>
 			</table>
 			<div class="navigation">{{ knp_pagination_render(project_activities) }}</div>
+			<table id="activity" class="table2excel d-none">
+					<tr>
+						<td>Milestone</td>
+						<td>Activity Title</td>
+						<td>Description</td>
+						<td>Start Date</td>
+						<td>End Date</td>
+						<td>Order</td>
+						<td>Weight</td>
+					</tr>
+					{% set i = 1 %}
+					{% for project_activity in project.projectActivities %}
+						<tr>
+							<td> {{ project_activity.milestone.name }}</td>
+							<td> {{ project_activity.title }}</td>
+							<td> {{ project_activity.description|raw }}
+							</td>
+							<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }}</td>
+							<td>{{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
+							<td>{{ project_activity.displayOrder }}</td>
+							<td>{{ project_activity.weight }}</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="9">{% trans %}no records found{% endtrans %}</td>
+						</tr>
+					{% endfor %}
+			</table>
 		</div>
 	</div>
+			<button class="btn btn-primary float-right" id="dwnld"><i class="fa fa-download"></i> Download</button>
 	{% if is_granted("project_activity_create") and project.status == 1 or is_granted("manage_project_plan") and project.status == 2 %}
-		<a href="{{ path('project_activity_new', {'project': project.id}) }}" class="btn btn-sm btn-success">
+		<a href="{{ path('project_activity_new', {'project': project.id}) }}" class="btn btn-success">
 			<span class="fa fa-plus"></span>
 			{% trans %}Create new{% endtrans %}</a>
 	{% endif %}
 	<br>
+{% endblock %}
+{% block javascripts %}
+	<script src="{{ asset('assets/plugins/table2excel/jquery.table2excel.min.js')}}"></script>
+<script>
+    $('#dwnld').on('click', function(){
+        
+        $("#activity").table2excel({
+            exclude: ".actions",
+            name: "Worksheet Name",
+            filename: "{{ project.name }} Activities.xls",
+            preserveColors: false
+        });
+    
+    });
+</script>
 {% endblock %}

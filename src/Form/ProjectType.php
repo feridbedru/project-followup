@@ -5,11 +5,12 @@ namespace App\Form;
 use App\Entity\OrganizationUnit;
 use App\Entity\Project;
 use App\Entity\Program;
+use App\Entity\Objective;
+use App\Entity\User;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -39,10 +40,35 @@ class ProjectType extends AbstractType
             ->add('baseline')
             ->add('unit', EntityType::class, [
                 'class' => OrganizationUnit::class,
-                'required' => true
+                'placeholder' => "Choose Accountable unit",
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    $res = $er->createQueryBuilder('u')
+                        ->andWhere('u.name is not NULL');
+                    return $res;
+                }
                 ])
-            ->add('project_manager')
+            ->add('project_manager', EntityType::class, [
+                'class' => User::class,
+                'placeholder' => "Choose Manager",
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    $res = $er->createQueryBuilder('u')
+                        ->andWhere('u.full_name is not NULL');
+                    return $res;
+                }
+            ])
             ->add('planned_value')
+            ->add('objective', EntityType::class, [
+                'class' => Objective::class,
+                'placeholder' => "Choose Objective",
+                'required' => true,
+                'query_builder' => function (EntityRepository $er) {
+                    $res = $er->createQueryBuilder('o')
+                        ->andWhere('o.name is not NULL');
+                    return $res;
+                }
+            ])
         ;
     }
 

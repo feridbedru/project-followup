@@ -128,11 +128,6 @@ class Project
     private $projectCollaborationTopics;
 
     /**
-     * @ORM\OneToMany(targetEntity=Stakeholder::class, mappedBy="project")
-     */
-    private $stakeholder;
-
-    /**
      * @ORM\OneToMany(targetEntity=ProjectStructure::class, mappedBy="project")
      */
     private $projectStructures;
@@ -172,6 +167,22 @@ class Project
      */
     private $planComments;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Objective::class, inversedBy="projects")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $objective;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=Organization::class)
+     */
+    private $stakeholder;
+
+    /**
+     * @ORM\OneToMany(targetEntity=PlanModificationRequest::class, mappedBy="project")
+     */
+    private $planModificationRequests;
+
     public function __construct()
     {
         $this->projectVersions = new ArrayCollection();
@@ -183,12 +194,13 @@ class Project
         $this->projectMembers = new ArrayCollection();
         $this->projectActivities = new ArrayCollection();
         $this->projectCollaborationTopics = new ArrayCollection();
-        $this->stakeholder = new ArrayCollection();
         $this->projectStructures = new ArrayCollection();
         $this->activityChats = new ArrayCollection();
         $this->projectPlanRevisions = new ArrayCollection();
         $this->projectPlanStatuses = new ArrayCollection();
         $this->planComments = new ArrayCollection();
+        $this->stakeholder = new ArrayCollection();
+        $this->planModificationRequests = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -616,36 +628,6 @@ class Project
     }
 
     /**
-     * @return Collection|Stakeholder[]
-     */
-    public function getStakeholder(): Collection
-    {
-        return $this->stakeholder;
-    }
-
-    public function addStakeholder(Stakeholder $stakeholder): self
-    {
-        if (!$this->stakeholder->contains($stakeholder)) {
-            $this->stakeholder[] = $stakeholder;
-            $stakeholder->setProject($this);
-        }
-
-        return $this;
-    }
-
-    public function removeStakeholder(Stakeholder $stakeholder): self
-    {
-        if ($this->stakeholder->removeElement($stakeholder)) {
-            // set the owning side to null (unless already changed)
-            if ($stakeholder->getProject() === $this) {
-                $stakeholder->setProject(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
      * @return Collection|ProjectStructure[]
      */
     public function getProjectStructures(): Collection
@@ -825,6 +807,72 @@ class Project
             // set the owning side to null (unless already changed)
             if ($planComment->getProject() === $this) {
                 $planComment->setProject(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getObjective(): ?Objective
+    {
+        return $this->objective;
+    }
+
+    public function setObjective(?Objective $objective): self
+    {
+        $this->objective = $objective;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Organization[]
+     */
+    public function getStakeholder(): Collection
+    {
+        return $this->stakeholder;
+    }
+
+    public function addStakeholder(Organization $stakeholder): self
+    {
+        if (!$this->stakeholder->contains($stakeholder)) {
+            $this->stakeholder[] = $stakeholder;
+        }
+
+        return $this;
+    }
+
+    public function removeStakeholder(Organization $stakeholder): self
+    {
+        $this->stakeholder->removeElement($stakeholder);
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|PlanModificationRequest[]
+     */
+    public function getPlanModificationRequests(): Collection
+    {
+        return $this->planModificationRequests;
+    }
+
+    public function addPlanModificationRequest(PlanModificationRequest $planModificationRequest): self
+    {
+        if (!$this->planModificationRequests->contains($planModificationRequest)) {
+            $this->planModificationRequests[] = $planModificationRequest;
+            $planModificationRequest->setProject($this);
+        }
+
+        return $this;
+    }
+
+    public function removePlanModificationRequest(PlanModificationRequest $planModificationRequest): self
+    {
+        if ($this->planModificationRequests->removeElement($planModificationRequest)) {
+            // set the owning side to null (unless already changed)
+            if ($planModificationRequest->getProject() === $this) {
+                $planModificationRequest->setProject(null);
             }
         }
 

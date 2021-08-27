@@ -20,10 +20,139 @@
 {% block body %}
 	<div class="row">
 		<div class="col-md-4">
-			<a href="#" class="btn btn-primary btn-block">Export Plan</a>
+			<button onclick="tablesToExcel(['project','milestone','activity','deliverable'], ['Project','Milestone','Activity','Deliverable'], '{{ project.name }}.xls', 'Excel')" class="btn btn-block btn-primary">Export Plan</button>
+			<table id="project" class="table table-responsive table2excel d-none">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Amount</th>
+						<th>Start Date</th>
+						<th>End Date</th>
+						<th>Stakeholders</th>
+						<th>Baseline</th>
+						<th>Planned Value</th>
+						<th>Status</th>
+						<th>Project Manager</th>
+						{% if project.program is not null %}
+							<th>Program</th>
+						{% endif %}
+						<th>Accountable Unit</th>
+						<th>Objective</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>{{ project.name }}</td>
+						<td>{{ project.currency.abbreviation }} {{ project.amount }}</td>
+						<td>{{ project.startDate ? project.startDate|date('Y-m-d') : '' }}</td>
+						<td>{{ project.endDate ? project.endDate|date('Y-m-d') : '' }}</td>
+						<td>
+							{# stakeholder #}
+						</td>
+						<td>{{ project.baseline }}</td>
+						<td>{{ project.plannedValue }}</td>
+						<td>
+							{% if project.status == 1 %}
+								Planning
+							{% elseif project.status == 2 %}
+								Plan Approval Requested
+							{% elseif project.status == 3 %}
+								Plan Approved
+							{% elseif project.status == 4 %}
+								On Implementation
+							{% elseif project.status == 5 %}
+								Completed
+							{% elseif project.status == 6 %}
+								Terminated
+							{% else %}
+								Unknown
+							{% endif %}
+						</td>
+						<td>{{ project.projectManager.fullName }}</td>
+						{% if project.program is not null %}
+							<td> {{ project.program.name }}
+							</td>
+						{% endif %}
+						<td>{{ project.unit.name }}</td>
+						<td>{{ project.objective.name }}</td>
+					</tr>
+				</tbody>
+			</table>
+			<table id="milestone" class="table2excel d-none">
+				<tr>
+					<td>Milestone Name</td>
+					<td>Description</td>
+					<td>Start Date</td>
+					<td>End Date</td>
+					<td>Weight</td>
+					<td>Activities are Equal</td>
+				</tr>
+				{% set i = 1 %}
+				{% for project_milestone in project.projectMilestones %}
+					<tr>
+						<td>{{ project_milestone.name }}</td>
+						<td>{{ project_milestone.description|raw }}</td>
+						<td>{{ project_milestone.startDate|date("M Y") }}</td>
+						<td>{{ project_milestone.endDate|date("M Y") }}</td>
+						<td>{{ project_milestone.weight }}</td>
+						<td>{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
+					</tr>
+				{% endfor %}
+			</table>
+			<table id="activity" class="table2excel d-none">
+				<tr>
+					<td>Milestone</td>
+					<td>Activity Title</td>
+					<td>Description</td>
+					<td>Start Date</td>
+					<td>End Date</td>
+					<td>Order</td>
+					<td>Weight</td>
+				</tr>
+				{% set i = 1 %}
+				{% for project_activity in project.projectActivities %}
+					<tr>
+						<td> {{ project_activity.milestone.name }}</td>
+						<td> {{ project_activity.title }}</td>
+						<td> {{ project_activity.description|raw }}
+						</td>
+						<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }}</td>
+						<td>{{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
+						<td>{{ project_activity.displayOrder }}</td>
+						<td>{{ project_activity.weight }}</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="9">{% trans %}no records found{% endtrans %}</td>
+					</tr>
+				{% endfor %}
+			</table>
+			<table id="deliverable" class="table2excel d-none">
+				<tr>
+					<td>Milestone</td>
+					<td>Deliverable Title</td>
+					<td>Description</td>
+					<td>Weight</td>
+					<td>Planned Delivery Date</td>
+				</tr>
+				{% for project_deliverable in project.projectDeliverables %}
+					<tr>
+						<td>{{ project_deliverable.milestone.name }}</td>
+						<td>{{ project_deliverable.title }}</td>
+						<td>{{ project_deliverable.description|raw }}</td>
+						<td>{{ project_deliverable.percentage }}</td>
+						<td>{{ project_deliverable.plannedDeliveryDate|date("M d Y") }}</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="10">{% trans %}no records found{% endtrans %}</td>
+					</tr>
+				{% endfor %}
+			</table>
 		</div>
-		{% if project.status == 2 and is_granted("manage_project_plan") %}
-			<div class="col-md-4">
+		{% if project.status == 2 %}
+			{% if is_granted("manage_project_plan") %}
+				<div class="col-md-4">
 				<button type="button" class="btn btn-success btn-block small-box-footer" data-toggle="modal" data-target="#decidePlan">
 					Approve / Reject Plan
 				</button>
@@ -58,7 +187,7 @@
 									</select>
 								</div>
 								<div class="form-group d-none" id="reason">
-									<label>Justification<span class="text-danger">
+									<label>Additional Comments<span class="text-danger">
 											*</span>
 									</label>
 									<textarea name="justification" class="form-control"></textarea>
@@ -70,6 +199,80 @@
 					</div>
 				</div>
 			</div>
+				{% if mod is not null and mod.status == 1 %}
+				<div class="col-md-4">
+					<button type="button" class="btn btn-info btn-block" data-toggle="modal" data-target="#approveRequest">
+						Plan Modification Request
+					</button>
+					<div class="modal fade" id="approveRequest" tabindex="-1" role="dialog" aria-labelledby="approveRequestLabel" aria-hidden="true">
+						<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+							<div class="modal-content">
+								<div class="modal-header bg-primary">
+									<h5 class="modal-title" id="approveRequestLabel">Approve / Reject Plan Modification Request</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+								<h5>Reason</h5>
+									<p>{{ mod.comment }}</p>
+									
+									<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_modification_approve',{'id':project.id})}}">
+										<input type="text" value="{{mod.id}}" name="req_id" class="form-control" hidden>
+										<div class="form-group">
+											<label>Decision<span class="text-danger">
+													*</span>
+											</label>
+											<select name="status" id="status" class="form-control" required="required" placeholder="choose one">
+												<option value="" disabled selected>Select your option</option>
+												<option value="3">Reject</option>
+												<option value="2">Accept</option>
+											</select>
+										</div>
+										<div class="form-group d-none" id="additional_comment">
+											<label>Additional Comments<span class="text-danger">
+													*</span>
+											</label>
+											<textarea name="approver_comment" class="form-control"></textarea>
+										</div>
+										<button type="submit" id="submit2" class="btn btn-success btn-block">
+											Approve\Reject Request</button>
+									</form>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				{% endif %}
+			{% elseif mod is null %}
+				<div class="col-md-4">
+				<button type="button" class="btn btn-success btn-block" data-toggle="modal" data-target="#planModReq">Plan Modification Request</button>
+				<div class="modal fade" id="planModReq" tabindex="-1" role="dialog" aria-labelledby="planModReqLabel" aria-hidden="true">
+					<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+						<div class="modal-content">
+							<div class="modal-header bg-primary">
+								<h5 class="modal-title" id="planModReqLabel">Plan Modification Request</h5>
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+									<span aria-hidden="true">&times;</span>
+								</button>
+							</div>
+							<div class="modal-body">
+								<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_modification_request',{'id':project.id})}}">
+									<div class="form-group" id="reason">
+										<label>Comments to the approver<span class="text-danger">
+												*</span>
+										</label>
+										<textarea name="comment" class="form-control"></textarea>
+									</div>
+									<button type="submit" id="submit1" class="btn btn-success btn-block">
+										Submit</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			{% endif %}	
 		{% endif %}
 	</div><br>
 	<div class="row">
@@ -92,6 +295,8 @@
 								<th>Start Date</th>
 								<th>End Date</th>
 								<th>Stakeholders</th>
+								<th>Baseline</th>
+								<th>Planned Value</th>
 								<th>Status</th>
 							</tr>
 						</thead>
@@ -106,6 +311,8 @@
 								<td>
 									{# stakeholder #}
 								</td>
+								<td>{{ project.baseline }}</td>
+								<td>{{ project.plannedValue }}</td>
 								<td>
 									{% if project.status == 1 %}
 										Planning
@@ -126,14 +333,20 @@
 							</tr>
 							<tr>
 								<th>Project Manager</th>
-								<th>Program</th>
+								{% if project.program is not null %}
+									<th>Program</th>
+								{% endif %}
+								<th>Accountable Unit</th>
+								<th>Objective</th>
 							</tr>
 							<tr>
-								<td>{{ project.projectManager.username }}</td>
-								<td>
-									{% if project.program is not null  %} {{ project.program.name }}
-									{% endif %}
-								</td>
+								<td>{{ project.projectManager.fullName }}</td>
+								{% if project.program is not null %}
+									<td> {{ project.program.name }}
+									</td>
+								{% endif %}
+								<td>{{ project.unit.name }}</td>
+								<td>{{ project.objective.name }}</td>
 							</tr>
 						</tbody>
 					</table>
@@ -186,7 +399,66 @@
 												<td>{{ project_activity.startDate ? project_activity.startDate|date('d M Y') : '' }}
 													- {{ project_activity.endDate ? project_activity.endDate|date('d M Y') : '' }}</td>
 												<td>{{ project_activity.weight }}</td>
-												<td><button class="btn btn-sm btn-success">Comment</button></td>
+												<td>
+													<button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#plan3Comment{{project_activity.id}}">
+														Comment
+													</button>
+													<div class="modal fade" id="plan3Comment{{project_activity.id}}" tabindex="-1" role="dialog" aria-labelledby="plan3CommentLabel{{project_activity.id}}" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+															<div class="modal-content">
+																<div class="modal-header bg-primary">
+																	<h5 class="modal-title" id="plan3CommentLabel{{project_activity.id}}">Comment</h5>
+																	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																		<span aria-hidden="true">&times;</span>
+																	</button>
+																</div>
+																<div class="modal-body">
+																	<div class="timeline">
+																		{% set display = '' %}
+																		{% for comment in comments %}
+																			{% if comment.entity == 3 and comment.dataId == project_activity.id %}
+																				{% set display = 'd-block' %}
+																				<div>
+																					<i class="fas fa-user bg-blue"></i>
+																					<div class="timeline-item">
+																						<span class="time">
+																							<i class="fas fa-calendar"></i> {{ comment.createdAt|date("d M Y")}}</span>
+																						<h3 class="timeline-header">
+																							<a href="#">{{ comment.createdBy.fullName }}</a>
+																						</h3>
+
+																						<div class="timeline-body"> {{ comment.comment }}
+																						</div>
+																						<div class="timeline-footer">
+																							<a class="btn btn-warning btn-sm">Edit</a>
+																							<a class="btn btn-danger btn-sm">Delete</a>
+																						</div>
+																					</div>
+																				</div>
+																			{% endif %}
+																		{% endfor %}
+																		<div>
+																			<i class="fas fa-clock bg-gray d-none {{ display }}"></i>
+																		</div>
+																	</div>
+																	<form class="" method="POST" action="{{ path('project_plan_comment',{'id':project.id })}}">
+																		<input type="text" name="data" class="form-control" value="{{ project_activity.title }}" hidden>
+																		<input type="text" name="entity" class="form-control" value="3" hidden>
+																		<input type="text" name="data_id" value="{{ project_activity.id }}" hidden>
+																		<div class="form-group">
+																			<label>Comment<span class="text-danger">
+																					*</span>
+																			</label>
+																			<textarea name="comment" class="form-control"></textarea>
+																		</div>
+																		<button type="submit" id="submit" class="btn btn-success btn-block">
+																			Submit</button>
+																	</form>
+																</div>
+															</div>
+														</div>
+													</div>
+												</td>
 											</tr>
 										{% else %}
 											<tr>
@@ -217,11 +489,70 @@
 												<td>{{ project_milestone.name }}</td>
 												<td>{{ project_milestone.weight }}</td>
 												<td>{{ project_milestone.activitiesEqualWeight ? 'Yes' : 'No' }}</td>
-												<td><button class="btn btn-sm btn-success">Comment</button></td>
+												<td>
+													<button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#plan1Comment{{project_milestone.id}}">
+														Comment
+													</button>
+													<div class="modal fade" id="plan1Comment{{project_milestone.id}}" tabindex="-1" role="dialog" aria-labelledby="plan1CommentLabel{{project_milestone.id}}" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+															<div class="modal-content">
+																<div class="modal-header bg-primary">
+																	<h5 class="modal-title" id="plan1CommentLabel{{project_milestone.id}}">Comment</h5>
+																	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																		<span aria-hidden="true">&times;</span>
+																	</button>
+																</div>
+																<div class="modal-body">
+																	<div class="timeline">
+																		{% set display = '' %}
+																		{% for comment in comments %}
+																			{% if comment.entity == 1 and comment.dataId == project_milestone.id %}
+																				{% set display = 'd-block' %}
+																				<div>
+																					<i class="fas fa-user bg-blue"></i>
+																					<div class="timeline-item">
+																						<span class="time">
+																							<i class="fas fa-calendar"></i> {{ comment.createdAt|date("d M Y")}}</span>
+																						<h3 class="timeline-header">
+																							<a href="#">{{ comment.createdBy.fullName }}</a>
+																						</h3>
+
+																						<div class="timeline-body"> {{ comment.comment }}
+																						</div>
+																						<div class="timeline-footer">
+																							<a class="btn btn-warning btn-sm">Edit</a>
+																							<a class="btn btn-danger btn-sm">Delete</a>
+																						</div>
+																					</div>
+																				</div>
+																			{% endif %}
+																		{% endfor %}
+																		<div>
+																			<i class="fas fa-clock bg-gray d-none {{ display }}"></i>
+																		</div>
+																	</div>
+																	<form class="" method="POST" action="{{ path('project_plan_comment',{'id':project.id })}}">
+																		<input type="text" name="data" class="form-control" value="{{ project_milestone.name }}" hidden>
+																		<input type="text" name="entity" class="form-control" value="1" hidden>
+																		<input type="text" name="data_id" value="{{ project_milestone.id }}" hidden>
+																		<div class="form-group">
+																			<label>Comment<span class="text-danger">
+																					*</span>
+																			</label>
+																			<textarea name="comment" class="form-control"></textarea>
+																		</div>
+																		<button type="submit" id="submit" class="btn btn-success btn-block">
+																			Submit</button>
+																	</form>
+																</div>
+															</div>
+														</div>
+													</div>
+												</td>
 											</tr>
 										{% else %}
 											<tr>
-												<td colspan="7">{% trans %}no records found{% endtrans %}</td>
+												<td colspan="5">{% trans %}no records found{% endtrans %}</td>
 											</tr>
 										{% endfor %}
 									</tbody>
@@ -250,7 +581,66 @@
 												<td>{{ project_deliverable.title }}</td>
 												<td>{{ project_deliverable.plannedDeliveryDate ? project_deliverable.plannedDeliveryDate|date('M d Y') : '' }}</td>
 												<td>{{ project_deliverable.percentage }}</td>
-												<td><button class="btn btn-sm btn-success">Comment</button></td>
+												<td>
+													<button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#plan2Comment{{project_deliverable.id}}">
+														Comment
+													</button>
+													<div class="modal fade" id="plan2Comment{{project_deliverable.id}}" tabindex="-1" role="dialog" aria-labelledby="plan2CommentLabel{{project_deliverable.id}}" aria-hidden="true">
+														<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+															<div class="modal-content">
+																<div class="modal-header bg-primary">
+																	<h5 class="modal-title" id="plan2CommentLabel{{project_deliverable.id}}">Comment</h5>
+																	<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																		<span aria-hidden="true">&times;</span>
+																	</button>
+																</div>
+																<div class="modal-body">
+																	<div class="timeline">
+																		{% set display = '' %}
+																		{% for comment in comments %}
+																			{% if comment.entity == 1 and comment.dataId == project_deliverable.id %}
+																				{% set display = 'd-block' %}
+																				<div>
+																					<i class="fas fa-user bg-blue"></i>
+																					<div class="timeline-item">
+																						<span class="time">
+																							<i class="fas fa-calendar"></i> {{ comment.createdAt|date("d M Y")}}</span>
+																						<h3 class="timeline-header">
+																							<a href="#">{{ comment.createdBy.fullName }}</a>
+																						</h3>
+
+																						<div class="timeline-body"> {{ comment.comment }}
+																						</div>
+																						<div class="timeline-footer">
+																							<a class="btn btn-warning btn-sm">Edit</a>
+																							<a class="btn btn-danger btn-sm">Delete</a>
+																						</div>
+																					</div>
+																				</div>
+																			{% endif %}
+																		{% endfor %}
+																		<div>
+																			<i class="fas fa-clock bg-gray d-none {{ display }}"></i>
+																		</div>
+																	</div>
+																	<form class="" method="POST" action="{{ path('project_plan_comment',{'id':project.id })}}">
+																		<input type="text" name="data" class="form-control" value="{{ project_deliverable.title }}" hidden>
+																		<input type="text" name="entity" class="form-control" value="2" hidden>
+																		<input type="text" name="data_id" value="{{ project_deliverable.id }}" hidden>
+																		<div class="form-group">
+																			<label>Comment<span class="text-danger">
+																					*</span>
+																			</label>
+																			<textarea name="comment" class="form-control"></textarea>
+																		</div>
+																		<button type="submit" id="submit" class="btn btn-success btn-block">
+																			Submit</button>
+																	</form>
+																</div>
+															</div>
+														</div>
+													</div>
+												</td>
 											</tr>
 										{% else %}
 											<tr>
@@ -383,7 +773,7 @@
 												*</span>
 											<div class="row">
 												<div class="col-md-6">
-													<a href="#" class="btn btn-primary btn-block">Export Plan</a>
+													<button onclick="tablesToExcel(['project','milestone','activity','deliverable'], ['Project','Milestone','Activity','Deliverable'], '{{ project.name }}.xls', 'Excel')" class="btn btn-primary btn-block">Export Plan</button>
 												</div>
 												<div class="col-md-6">
 													<button type="submit" class="btn btn-success btn-block">Submit</button>
@@ -409,20 +799,106 @@
 	{% endif %}
 {% endblock %}
 {% block javascripts %}
-	<script>
-		$('#decision').change(function () {
-var val = $(this).val();
-if (val == 1) {
-$("#reason").removeClass("d-none");
-$('#submit').text('Reject Plan');
-$('#submit').removeClass("btn-success");
-$('#submit').addClass("btn-danger");
-} else {
-$("#reason").addClass("d-none");
-$('#submit').text('Approve Plan');
-$('#submit').removeClass("btn-danger");
-$('#submit').addClass("btn-success");
+<script>
+	$('#decision').change(function () {
+		var val = $(this).val();
+		if (val == 1) {
+		$("#reason").removeClass("d-none");
+		$('#submit').text('Reject Plan');
+		$('#submit').removeClass("btn-success");
+		$('#submit').addClass("btn-danger");
+	} else {
+		$("#reason").addClass("d-none");
+		$('#submit').text('Approve Plan');
+		$('#submit').removeClass("btn-danger");
+		$('#submit').addClass("btn-success");
+	}
+	});
+</script>
+<script>
+	$('#status').change(function () {
+		var val = $(this).val();
+		if (val == 3) {
+		$("#additional_comment").removeClass("d-none");
+		$('#submit2').text('Reject Request');
+		$('#submit2').removeClass("btn-success");
+		$('#submit2').addClass("btn-danger");
+	} else {
+		$("#additional_comment").addClass("d-none");
+		$('#submit2').text('Approve Request');
+		$('#submit2').removeClass("btn-danger");
+		$('#submit2').addClass("btn-success");
+	}
+	});
+</script>
+<script src="{{ asset('assets/plugins/table2excel/jquery.table2excel.min.js')}}"></script>
+<script>
+	var tablesToExcel = (function () {
+var uri = 'data:application/vnd.ms-excel;base64,',
+tmplWorkbookXML = '<?xml version="1.0"?><?mso-application progid="Excel.Sheet"?><Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet" xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">' + '<DocumentProperties xmlns="urn:schemas-microsoft-com:office:office"><Author>MinT Project Followup</Author><Created>{created}</Created></DocumentProperties>' + '<Styles>' + '<Style ss:ID="Currency"><NumberFormat ss:Format="Currency"></NumberFormat></Style>' + '<Style ss:ID="Date"><NumberFormat ss:Format="Medium Date"></NumberFormat></Style>' + '</Styles>' + '{worksheets}</Workbook>',
+tmplWorksheetXML = '<Worksheet ss:Name="{nameWS}"><Table>{rows}</Table></Worksheet>',
+tmplCellXML = '<Cell{attributeStyleID}{attributeFormula}><Data ss:Type="{nameType}">{data}</Data></Cell>',
+base64 = function (s) {
+return window.btoa(unescape(encodeURIComponent(s)))
+},
+format = function (s, c) {
+return s.replace(/{(\w+)}/g, function (m, p) {
+return c[p];
+})
 }
-});
-	</script>
+return function (tables, wsnames, wbname, appname) {
+var ctx = "";
+var workbookXML = "";
+var worksheetsXML = "";
+var rowsXML = "";
+
+for (var i = 0; i < tables.length; i++) {
+if (! tables[i].nodeType) 
+tables[i] = document.getElementById(tables[i]);
+
+
+for (var j = 0; j < tables[i].rows.length; j++) {
+rowsXML += '<Row>'
+for (var k = 0; k < tables[i].rows[j].cells.length; k++) {
+var dataType = tables[i].rows[j].cells[k].getAttribute("data-type");
+var dataStyle = tables[i].rows[j].cells[k].getAttribute("data-style");
+var dataValue = tables[i].rows[j].cells[k].getAttribute("data-value");
+dataValue = (dataValue) ? dataValue : tables[i].rows[j].cells[k].innerHTML;
+var dataFormula = tables[i].rows[j].cells[k].getAttribute("data-formula");
+dataFormula = (dataFormula) ? dataFormula : (appname == 'Calc' && dataType == 'DateTime') ? dataValue : null;
+ctx = {
+attributeStyleID: (dataStyle == 'Currency' || dataStyle == 'Date') ? ' ss:StyleID="' + dataStyle + '"' : '',
+nameType: (dataType == 'Number' || dataType == 'DateTime' || dataType == 'Boolean' || dataType == 'Error') ? dataType : 'String',
+data: (dataFormula) ? '' : dataValue,
+attributeFormula: (dataFormula) ? ' ss:Formula="' + dataFormula + '"' : ''
+};
+rowsXML += format(tmplCellXML, ctx);
+}
+rowsXML += '</Row>'
+}
+ctx = {
+rows: rowsXML,
+nameWS: wsnames[i] || 'Sheet' + i
+};
+worksheetsXML += format(tmplWorksheetXML, ctx);
+rowsXML = "";
+}
+
+ctx = {
+created: (new Date()).getTime(),
+worksheets: worksheetsXML
+};
+workbookXML = format(tmplWorkbookXML, ctx);
+
+
+var link = document.createElement("A");
+link.href = uri + base64(workbookXML);
+link.download = wbname || 'Workbook.xls';
+link.target = '_blank';
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+}
+})();
+</script>
 {% endblock %}

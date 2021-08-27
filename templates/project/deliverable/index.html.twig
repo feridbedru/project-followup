@@ -116,6 +116,29 @@
 					<div class="navigation">{{ knp_pagination_render(project_deliverables) }}</div>
 				</div>
 			</div>
+			<table id="deliverable" class="table2excel d-none">
+				<tr>
+					<td>Milestone</td>
+					<td>Deliverable Title</td>
+					<td>Description</td>
+					<td>Weight</td>
+					<td>Planned Delivery Date</td>
+				</tr>
+				{% for project_deliverable in project.projectDeliverables %}
+					<tr>
+						<td>{{ project_deliverable.milestone.name }}</td>
+						<td>{{ project_deliverable.title }}</td>
+						<td>{{ project_deliverable.description|raw }}</td>
+						<td>{{ project_deliverable.percentage }}</td>
+						<td>{{ project_deliverable.plannedDeliveryDate|date("M d Y") }}</td>
+					</tr>
+				{% else %}
+					<tr>
+						<td colspan="10">{% trans %}no records found{% endtrans %}</td>
+					</tr>
+				{% endfor %}
+			</table>
+			<button class="btn btn-primary float-right" id="dwnld"><i class="fa fa-download"></i> Download</button>
 		</div>
 	</div>
 {% endblock %}
@@ -149,4 +172,17 @@
 			});
 		});
 	</script>
+	<script src="{{ asset('assets/plugins/table2excel/jquery.table2excel.min.js')}}"></script>
+<script>
+    $('#dwnld').on('click', function(){
+        
+        $("#deliverable").table2excel({
+            exclude: ".actions",
+            name: "Worksheet Name",
+            filename: "{{ project.name }} Deliverables.xls",
+            preserveColors: false
+        });
+    
+    });
+</script>
 {% endblock %}

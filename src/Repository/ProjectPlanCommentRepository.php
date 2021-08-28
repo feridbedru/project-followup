@@ -19,6 +19,16 @@ class ProjectPlanCommentRepository extends ServiceEntityRepository
         parent::__construct($registry, ProjectPlanComment::class);
     }
 
+    public function findComments($project, $date)
+    {
+        return $this->createQueryBuilder("r")
+            ->Where('r.created_at > :dt')
+            ->andWhere('r.project = :project')
+            ->setParameter('dt', $date)
+            ->setParameter('project', $project)
+            ->getQuery()
+            ->getResult();
+    }
     // /**
     //  * @return ProjectPlanComment[] Returns an array of ProjectPlanComment objects
     //  */

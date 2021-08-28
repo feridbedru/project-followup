@@ -127,9 +127,33 @@ class ProjectController extends AbstractController
         return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
     }
 
-    #[Route('/{id}/approve', name: 'plan_approve_reject', methods: ['POST'])]
-    public function approvePlan( Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    #[Route('/{id}/approve', name: 'plan_approve_reject', methods: ['POST','GET'])]
+    public function approvePlan( Project $project, ProjectRepository $projectRepository, ProjectPlanRevisionRepository $projectPlanRevisionRepository, ProjectPlanCommentRepository $projectPlanCommentRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
     {
+        $lastRevision = $projectPlanRevisionRepository->findLastRevisionDate($project);
+        $lastDate = $lastRevision['created_at']->format('Y-m-d H:i:s');
+        $specific_comments = array();
+        $comments = $projectPlanCommentRepository->findComments($project, $lastDate);
+        foreach ($comments as $comment) {
+            $title = $comment->getData();
+            $entity = $comment->getEntity();
+            $on = '';
+            if ($entity == 1) {
+                $on = 'Milestone';
+            }
+            elseif( $entity == 2){
+                $on = 'Deliverable';
+            }
+            elseif( $entity == 3){
+                $on = 'Activity';
+            }
+            else{
+                $on = 'Project Component';
+            }
+            $feedback = $comment->getComment();
+            $msg = 'On '.$on.' named '.$title.', '.$feedback;
+            array_push($specific_comments, $msg);
+        }
         $decision = $request->request->get('decision');
         $justification = $request->request->get('justification');
         $entityManager = $this->getDoctrine()->getManager();
@@ -156,7 +180,7 @@ class ProjectController extends AbstractController
         $message = str_replace('$project', $projectName, $message);
         $stat = '';
         if ($decision == 1) {
-            $stat = $status. ' for the following reason. '.$justification;
+            $stat = $status. ' for the following reasons. '.$justification.' \n'.implode(",",$specific_comments);
         }
         else{
             $stat = $status;
@@ -271,7 +295,7 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/comment', name: 'project_plan_comment', methods: ['POST'])]
-    public function submitComment( Project $project, Request $request)
+    public function submitComment(Project $project, Request $request)
     {
         $comment = $request->request->get('comment');
         $entity = $request->request->get('entity');

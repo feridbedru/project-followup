@@ -21,7 +21,6 @@ class ActivityProgressRepository extends ServiceEntityRepository
 
     public function findReport( $date)
     {
-        // $date   = new \DateTime($date->format("Y-m-d") . "");
         return $this->createQueryBuilder("r")
             ->Where('r.created_at = :dt')
             ->setParameter('dt', $date)

@@ -25,7 +25,7 @@ class ProjectActivityType extends AbstractType
             ->add('milestone', EntityType::class, [
                 'class' => ProjectMilestone::class,
                 'placeholder' => "Choose milestone",
-                'required' => false,
+                'required' => true,
                 'query_builder' => function (EntityRepository $er) use($project){
                     $res = $er->createQueryBuilder('d')
                         ->andWhere('d.project = :project')

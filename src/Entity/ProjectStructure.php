@@ -61,6 +61,11 @@ class ProjectStructure
      */
     private $projectMembers;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $one_person_only;
+
     public function __construct()
     {
         $this->email_template = new ArrayCollection();
@@ -199,6 +204,18 @@ class ProjectStructure
                 $projectMember->setRole(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getOnePersonOnly(): ?bool
+    {
+        return $this->one_person_only;
+    }
+
+    public function setOnePersonOnly(bool $one_person_only): self
+    {
+        $this->one_person_only = $one_person_only;
 
         return $this;
     }

@@ -29,9 +29,10 @@ class ProjectEmailController extends AbstractController
             $form = $this->createFormBuilder()
                 ->add('projectStructure', EntityType::class, [
                     'class' => ProjectStructure::class, 'placeholder' => "Choose role", 'required' => true, 'expanded' => true, 'multiple' => true,
-                    'query_builder' => function (EntityRepository $er) {
+                    'query_builder' => function (EntityRepository $er) use($project){
                         $res = $er->createQueryBuilder('s')
-                            ->andWhere('s.name is not NULL');
+                            ->andWhere('s.project = :project')
+                            ->setParameter('project', $project);
                         return $res;
                     }
                 ])
@@ -61,7 +62,6 @@ class ProjectEmailController extends AbstractController
 
             $queryBuilder = $emailTemplateRepository->findAll();
             $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 10);
-
             return $this->render('project/email/index.html.twig', [
                 'emails' => $data,
                 'project' => $project,
@@ -74,9 +74,10 @@ class ProjectEmailController extends AbstractController
         $form = $this->createFormBuilder()
             ->add('projectStructure', EntityType::class, [
                 'class' => ProjectStructure::class, 'placeholder' => "Choose role", 'required' => true, 'expanded' => true, 'multiple' => true,
-                'query_builder' => function (EntityRepository $er) {
+                'query_builder' => function (EntityRepository $er) use($project){
                     $res = $er->createQueryBuilder('s')
-                        ->andWhere('s.name is not NULL');
+                        ->andWhere('s.project = :project')
+                        ->setParameter('project', $project);
                     return $res;
                 }
             ])
@@ -102,7 +103,6 @@ class ProjectEmailController extends AbstractController
 
         $queryBuilder = $emailTemplateRepository->findAll();
         $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 10);
-
         return $this->render('project/email/index.html.twig', [
             'emails' => $data,
             'project' => $project,

@@ -27,7 +27,7 @@ class ProjectMembersController extends AbstractController
 
             $id = $request->request->get('edit');
             $projectMember = $projectMembersRepository->findOneBy(['id' => $id]);
-            $form = $this->createForm(ProjectMembersType::class, $projectMember);
+            $form = $this->createForm(ProjectMembersType::class, $projectMember, array('project' => $project->getId()));
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
@@ -50,7 +50,7 @@ class ProjectMembersController extends AbstractController
 
 
         $projectMember = new ProjectMembers();
-        $form = $this->createForm(ProjectMembersType::class, $projectMember);
+        $form = $this->createForm(ProjectMembersType::class, $projectMember, array('project' => $project->getId()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

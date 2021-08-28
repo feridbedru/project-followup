@@ -31,12 +31,14 @@
 									<p>Dashboard</p>
 								</a>
 							</li>
-							<li class="nav-item">
+							{% if project.status != 2 %}
+								<li class="nav-item">
 								<a href="{{ path('project_structure_index', {'project': project.id })}}" class="nav-link">
 									<i class="fas fa-list-alt nav-icon"></i>
 									<p>Structure</p>
 								</a>
 							</li>
+							{% endif %}
 							{% if project.status >= 3 %}
 								<li class="nav-item">
 									<a href="{{ path('project_members_index', {'project': project.id })}}" class="nav-link">
@@ -45,12 +47,14 @@
 									</a>
 								</li>
 							{% endif %}
-							<li class="nav-item">
+							{% if project.status !=2 %}
+								<li class="nav-item">
 								<a href="{{ path('project_resource_index', {'project': project.id })}}" class="nav-link">
 									<i class="fas fa-list-alt nav-icon"></i>
 									<p>Knowledge</p>
 								</a>
 							</li>
+							{% endif %}
 							<li class="nav-item">
 								<a href="{{ path('project_milestone_index', {'project': project.id })}}" class="nav-link">
 									<i class="fas fa-list-alt nav-icon"></i>

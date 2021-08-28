@@ -24,7 +24,7 @@ class ProjectStructureController extends AbstractController
             
             $id = $request->request->get('edit');
             $projectStructure = $projectStructureRepository->findOneBy(['id'=>$id]);
-            $form = $this->createForm(ProjectStructureType::class, $projectStructure);
+            $form = $this->createForm(ProjectStructureType::class, $projectStructure, array('project' => $project->getId()));
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
@@ -47,7 +47,7 @@ class ProjectStructureController extends AbstractController
 
         
         $projectStructure = new ProjectStructure();
-        $form = $this->createForm(ProjectStructureType::class, $projectStructure);
+        $form = $this->createForm(ProjectStructureType::class, $projectStructure, array('project' => $project->getId()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

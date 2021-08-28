@@ -17,6 +17,7 @@ class ProjectMembersType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $project = $options['project'];
         $builder
             ->add('status', ChoiceType::class, [
                 'choices' => [
@@ -32,8 +33,6 @@ class ProjectMembersType extends AbstractType
                 'required' => true,
                 'query_builder' => function (EntityRepository $er) {
                     $res = $er->createQueryBuilder('u')
-                        // ->from('u')
-                        // ->join('')
                         ->leftJoin(ProjectMembers::class, 'p', Join::WITH, 'p.user=u.id');
                     return $res;
                 }
@@ -42,17 +41,18 @@ class ProjectMembersType extends AbstractType
                 'class' => ProjectStructure::class,
                 'placeholder' => "Choose a role",
                 'required' => true,
-                'query_builder' => function (EntityRepository $er) {
+                'query_builder' => function (EntityRepository $er) use($project){
                     $res = $er->createQueryBuilder('r')
-                        ->andWhere('r.name is not NULL');
+                    ->andWhere('r.project = :project')
+                    ->setParameter('project', $project);
                     return $res;
-                    dd($res);
                 }
             ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
+        $resolver->setRequired('project');
         $resolver->setDefaults([
             'data_class' => ProjectMembers::class,
         ]);

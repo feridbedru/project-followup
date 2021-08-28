@@ -48,4 +48,12 @@
 $('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height: 200})
 })
 	</script>
+		<script>
+		$('#project_start_date').change( function() {
+			var val = $(this).val();
+			$("#project_end_date").attr({
+			"min" : val
+			});
+		});
+	</script>
 {% endblock %}

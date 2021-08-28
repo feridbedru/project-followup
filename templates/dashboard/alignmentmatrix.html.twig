@@ -2,45 +2,74 @@
 
 {% block title %}Alignment Matrix
 {% endblock %}
-
+{% block breadcrumb %}
+	<li class="breadcrumb-item active">{% trans %}
+		Alignment Matrix
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Alignment Matrix{% endtrans %}
+{% endblock %}
 {% block body %}
-	<table class="table table-hover">
+            <div class="card">
+              <div class="card-header">
+                <h3 class="card-title">Alignment Matrix</h3>
+              </div>
+              <div class="card-body">
+	<table class="table table-hover  table-bordered table-striped" id="mytable">
 		<thead>
 			<tr>
-				<th scope="col">Objectives</th>
+				<th>Objectives</th>
 				{% for unit in units %}
-					<th scope="col" id="{{ unit.name }}">{{ unit.name }}</th>
+					<th id="U{{ unit.id }}" class="text-center">{{ unit.name }}</th>
 				{% endfor %}
 			</tr>
 		</thead>
 		<tbody>
 			{% for objective in objectives %}
 				<tr>
-					<th scope="row" header="{{ objective.name }}">{{ objective.name }}</td>
-					{% for project in projects %}
-						{% if project.objective.id == objective.id %}
-							<td headers="{{ project.unit.name }} {{ project.objective.name }}"> {{ project.name }}</td>
-            {# {% else %}
-            <td headers=""></td> #}
-						{% endif %}
+					<td id="O{{ objective.id }}"> {{ objective.name }}
+					</td>
+					{% for unit in units %}
+						<td id="O{{ objective.id }}U{{ unit.id }}" class="text-center"> </td>
 					{% endfor %}
 				</tr>
 			{% endfor %}
 		</tbody>
 	</table>
-
-  <table>
-  <tr>
-    <th id="name">Name</th>
-    <th id="email">Email</th>
-    <th id="phone">Phone</th>
-    <th id="addr">Address</th>
-  </tr>
-  <tr>
-    <td headers="name">John Doe</td>
-    <td headers="phone">+45342323</td>
-    <td headers="email">someone@example.com</td>
-    <td headers="addr">Rosevn 56,4300 Sandnes,Norway</td>
-  </tr>
-</table>
+	</div>
+	</div>
+{% endblock %}
+{% block stylesheets %}
+  <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css')}}">
+  <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-responsive/css/responsive.bootstrap4.min.css')}}">
+  <link rel="stylesheet" href="{{ asset('assets/plugins/datatables-buttons/css/buttons.bootstrap4.min.css')}}">
+{% endblock %}
+{% block javascripts %}
+<script>
+	{% for project in projects %}
+		$( "#O{{ project.objective.id }}U{{ project.unit.id }}" ).text( "{{ project.name }}" );
+	{% endfor %}
+</script>
+<script src="{{ asset('assets/plugins/datatables/jquery.dataTables.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/datatables-responsive/js/dataTables.responsive.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/datatables-responsive/js/responsive.bootstrap4.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/datatables-buttons/js/dataTables.buttons.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/datatables-buttons/js/buttons.bootstrap4.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/jszip/jszip.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/pdfmake/pdfmake.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/pdfmake/vfs_fonts.js')}}"></script>
+<script src="{{ asset('assets/plugins/datatables-buttons/js/buttons.html5.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/datatables-buttons/js/buttons.print.min.js')}}"></script>
+<script src="{{ asset('assets/plugins/datatables-buttons/js/buttons.colVis.min.js')}}"></script>
+<script>
+  $(function () {
+    $("#mytable").DataTable({
+      "responsive": true, "lengthChange": false, "autoWidth": false, "paging": false, "searching": false, "info": false,
+      "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
+    }).buttons().container().appendTo('#mytable_wrapper .col-md-6:eq(0)');
+  });
+</script>
 {% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Report
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('report_index')}}">{% trans %}
+			Report
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		Show
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Show Report
+	{% endtrans %}
+{% endblock %}
+{% block body %}
+	{% if is_granted("report_show") %}
+		<div class="card card-info">
+			<div class="card-header">
+				<h5>{% trans %}
+					Show Report
+					{% endtrans %}</h5>
+			</div>
+			<div class="card-body">
+				<table class="table">
+					<tbody>
+						<tr>
+							<th>{% trans %}Name{% endtrans %}</th>
+							<td>{{ report.name }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Description{% endtrans %}</th>
+							<td>{{ report.description }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Query{% endtrans %}</th>
+							<td>{{ report.query }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Active{% endtrans %}</th>
+							<td>{{ report.isActive ? 'Yes' : 'No' }}</td>
+						</tr>
+						<tr>
+							<th>{% trans %}Created At{% endtrans %}</th>
+							<td>{{ report.createdAt ? report.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+						</tr>
+					</tbody>
+				</table>
+
+				<a href="{{ path('report_edit', {'id': report.id}) }}" class="btn btn-warning text-white">{% trans %}Edit{% endtrans %}</a> {{ include('report/_delete_form.html.twig') }}
+			</div>
+		</div>
+		<br>
+	{% endif %}
+{% endblock %}

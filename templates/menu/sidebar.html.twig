@@ -195,6 +195,41 @@
 					</ul>
 				</li>
 				{% endif %}
+				{% if is_granted("report_index") %}
+				<li class="nav-item has-treeview">
+					<a href="#" class="nav-link ">
+						<i class="nav-icon fas fa-file-download"></i>
+						<p>
+							Reports
+							<i class="right fas fa-angle-left"></i>
+						</p>
+					</a>
+					<ul class="nav nav-treeview">
+					{% if is_granted("report_create") %}
+						<li class="nav-item">
+							<a href="{{ path('report_new')}}" class="nav-link ">
+								<i class="fas fa-plus-circle nav-icon"></i>
+								<p>New</p>
+							</a>
+						</li>
+					{% endif %}
+						<li class="nav-item">
+							<a href="{{ path('report_index')}}" class="nav-link">
+								<i class="fas fa-list-alt nav-icon"></i>
+								<p>List</p>
+							</a>
+						</li>
+					</ul>
+				</li>
+				{% endif %}
+				<li class="nav-item">
+					<a href="{{ path('alignment_matrix')}}" class="nav-link">
+						<i class="nav-icon fas fa-th"></i>
+						<p>
+							Alignment Matrix
+						</p>
+					</a>
+				</li>
 				{% if is_granted("currency_index") or is_granted("resource_type_index") or is_granted("sponsor_index") or is_granted("organization_index") or is_granted("organization_unit_index") or is_granted("email_template_index") or is_granted("goal_index")%}
 				<li class="nav-item has-treeview">
 					<a href="#" class="nav-link "> 

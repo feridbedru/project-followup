@@ -1,0 +1,72 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Report index
+{% endblock %}
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('report_index')}}">{% trans %}
+			Report
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		List
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{% trans %}
+	Report{% endtrans %}
+{% endblock %}
+{% block body %}
+	<div class="card card-info">
+		<div class="card-header">
+			<h5>{% trans %}
+				List
+				{% endtrans %}</h5>
+		</div>
+		<div class="card-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>{{ knp_pagination_sortable(reports, 'Name'|trans, 'r.name') }}</th>
+						<th>{{ knp_pagination_sortable(reports, 'Description'|trans, 'r.description') }}</th>
+						<th>{{ knp_pagination_sortable(reports, 'Active'|trans, 'r.is_active') }}</th>
+						<th>{% trans %}Actions{% endtrans %}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% set i = 1 %}
+					{% for report in reports %}
+						<tr>
+							<td>{{ i }}
+								{% set i = i+1 %}
+							</td>
+							<td>{{ report.name }}</td>
+							<td>{{ report.description }}</td>
+							<td>{{ report.isActive ? 'Yes' : 'No' }}</td>
+							<td>
+								{% if is_granted("report_show") %}
+									<a href="{{ path('report_show', {'id': report.id}) }}" class="btn btn-sm btn-primary">{% trans %}Show{% endtrans %}</a>
+								{% endif %}
+								{% if is_granted("report_edit") %}
+									<a href="{{ path('report_edit', {'id': report.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
+								{% endif %}
+							</td>
+						</tr>
+					{% else %}
+						<tr>
+							<td colspan="7">{% trans %}no records found{% endtrans %}</td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+			<div class="navigation">{{ knp_pagination_render(reports) }}</div>
+		</div>
+	</div>
+	{% if is_granted("report_create") %}
+		<a href="{{ path('report_new') }}" class="btn btn-sm btn-success">
+			<span class="fa fa-plus"></span>
+			{% trans %}Create new{% endtrans %}</a>
+	{% endif %}
+	<br>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Report{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="{{path('report_index')}}">{% trans %} Report {% endtrans %}</a>
+</li>
+<li class="breadcrumb-item active">{% trans %} New {% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}{% trans %} New Report {% endtrans %}
+{% endblock %}
+{% block body %}
+{% if is_granted("report_create") %}
+    <div class="card card-info">
+        <div class="card-header">
+            <h5>{% trans %} New Report{% endtrans %}</h5>
+        </div>
+        <div class="card-body">
+            {{ include('report/_form.html.twig') }}
+        </div>
+    </div>
+<br>
+{% endif %}
+{% endblock %}

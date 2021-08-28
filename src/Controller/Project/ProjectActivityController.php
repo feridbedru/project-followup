@@ -3,6 +3,8 @@
 namespace App\Controller\Project;
 
 use App\Entity\ProjectActivity;
+use App\Entity\Project;
+use App\Entity\ProjectMilestone;
 use App\Entity\Log;
 use App\Form\ProjectActivityType;
 use App\Repository\ProjectRepository;
@@ -29,7 +31,7 @@ class ProjectActivityController extends AbstractController
     }
 
     #[Route('/new', name: 'project_activity_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, ProjectRepository $projectRepository, ProjectActivityRepository $projectActivityRepository): Response
+    public function new(Request $request, ProjectRepository $projectRepository): Response
     {
         $this->denyAccessUnlessGranted('project_activity_create');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
@@ -107,8 +109,7 @@ class ProjectActivityController extends AbstractController
         return $this->redirectToRoute('project_activity_index', ["project" => $project->getId()]);
     }
 
-
-    #[Route('/{id}/weight', name: 'project_activity_data', methods: ['POST','GET'])]
+    #[Route('/{id}/weight', name: 'project_activity_data', methods: ['POST'])]
     public function weight(Request $request, ProjectActivityRepository $projectActivityRepository): Response
     {
         $routeParams = $request->attributes->get('_route_params');
@@ -123,5 +124,15 @@ class ProjectActivityController extends AbstractController
         $sum = array_sum($sum);
         $total = 100 - $sum;
         return new Response(json_encode($total));
+    }
+
+    #[Route('/order/{milestone}', name: 'project_activity_order', methods: ['POST','GET'])]
+    public function order(Request $request, ProjectActivityRepository $projectActivityRepository): Response
+    {
+        $routeParams = $request->attributes->get('_route_params');
+        $project = $routeParams['project'];
+        $projectMilestone = $routeParams['milestone'];
+        $max = $projectActivityRepository->findMaxOrder($project, $projectMilestone);
+        return new Response(json_encode($max));
     }
 }

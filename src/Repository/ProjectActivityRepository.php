@@ -19,16 +19,18 @@ class ProjectActivityRepository extends ServiceEntityRepository
         parent::__construct($registry, ProjectActivity::class);
     }
     
-    public function findMaxOrder($milestone)
+    public function findMaxOrder($project,$milestone)
     {
         return $this->createQueryBuilder('p')
-            ->select('p, MAX(p.display_order) AS max_order')
+            ->select('MAX(p.display_order) AS max_order')
             ->where('p.milestone = :val')
+            ->andWhere('p.project = :val2')
             ->setParameter('val', $milestone)
-            ->orderBy('p.display_order', 'DES')
-            ->setMaxResults(5)
+            ->setParameter('val2', $project)
+            ->orderBy('p.display_order', 'DESC')
+            ->groupBy('p.milestone')
             ->getQuery()
-            ->getResult()
+            ->getSingleResult()
         ;
     }
     

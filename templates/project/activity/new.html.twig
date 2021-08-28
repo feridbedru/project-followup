@@ -95,8 +95,18 @@ $('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height:
 						"max" : response
 					});
 				}
-			});
-					
+			});	
+			var urlr = "{{ path('project_activity_order', {'project': project.id, 'milestone': 'milestone_id'})}}";
+			urlr = urlr.replace("milestone_id", milestone_id);
+			$.ajax({
+				type: "POST",
+				url: urlr,
+				dataType: "json",
+				success: function(response) {
+					console.log(response);
+					$('#project_activity_display_order').val(response['max_order']);
+				}
+			});	
 		});
 		$('#project_activity_start_date').change( function() {
 			var val = $(this).val();

@@ -19,6 +19,19 @@ class ProjectPlanRevisionRepository extends ServiceEntityRepository
         parent::__construct($registry, ProjectPlanRevision::class);
     }
 
+    public function findMax($project=null)
+    {
+        return $this->createQueryBuilder('p')
+            ->select('MAX(p.revision_id) AS max')
+            ->andWhere("p.project = :project")
+            ->setParameter('project', $project)
+            ->orderBy('p.revision_id', 'DESC')
+            ->groupBy('p.project')
+            ->getQuery()
+            ->getSingleResult()
+        ;
+    }
+
     // /**
     //  * @return ProjectPlanRevision[] Returns an array of ProjectPlanRevision objects
     //  */

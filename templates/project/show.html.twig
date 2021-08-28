@@ -757,10 +757,14 @@
 										</div>
 										<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('plan_approve_request',{'id':project.id})}}">
 											<div class="form-group">
-												<label>Revision ID<span class="text-danger">
+												<label>Revision Type<span class="text-danger">
 														*</span>
 												</label>
-												<input type="text" name="revision_id" class="form-control" required="required" placeholder="enter the revision id">
+												<select name="revision_type" id="revision_type" class="form-control" required="required" placeholder="choose one">
+													<option value="" disabled selected>Select your option</option>
+													<option value="1">Minor</option>
+													<option value="2">Major</option>
+												</select>
 											</div>
 											<div class="form-group">
 												<label>Revision Detail</label>

@@ -14,6 +14,7 @@ use App\Repository\EmailTemplateRepository;
 use App\Repository\PlanModificationRequestRepository;
 use App\Repository\ProjectPlanCommentRepository;
 use App\Repository\ProjectResourceRepository;
+use App\Repository\ProjectPlanRevisionRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -85,9 +86,22 @@ class ProjectController extends AbstractController
         ]);
     }
     #[Route('/{id}/status', name: 'plan_approve_request', methods: ['POST'])]
-    public function requestApproval( Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    public function requestApproval( Project $project, ProjectPlanRevisionRepository $projectPlanRevisionRepository, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
     {
-        $revision_id =  $request->request->get('revision_id');
+        $max = $projectPlanRevisionRepository->findMax($project);
+        $max_rev = $max['max'];
+        if($max_rev == null ){
+            $max_rev = 0;
+        }
+        $revision_id = '';
+        $revision_type = $request->request->get('revision_type');
+        if($revision_type == 2){
+            $revision_id = $max_rev + 1;
+            $revision_id = round($revision_id);
+        }
+        else{
+            $revision_id = $max_rev + 0.1;
+        }
         $revision_detail = $request->request->get('revision_detail');
         $entityManager = $this->getDoctrine()->getManager();
         $projectPlanRevision = new ProjectPlanRevision();

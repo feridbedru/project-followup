@@ -86,7 +86,33 @@
 									<td>{{ project_deliverable.deliveryDate ? project_deliverable.deliveryDate|date('M d Y') : '' }}</td>
 									<td>
 										{% if project.status >= 3 %}
-											<a href="#" class="btn btn-sm btn-success">Add Delivered Date</a>
+											<button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#addDeliveryDate">
+												Add Delivery Date
+											</button>
+											<div class="modal fade" id="addDeliveryDate" tabindex="-1" role="dialog" aria-labelledby="addDeliveryDateLabel" aria-hidden="true">
+												<div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+													<div class="modal-content">
+														<div class="modal-header bg-primary">
+															<h5 class="modal-title" id="addDeliveryDateLabel">Add Delivery Date</h5>
+															<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+																<span aria-hidden="true">&times;</span>
+															</button>
+														</div>
+														<div class="modal-body">
+															<form class="d-inline ml-2 mr-2 mb-5" method="POST" action="{{ path('project_deliverable_delivery_date',{'id': project_deliverable.id, 'project': project.id})}}">
+																<div class="form-group">
+																	<label>Delivered Date<span class="text-danger">
+																			*</span>
+																	</label>
+																	<input type="date" required="required" name="delivered_date" id="delivered_date" class="form-control">
+																</div>
+																<button type="submit" id="submit" class="btn btn-success btn-block">
+																	Submit</button>
+															</form>
+														</div>
+													</div>
+												</div>
+											</div>
 										{% endif %}
 										{% if is_granted("project_deliverable_edit")  and project.status == 1 or is_granted("manage_project_plan") and project.status == 2 %}
 											<form class="d-inline" method="post">
@@ -138,7 +164,9 @@
 					</tr>
 				{% endfor %}
 			</table>
-			<button class="btn btn-primary float-right" id="dwnld"><i class="fa fa-download"></i> Download</button>
+			<button class="btn btn-primary float-right" id="dwnld">
+				<i class="fa fa-download"></i>
+				Download</button>
 		</div>
 	</div>
 {% endblock %}
@@ -149,40 +177,32 @@
 	<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
 	<script>
 		$(function () {
-		$('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height: 200})
-		})
+$('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height: 200})
+})
 	</script>
 	<script>
 		$('#project_deliverable_milestone').on('select2:select', function (e) {
-			var milestone_id = e.params.data.id;
-			var project = {{ project.id }}
-			var url = "{{ path('project_milestone_data', {'project': project.id, 'id': 'milestone_id'})}}";
-			url = url.replace("milestone_id", milestone_id);
-			$.ajax({
-				type: "POST",
-				url: url,
-				dataType: "json",
-				success: function(response) {
-					console.log(response);
-					$("#project_deliverable_planned_delivery_date").attr({
-						"min" : response[0],
-						"max" : response[1]
-					});
-				}
-			});
-		});
+var milestone_id = e.params.data.id;
+var project = {{ project.id }}
+var url = "{{ path('project_milestone_data', {'project': project.id, 'id': 'milestone_id'}) }}";
+url = url.replace("milestone_id", milestone_id);
+$.ajax({
+type: "POST",
+url: url,
+dataType: "json",
+success: function (response) {
+console.log(response);
+$("#project_deliverable_planned_delivery_date").attr({"min": response[0], "max": response[1]});
+}
+});
+});
 	</script>
 	<script src="{{ asset('assets/plugins/table2excel/jquery.table2excel.min.js')}}"></script>
-<script>
-    $('#dwnld').on('click', function(){
-        
-        $("#deliverable").table2excel({
-            exclude: ".actions",
-            name: "Worksheet Name",
-            filename: "{{ project.name }} Deliverables.xls",
-            preserveColors: false
-        });
-    
-    });
-</script>
+	<script>
+		$('#dwnld').on('click', function () {
+
+$("#deliverable").table2excel({exclude: ".actions", name: "Worksheet Name", filename: "{{ project.name }}Deliverables.xls", preserveColors: false});
+
+});
+	</script>
 {% endblock %}

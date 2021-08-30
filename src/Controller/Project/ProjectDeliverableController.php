@@ -113,4 +113,23 @@ class ProjectDeliverableController extends AbstractController
 
         return $this->redirectToRoute('project_deliverable_index', ["project" => $project->getId()]);
     }
+
+    #[Route('/{id}/deliverydate', name: 'project_deliverable_delivery_date', methods: ['POST'])]
+    public function deliverydate(Request $request, ProjectDeliverableRepository $projectDeliverableRepository, ProjectRepository $projectRepository): Response
+    {
+        $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $id = $request->attributes->get("id");
+        $date = $request->request->get("delivered_date");
+        $delivered_date = new \DateTime($date);
+        $entityManager = $this->getDoctrine()->getManager();
+        // dd($delivered_date);
+        $projectDeliverable = $projectDeliverableRepository->findOneBy(['id' => $id]);
+        $projectDeliverable->setDeliveryDate($delivered_date);
+        $entityManager->persist($projectDeliverable);
+        $entityManager->flush();
+        
+        $this->addFlash("success", "Added project deliverable's delivery date successfully.");
+
+        return $this->redirectToRoute('project_deliverable_index', ["project" => $project->getId()]);
+    }
 }

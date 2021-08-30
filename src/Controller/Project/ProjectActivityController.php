@@ -48,6 +48,12 @@ class ProjectActivityController extends AbstractController
             $projectActivity->setProject($project);
             $entityManager->persist($projectActivity);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectActivity->getId(), "ProjectActivity", "CREATE", $projectActivity);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","created project activity successfully.");
 
             return $this->redirectToRoute('project_activity_index', ["project" => $project->getId()]);
@@ -76,11 +82,16 @@ class ProjectActivityController extends AbstractController
     {
         $this->denyAccessUnlessGranted('project_activity_edit');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $original = clone $project;
         $form = $this->createForm(ProjectActivityType::class, $projectActivity, array('project' => $project->getId()));
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectActivity->getId(), "ProjectActivity", "UPDATE", $original, $projectActivity);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","Updated project activity successfully.");
 
             return $this->redirectToRoute('project_activity_index', ["project" => $project->getId()]);
@@ -101,6 +112,9 @@ class ProjectActivityController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$projectActivity->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectActivity);
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectActivity->getId(), "ProjectActivity", "DELETE", $projectActivity);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
 

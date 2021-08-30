@@ -37,6 +37,12 @@ class EmailTemplateController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($emailTemplate);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$emailTemplate->getId(),"EmailTemplate","CREATE", $emailTemplate);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","created email_template successfully.");
 
             return $this->redirectToRoute('email_template_index');
@@ -62,10 +68,16 @@ class EmailTemplateController extends AbstractController
     {
         $this->denyAccessUnlessGranted('email_template_edit');
         $form = $this->createForm(EmailTemplateType::class, $emailTemplate);
+        $original = clone $emailTemplate;
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$emailTemplate->getId(),"EmailTemplate","UPDATE", $original ,$emailTemplate);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","Updated email_template successfully.");
 
             return $this->redirectToRoute('email_template_index');
@@ -84,6 +96,9 @@ class EmailTemplateController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$emailTemplate->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($emailTemplate);
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$emailTemplate->getId(),"EmailTemplate","DELETE", $emailTemplate);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
 

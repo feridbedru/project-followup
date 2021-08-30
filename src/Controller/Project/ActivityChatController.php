@@ -7,7 +7,6 @@ use App\Entity\Log;
 use App\Form\ActivityChatType;
 use App\Repository\ActivityChatRepository;
 use App\Repository\ProjectRepository;
-use App\Repository\ProjectActivityRepository;
 use App\Repository\ProjectCollaborationTopicRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,11 +26,16 @@ class ActivityChatController extends AbstractController
             
             $id = $request->request->get('edit');
             $activityChat = $activityChatRepository->findOneBy(['id'=>$id]);
+            $original = clone $activityChat;
             $form = $this->createForm(ActivityChatType::class, $activityChat);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$activityChat->getId(),"ActivityChat","UPDATE",$original, $activityChat);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success","Updated activity_chat successfully.");
 
                 return $this->redirectToRoute('activity chat_index', ["project" => $project->getId(), "topic" => $topic->getId()]);
@@ -62,6 +66,12 @@ class ActivityChatController extends AbstractController
             $activityChat->setPostedBy($this->getUser());
             $entityManager->persist($activityChat);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$activityChat->getId(),"ActivityChat","CREATE", $activityChat);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","Registered activity chat successfully.");
 
             return $this->redirectToRoute('activity_chat_index', ["project" => $project->getId(), "topic" => $topic->getId()]);
@@ -90,6 +100,11 @@ class ActivityChatController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$activityChat->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($activityChat);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$activityChat->getId(),"ActivityChat","DELETE", $activityChat);
+            $entityManager->persist($log);
+
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted activity chat successfully.");

@@ -21,13 +21,18 @@ class ResourceTypeController extends AbstractController
         if($request->request->get('edit')){
             $id = $request->request->get('edit');
             $resourceType = $resourceTypeRepository->findOneBy(['id'=>$id]);
+            $original = clone $resourceType;
             $form = $this->createForm(ResourceTypeType::class, $resourceType);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$resourceType->getId(),"ResourceType","UPDATE",$original, $resourceType);
+                $entityManager->persist($log);
+
                 $entityManager->flush();
-                
+
                 $this->addFlash("success","Updated resource type successfully.");
 
                 return $this->redirectToRoute('resource_type_index');
@@ -80,7 +85,6 @@ class ResourceTypeController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$resourceType->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($resourceType);
-            $entityManager->flush();
 
             $log = new Log();
             $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$resourceType->getId(),"ResourceType","DELETE",$resourceType);

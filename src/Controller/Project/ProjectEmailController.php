@@ -25,6 +25,7 @@ class ProjectEmailController extends AbstractController
         if ($request->request->get('edit')) {
             $id = $request->request->get('edit');
             $template = $emailTemplateRepository->findOneBy(['id' => $request->request->get('edit')]);
+            $original = clone $template;
             $em = $this->getDoctrine()->getManager();
             $form = $this->createFormBuilder()
                 ->add('projectStructure', EntityType::class, [
@@ -57,7 +58,11 @@ class ProjectEmailController extends AbstractController
                 foreach ($structures as $structure) {
                     $template->addProjectStructure($structure);
                 }
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $template->getId(), "ProjectEmail", "UPDATE", $original, $template);
+                $entityManager->persist($log);
+                $entityManager->flush();
             }
 
             $queryBuilder = $emailTemplateRepository->findAll();
@@ -99,6 +104,12 @@ class ProjectEmailController extends AbstractController
                 $template->addProjectStructure($structure);
             }
             $this->getDoctrine()->getManager()->flush();
+
+            $entityManager = $this->getDoctrine()->getManager();
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $template->getId(), "ProjectEmail", "CREATE", $template);
+            $entityManager->persist($log);
+            $entityManager->flush();
         }
 
         $queryBuilder = $emailTemplateRepository->findAll();

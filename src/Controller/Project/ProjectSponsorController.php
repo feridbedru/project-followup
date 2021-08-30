@@ -22,11 +22,16 @@ class ProjectSponsorController extends AbstractController
             
             $id = $request->request->get('edit');
             $projectSponsor = $projectSponsorRepository->findOneBy(['id'=>$id]);
+            $original = clone $projectSponsor;
             $form = $this->createForm(ProjectSponsorType::class, $projectSponsor);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectSponsor->getId(), "ProjectSponsor", "UPDATE", $original, $projectSponsor);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success","Updated project_sponsor successfully.");
 
                 return $this->redirectToRoute('project_sponsor_index');
@@ -51,6 +56,11 @@ class ProjectSponsorController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($projectSponsor);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectSponsor->getId(), "ProjectSponsor", "CREATE", $projectSponsor);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","Registered project_sponsor successfully.");
 
             return $this->redirectToRoute('project_sponsor_index');
@@ -74,6 +84,10 @@ class ProjectSponsorController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$projectSponsor->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectSponsor);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectSponsor->getId(), "ProjectSponsor", "DELETE", $projectSponsor);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted project_sponsor successfully.");

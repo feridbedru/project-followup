@@ -33,11 +33,16 @@ class ProjectMilestoneController extends AbstractController
 
             $id = $request->request->get('edit');
             $projectMilestone = $projectMilestoneRepository->findOneBy(['id' => $id]);
+            $original = clone $projectMilestone;
             $form = $this->createForm(ProjectMilestoneType::class, $projectMilestone);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectMilestone->getId(), "ProjectMilestone", "UPDATE", $original, $projectMilestone);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success", "Updated project milestone successfully.");
 
                 return $this->redirectToRoute('project_milestone_index', ["project" => $project->getId()]);
@@ -67,6 +72,11 @@ class ProjectMilestoneController extends AbstractController
             $projectMilestone->setProject($project);
             $entityManager->persist($projectMilestone);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectMilestone->getId(), "ProjectMilestone", "CREATE", $projectMilestone);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success", "Registered project milestone successfully.");
 
             return $this->redirectToRoute('project_milestone_index', ["project" => $project->getId()]);
@@ -91,6 +101,10 @@ class ProjectMilestoneController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $projectMilestone->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectMilestone);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectMilestone->getId(), "ProjectMilestone", "DELETE", $projectMilestone);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success", "Deleted project_milestone successfully.");

@@ -22,11 +22,16 @@ class GoalController extends AbstractController
             
             $id = $request->request->get('edit');
             $goal = $goalRepository->findOneBy(['id'=>$id]);
+            $original = clone $goal;
             $form = $this->createForm(GoalType::class, $goal);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$goal->getId(),"Goal","UPDATE",$original, $goal);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success","Updated goal successfully.");
 
                 return $this->redirectToRoute('goal_index');
@@ -51,6 +56,11 @@ class GoalController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($goal);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$goal->getId(),"Goal","CREATE", $goal);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","Registered goal successfully.");
 
             return $this->redirectToRoute('goal_index');
@@ -74,6 +84,11 @@ class GoalController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$goal->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($goal);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$goal->getId(),"Goal"," DELETE", $goal);
+            $entityManager->persist($log);
+
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted goal successfully.");

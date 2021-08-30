@@ -27,11 +27,16 @@ class ProjectMembersController extends AbstractController
 
             $id = $request->request->get('edit');
             $projectMember = $projectMembersRepository->findOneBy(['id' => $id]);
+            $original = clone $projectMember;
             $form = $this->createForm(ProjectMembersType::class, $projectMember, array('project' => $project->getId()));
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectMember->getId(), "ProjectMember", "UPDATE", $original, $projectMember);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success", "Updated project members successfully.");
 
                 return $this->redirectToRoute('project_members_index', ["project" => $project->getId()]);
@@ -60,6 +65,11 @@ class ProjectMembersController extends AbstractController
             $projectMember->setCreatedAt(new \DateTime());
             $projectMember->setProject($project);
             $entityManager->persist($projectMember);
+            $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectMember->getId(), "ProjectMember", "CREATE", $projectMember);
+            $entityManager->persist($log);
             $entityManager->flush();
             $this->addFlash("success", "Registered project members successfully.");
 
@@ -119,6 +129,9 @@ class ProjectMembersController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $projectMember->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectMember);
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectMember->getId(), "ProjectMember", "DELETE", $projectMember);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success", "Deleted project members successfully.");

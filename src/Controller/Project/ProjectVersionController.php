@@ -18,22 +18,27 @@ class ProjectVersionController extends AbstractController
     #[Route('/', name: 'project_version_index', methods: ['GET', 'POST'])]
     public function index(ProjectVersionRepository $projectVersionRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        if($request->request->get('edit')){
-            
+        if ($request->request->get('edit')) {
+
             $id = $request->request->get('edit');
-            $projectVersion = $projectVersionRepository->findOneBy(['id'=>$id]);
+            $projectVersion = $projectVersionRepository->findOneBy(['id' => $id]);
+            $original = clone $projectVersion;
             $form = $this->createForm(ProjectVersionType::class, $projectVersion);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
-                $this->addFlash("success","Updated project version successfully.");
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectVersion->getId(), "ProjectVersion", "UPDATE", $original, $projectVersion);
+                $entityManager->persist($log);
+                $entityManager->flush();
+                $this->addFlash("success", "Updated project version successfully.");
 
                 return $this->redirectToRoute('project_version_index');
             }
 
             $queryBuilder = $projectVersionRepository->findProjectVersion($request->query->get('search'));
-            $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 5 );
+            $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 5);
 
             return $this->render('project/version/index.html.twig', [
                 'project_versions' => $data,
@@ -42,7 +47,7 @@ class ProjectVersionController extends AbstractController
             ]);
         }
 
-        
+
         $projectVersion = new ProjectVersion();
         $form = $this->createForm(ProjectVersionType::class, $projectVersion);
         $form->handleRequest($request);
@@ -51,32 +56,40 @@ class ProjectVersionController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($projectVersion);
             $entityManager->flush();
-            $this->addFlash("success","Registered project version successfully.");
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectVersion->getId(), "ProjectVersion", "CREATE", $projectVersion);
+            $entityManager->persist($log);
+            $entityManager->flush();
+            $this->addFlash("success", "Registered project version successfully.");
 
             return $this->redirectToRoute('project_version_index');
         }
 
         $queryBuilder = $projectVersionRepository->findProjectVersion($request->query->get('search'));
-        $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 5 );
+        $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 5);
 
         return $this->render('project/version/index.html.twig', [
             'project_versions' => $data,
             'form' => $form->createView(),
             'edit' => false
         ]);
-
     }
 
     #[Route('/{id}', name: 'project_version_delete', methods: ['POST'])]
     public function delete(Request $request, ProjectVersion $projectVersion): Response
     {
         $this->denyAccessUnlessGranted('project_version_delete');
-        if ($this->isCsrfTokenValid('delete'.$projectVersion->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $projectVersion->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectVersion);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectVersion->getId(), "ProjectVersion", "DELETE", $projectVersion);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
-        $this->addFlash("success","Deleted project version successfully.");
+        $this->addFlash("success", "Deleted project version successfully.");
 
         return $this->redirectToRoute('project_version_index');
     }

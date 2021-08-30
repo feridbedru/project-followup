@@ -23,11 +23,16 @@ class ProjectResourceController extends AbstractController
         if($request->request->get('edit')){
             $id = $request->request->get('edit');
             $projectResource = $projectResourceRepository->findOneBy(['id'=>$id]);
+            $original = clone $projectResource;
             $form = $this->createForm(ProjectResourceType::class, $projectResource);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectResource->getId(), "ProjectResource", "UPDATE", $original, $projectResource);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success","Updated project_resource successfully.");
 
                 return $this->redirectToRoute('project_resource_index', ["project" => $project->getId()]);
@@ -61,6 +66,12 @@ class ProjectResourceController extends AbstractController
             $projectResource->setFile($newFilename);
             $entityManager->persist($projectResource);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectResource->getId(), "ProjectResource", "CREATE", $projectResource);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","Registered project resource successfully.");
 
             return $this->redirectToRoute('project_resource_index', ["project" => $project->getId()]);
@@ -86,6 +97,10 @@ class ProjectResourceController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$projectResource->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectResource);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectResource->getId(), "ProjectResource", "DELETE", $projectResource);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted project resource successfully.");

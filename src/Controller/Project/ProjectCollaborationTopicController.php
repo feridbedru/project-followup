@@ -20,22 +20,27 @@ class ProjectCollaborationTopicController extends AbstractController
     public function index(ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-        if($request->request->get('edit')){
-            
+        if ($request->request->get('edit')) {
+
             $id = $request->request->get('edit');
-            $projectCollaborationTopic = $projectCollaborationTopicRepository->findOneBy(['id'=>$id]);
+            $projectCollaborationTopic = $projectCollaborationTopicRepository->findOneBy(['id' => $id]);
+            $original = clone $projectCollaborationTopic;
             $form = $this->createForm(ProjectCollaborationTopicType::class, $projectCollaborationTopic);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
-                $this->addFlash("success","Updated project collaboration topic successfully.");
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectCollaborationTopic->getId(), "ProjectCollaborationTopic", "UPDATE", $original, $projectCollaborationTopic);
+                $entityManager->persist($log);
+                $entityManager->flush();
+                $this->addFlash("success", "Updated project collaboration topic successfully.");
 
                 return $this->redirectToRoute('project_collaboration_topic_index', ["project" => $project->getId()]);
             }
 
             $queryBuilder = $projectCollaborationTopicRepository->findBy(['project' => $project]);
-            $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
+            $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 10);
 
             return $this->render('project/collaboration_topic/index.html.twig', [
                 'project_collaboration_topics' => $data,
@@ -45,7 +50,7 @@ class ProjectCollaborationTopicController extends AbstractController
             ]);
         }
 
-        
+
         $projectCollaborationTopic = new ProjectCollaborationTopic();
         $form = $this->createForm(ProjectCollaborationTopicType::class, $projectCollaborationTopic);
         $form->handleRequest($request);
@@ -57,13 +62,18 @@ class ProjectCollaborationTopicController extends AbstractController
             $projectCollaborationTopic->setCreatedBy($this->getUser());
             $entityManager->persist($projectCollaborationTopic);
             $entityManager->flush();
-            $this->addFlash("success","Registered project collaboration topic successfully.");
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectCollaborationTopic->getId(), "ProjectCollaborationTopic", "CREATE", $projectCollaborationTopic);
+            $entityManager->persist($log);
+            $entityManager->flush();
+            $this->addFlash("success", "Registered project collaboration topic successfully.");
 
             return $this->redirectToRoute('project_collaboration_topic_index', ["project" => $project->getId()]);
         }
 
         $queryBuilder = $projectCollaborationTopicRepository->findBy(['project' => $project]);
-        $data = $paginator->paginate($queryBuilder, $request->query->getInt('page',1), 10 );
+        $data = $paginator->paginate($queryBuilder, $request->query->getInt('page', 1), 10);
 
         return $this->render('project/collaboration_topic/index.html.twig', [
             'project_collaboration_topics' => $data,
@@ -71,7 +81,6 @@ class ProjectCollaborationTopicController extends AbstractController
             'edit' => false,
             'project' => $project
         ]);
-
     }
 
     #[Route('/{id}', name: 'project_collaboration_topic_delete', methods: ['POST'])]
@@ -79,12 +88,15 @@ class ProjectCollaborationTopicController extends AbstractController
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $this->denyAccessUnlessGranted('project_collaboration_topic_delete');
-        if ($this->isCsrfTokenValid('delete'.$projectCollaborationTopic->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $projectCollaborationTopic->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectCollaborationTopic);
-            $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectCollaborationTopic->getId(), "ProjectCollaborationTopic", "DELETE", $projectCollaborationTopic);
+            $entityManager->persist($log);
         }
-        $this->addFlash("success","Deleted project collaboration topic successfully.");
+        $this->addFlash("success", "Deleted project collaboration topic successfully.");
 
         return $this->redirectToRoute('project_collaboration_topic_index', ["project" => $project->getId()]);
     }

@@ -4,8 +4,6 @@ namespace App\Controller\Project;
 
 use App\Entity\ActivityUser;
 use App\Entity\Log;
-use App\Entity\ProjectActivity;
-use App\Entity\ProjectMembers;
 use App\Form\ActivityUserType;
 use App\Repository\ActivityUserRepository;
 use App\Repository\ProjectRepository;
@@ -28,11 +26,16 @@ class ActivityUserController extends AbstractController
 
             $id = $request->request->get('edit');
             $activityUser = $activityUserRepository->findOneBy(['id' => $id]);
+            $original = clone $activityUser;
             $form = $this->createForm(ActivityUserType::class, $activityUser);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $activityUser->getId(), "ActivityUser", "UPDATE", $original, $activityUser);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success", "Updated activity user successfully.");
 
                 return $this->redirectToRoute('activity_user_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
@@ -55,7 +58,6 @@ class ActivityUserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // $memberId = $form->get('user')->getData()->getId();
             $entityManager = $this->getDoctrine()->getManager();
             $activityUser->setActivity($activity);
             $activityUser->setAssignedAt(new \DateTime());
@@ -68,13 +70,11 @@ class ActivityUserController extends AbstractController
                 $entityManager->flush();
                 $entityManager->clear();
             }
-
-            // $member = $entityManager->getRepository(ProjectMembers::class)->findOneBy(['id' => $memberId]);
-            // if ($member->getIsWorkingOnTask() == false) {
-            //     $member->setIsWorkingOnTask(true);
-            //     $entityManager->flush();
-            //     $entityManager->clear();
-            // }
+            
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $activityUser->getId(), "ActivityUser", "CREATE", $activityUser);
+            $entityManager->persist($log);
+            $entityManager->flush();
 
             $this->addFlash("success", "Registered activity user successfully.");
 
@@ -102,6 +102,10 @@ class ActivityUserController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $activityUser->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($activityUser);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $activityUser->getId(), "ActivityUser", "DELETE", $activityUser);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success", "Deleted activity user successfully.");

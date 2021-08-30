@@ -22,11 +22,16 @@ class CurrencyController extends AbstractController
             
             $id = $request->request->get('edit');
             $currency = $currencyRepository->findOneBy(['id'=>$id]);
+            $original = clone $currency;
             $form = $this->createForm(CurrencyType::class, $currency);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$currency->getId(),"Currency","UPDATE",$original, $currency);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success","Updated currency successfully.");
 
                 return $this->redirectToRoute('currency_index');
@@ -51,6 +56,12 @@ class CurrencyController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($currency);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$currency->getId(),"Currency","CREATE", $currency);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","Registered currency successfully.");
 
             return $this->redirectToRoute('currency_index');
@@ -74,6 +85,11 @@ class CurrencyController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$currency->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($currency);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$currency->getId(),"Currency","DELETE", $currency);
+            $entityManager->persist($log);
+
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted currency successfully.");

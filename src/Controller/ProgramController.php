@@ -38,6 +38,11 @@ class ProgramController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($program);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$program->getId(),"Program","CREATE", $program);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","created program successfully.");
 
             return $this->redirectToRoute('program_index');
@@ -64,11 +69,16 @@ class ProgramController extends AbstractController
     public function edit(Request $request, Program $program): Response
     {
         $this->denyAccessUnlessGranted('program_edit');
+        $original = clone $program;
         $form = $this->createForm(ProgramType::class, $program);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$program->getId(),"Program","UPDATE",$original, $program);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","Updated program successfully.");
 
             return $this->redirectToRoute('program_index');
@@ -87,6 +97,9 @@ class ProgramController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$program->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($program);
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$program->getId(),"Program","DELETE", $program);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
 

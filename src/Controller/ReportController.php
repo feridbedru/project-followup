@@ -39,6 +39,12 @@ class ReportController extends AbstractController
             $report->setCreatedBy($this->getUser());
             $entityManager->persist($report);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$report->getId(),"Report","CREATE", $report);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","created report successfully.");
 
             return $this->redirectToRoute('report_index');
@@ -63,11 +69,16 @@ class ReportController extends AbstractController
     public function edit(Request $request, Report $report): Response
     {
         $this->denyAccessUnlessGranted('report_edit');
+        $original = clone $report;
         $form = $this->createForm(ReportType::class, $report);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$report->getId(),"Report","UPDATE",$original, $report);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","Updated report successfully.");
 
             return $this->redirectToRoute('report_index');
@@ -86,6 +97,11 @@ class ReportController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$report->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($report);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$report->getId(),"Report","DELETE", $report);
+            $entityManager->persist($log);
+
             $entityManager->flush();
         }
 

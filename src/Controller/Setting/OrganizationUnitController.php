@@ -24,11 +24,17 @@ class OrganizationUnitController extends AbstractController
             
             $id = $request->request->get('edit');
             $organizationUnit = $organizationUnitRepository->findOneBy(['id'=>$id]);
+            $original = clone $organizationUnit;
             $form = $this->createForm(OrganizationUnitType::class, $organizationUnit);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$organizationUnit->getId(),"OrganizationUnit","UPDATE",$original, $organizationUnit);
+                $entityManager->persist($log);
+                $entityManager->flush();
+
                 $this->addFlash("success","Updated organization unit successfully.");
 
                 return $this->redirectToRoute('organization_unit_index', ["organization" => $organization->getId()]);
@@ -55,6 +61,12 @@ class OrganizationUnitController extends AbstractController
             $organizationUnit->setOrganization($organization);
             $entityManager->persist($organizationUnit);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$organizationUnit->getId(),"OrganizationUnit","CREATE", $organizationUnit);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","Registered organization unit successfully.");
 
             return $this->redirectToRoute('organization_unit_index', ["organization" => $organization->getId()]);
@@ -80,6 +92,10 @@ class OrganizationUnitController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$organizationUnit->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($organizationUnit);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$organizationUnit->getId(),"OrganizationUnit","DELETE", $organizationUnit);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted organization unit successfully.");

@@ -22,11 +22,17 @@ class SponsorController extends AbstractController
             
             $id = $request->request->get('edit');
             $sponsor = $sponsorRepository->findOneBy(['id'=>$id]);
+            $original = clone $sponsor;
             $form = $this->createForm(SponsorType::class, $sponsor);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$sponsor->getId(),"Sponsor","UPDATE",$original, $sponsor);
+                $entityManager->persist($log);
+                $entityManager->flush();
+
                 $this->addFlash("success","Updated sponsor successfully.");
 
                 return $this->redirectToRoute('sponsor_index');
@@ -51,6 +57,12 @@ class SponsorController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($sponsor);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$sponsor->getId(),"Sponsor","CREATE", $sponsor);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","Registered sponsor successfully.");
 
             return $this->redirectToRoute('sponsor_index');
@@ -74,6 +86,11 @@ class SponsorController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$sponsor->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($sponsor);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$sponsor->getId(),"Sponsor","DELETE", $sponsor);
+            $entityManager->persist($log);
+
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted sponsor successfully.");

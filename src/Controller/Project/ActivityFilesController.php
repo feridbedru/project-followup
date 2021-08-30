@@ -26,11 +26,16 @@ class ActivityFilesController extends AbstractController
 
             $id = $request->request->get('edit');
             $activityFile = $activityFilesRepository->findOneBy(['id' => $id]);
+            $original = clone $activityFile;
             $form = $this->createForm(ActivityFilesType::class, $activityFile);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$activityFile->getId(),"ActivityFiles","UPDATE",$original, $activityFile);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success", "Updated activity files successfully.");
 
                 return $this->redirectToRoute('activity_files_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
@@ -65,6 +70,12 @@ class ActivityFilesController extends AbstractController
             $activityFile->setFile($newFilename);
             $entityManager->persist($activityFile);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$activityFile->getId(),"ActivityFiles","CREATE", $activityFile);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success", "Registered activity files successfully.");
 
             return $this->redirectToRoute('activity_files_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
@@ -91,7 +102,12 @@ class ActivityFilesController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $activityFile->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($activityFile);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$activityFile->getId(),"ActivityFiles","DELETE", $activityFile);
+            $entityManager->persist($log);
             $entityManager->flush();
+            
         }
         $this->addFlash("success", "Deleted activity files successfully.");
 

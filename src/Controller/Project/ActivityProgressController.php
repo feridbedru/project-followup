@@ -33,11 +33,16 @@ class ActivityProgressController extends AbstractController
 
             $id = $request->request->get('edit');
             $activityProgress = $activityProgressRepository->findOneBy(['id' => $id]);
+            $original = clone $activityProgress;
             $form = $this->createForm(ActivityProgressType::class, $activityProgress);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $activityProgress->getId(), "ActivityProgress", "UPDATE", $original, $activityProgress);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success", "Updated activity progress successfully.");
 
                 return $this->redirectToRoute('activity_progress_index', ["project" => $project->getId(), "activity" => $activity->getId()]);
@@ -66,13 +71,18 @@ class ActivityProgressController extends AbstractController
             $activityProgress->setCreatedAt(new \DateTime());
             $activityProgress->setCreatedBy($this->getUser());
             $uploadedFile = $form['file']->getData();
-            if($uploadedFile){
+            if ($uploadedFile) {
                 $location = $this->getParameter('kernel.project_dir') . '/public/upload/progress';
                 $newFilename = uniqid() . '.' . $uploadedFile->getClientOriginalExtension();
                 $uploadedFile->move($location, $newFilename);
                 $activityProgress->setFile($newFilename);
             }
             $entityManager->persist($activityProgress);
+            $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $activityProgress->getId(), "ActivityProgress", "CREATE", $activityProgress);
+            $entityManager->persist($log);
             $entityManager->flush();
             $this->addFlash("success", "Registered activity progress successfully.");
 
@@ -101,6 +111,10 @@ class ActivityProgressController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $activityProgress->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($activityProgress);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $activityProgress->getId(), "ActivityProgress", "CREATE", $activityProgress);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success", "Deleted activity progress successfully.");

@@ -60,6 +60,11 @@ class ProjectController extends AbstractController
             $project->setCreatedAt(new \DateTime());
             $entityManager->persist($project);
             $entityManager->flush();
+            
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $project->getId(), "Project", "CREATE", $project);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","created project successfully.");
 
             return $this->redirectToRoute('project_show', ["id" => $project->getId()]);
@@ -321,11 +326,16 @@ class ProjectController extends AbstractController
     public function edit(Request $request, Project $project): Response
     {
         $this->denyAccessUnlessGranted('project_edit');
+        $original = clone $project;
         $form = $this->createForm(ProjectType::class, $project);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->getDoctrine()->getManager()->flush();
+            $entityManager = $this->getDoctrine()->getManager();
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $project->getId(), "Project", "UPDATE",$original, $project);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","Updated project successfully.");
 
             return $this->redirectToRoute('project_index');
@@ -344,6 +354,10 @@ class ProjectController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$project->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($project);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $project->getId(), "Project", "DELETE", $project);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
 

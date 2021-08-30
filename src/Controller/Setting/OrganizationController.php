@@ -22,11 +22,17 @@ class OrganizationController extends AbstractController
             
             $id = $request->request->get('edit');
             $organization = $organizationRepository->findOneBy(['id'=>$id]);
+            $original = clone $organization;
             $form = $this->createForm(OrganizationType::class, $organization);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$organization->getId(),"Organization","UPDATE",$original, $organization);
+                $entityManager->persist($log);
+                $entityManager->flush();
+                
                 $this->addFlash("success","Updated organization successfully.");
 
                 return $this->redirectToRoute('organization_index');
@@ -58,6 +64,12 @@ class OrganizationController extends AbstractController
             }
             $entityManager->persist($organization);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$organization->getId(),"Organization","CREATE", $organization);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","Registered organization successfully.");
 
             return $this->redirectToRoute('organization_index');
@@ -81,6 +93,11 @@ class OrganizationController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$organization->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($organization);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$organization->getId(),"Organization","DELETE", $organization);
+            $entityManager->persist($log);
+
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted organization successfully.");

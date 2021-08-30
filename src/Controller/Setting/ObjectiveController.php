@@ -24,11 +24,17 @@ class ObjectiveController extends AbstractController
             
             $id = $request->request->get('edit');
             $objective = $objectiveRepository->findOneBy(['id'=>$id]);
+            $original = clone $objective;
             $form = $this->createForm(ObjectiveType::class, $objective);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$objective->getId(),"Objective","UPDATE",$original, $objective);
+                $entityManager->persist($log);
+                $entityManager->flush();
+
                 $this->addFlash("success","Updated objective successfully.");
 
                 return $this->redirectToRoute('objective_index', ["goal" => $goal->getId()]);
@@ -54,6 +60,9 @@ class ObjectiveController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $objective->setGoal($goal);
             $entityManager->persist($objective);
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$objective->getId(),"Objective","CREATE", $objective);
+            $entityManager->persist($log);
             $entityManager->flush();
             $this->addFlash("success","Registered objective successfully.");
 
@@ -80,6 +89,9 @@ class ObjectiveController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$objective->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($objective);
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$objective->getId(),"Objective","DELETE", $objective);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted objective successfully.");

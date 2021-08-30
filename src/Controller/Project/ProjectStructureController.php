@@ -24,11 +24,16 @@ class ProjectStructureController extends AbstractController
             
             $id = $request->request->get('edit');
             $projectStructure = $projectStructureRepository->findOneBy(['id'=>$id]);
+            $original = clone $projectStructure;
             $form = $this->createForm(ProjectStructureType::class, $projectStructure, array('project' => $project->getId()));
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectStructure->getId(), "ProjectStructure", "UPDATE", $original, $projectStructure);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success","Updated project structure successfully.");
 
                 return $this->redirectToRoute('project_structure_index', ["project" => $project->getId()]);
@@ -57,6 +62,11 @@ class ProjectStructureController extends AbstractController
             $projectStructure->setProject($project);
             $entityManager->persist($projectStructure);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectStructure->getId(), "ProjectStructure", "CREATE", $projectStructure);
+            $entityManager->persist($log);
+            $entityManager->flush();
             $this->addFlash("success","Registered project structure successfully.");
 
             return $this->redirectToRoute('project_structure_index', ["project" => $project->getId()]);
@@ -82,6 +92,10 @@ class ProjectStructureController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$projectStructure->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectStructure);
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectStructure->getId(), "ProjectStructure", "CREATE", $projectStructure);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted project structure successfully.");

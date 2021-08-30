@@ -33,11 +33,16 @@ class ProjectDeliverableController extends AbstractController
 
             $id = $request->request->get('edit');
             $projectDeliverable = $projectDeliverableRepository->findOneBy(['id' => $id]);
+            $original = clone $projectDeliverable;
             $form = $this->createForm(ProjectDeliverableType::class, $projectDeliverable, array('project' => $project->getId()));
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectDeliverable->getId(), "ProjectDeiverable", "UPDATE", $original, $projectDeliverable);
+                $entityManager->persist($log);
+                $entityManager->flush();
                 $this->addFlash("success", "Updated project deliverable successfully.");
 
                 return $this->redirectToRoute('project_deliverable_index', ["project" => $project->getId()]);
@@ -68,6 +73,12 @@ class ProjectDeliverableController extends AbstractController
             $projectDeliverable->setVerifyDeliverable(0);
             $entityManager->persist($projectDeliverable);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectDeliverable->getId(), "ProjectDeliverable", "CREATE", $projectDeliverable);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success", "Registered project deliverable successfully.");
 
             return $this->redirectToRoute('project_deliverable_index', ["project" => $project->getId()]);
@@ -93,6 +104,9 @@ class ProjectDeliverableController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $projectDeliverable->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectDeliverable);
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $projectDeliverable->getId(), "ProjectDeliverable", "DELETE", $projectDeliverable);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success", "Deleted project deliverable successfully.");

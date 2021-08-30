@@ -2,6 +2,7 @@
 
 namespace App\Controller\User;
 
+use App\Entity\Log;
 use App\Entity\Permission;
 use App\Entity\User;
 use App\Entity\UserGroup;
@@ -32,6 +33,7 @@ class UserGroupController extends AbstractController
             // $this->denyAccessUnlessGranted('edt_usr_grp');
             $id = $request->request->get('edit');
             $userGroup = $userGroupRepository->findOneBy(['id' => $id]);
+            $original = clone $userGroup;
             $form = $this->createForm(UserGroupType::class, $userGroup);
             $form->handleRequest($request);
 
@@ -39,7 +41,11 @@ class UserGroupController extends AbstractController
                 $this->denyAccessUnlessGranted('edt_usr_grp');
                 $userGroup->setUpdatedAt(new \DateTime());
                 $userGroup->setUpdatedBy($this->getUser());
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $log = new Log();
+                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$userGroup->getId(),"UserGroup","UPDATE",$original, $userGroup);
+                $entityManager->persist($log);
+                $entityManager->flush();
 
                 return $this->redirectToRoute('user_group_index');
             }
@@ -67,6 +73,11 @@ class UserGroupController extends AbstractController
             $userGroup->setCreatedAt(new \DateTime());
             $userGroup->setRegisteredBy($this->getUser());
             $entityManager->persist($userGroup);
+            $entityManager->flush();
+            
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$userGroup->getId(),"UserGroup","CREATE", $userGroup);
+            $entityManager->persist($log);
             $entityManager->flush();
 
             return $this->redirectToRoute('user_group_index');

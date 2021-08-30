@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\LogRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 /**
  * @ORM\Entity(repositoryClass=LogRepository::class)
@@ -31,11 +34,6 @@ class Log
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $actiontime;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
     private $ipaddress;
 
     /**
@@ -57,6 +55,11 @@ class Log
      * @ORM\Column(type="text", nullable=true)
      */
     private $modified;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $action_time;
 
     public function getId(): ?int
     {
@@ -83,18 +86,6 @@ class Log
     public function setRecordId(?int $record_id): self
     {
         $this->record_id = $record_id;
-
-        return $this;
-    }
-
-    public function getActiontime(): ?string
-    {
-        return $this->actiontime;
-    }
-
-    public function setActiontime(string $actiontime): self
-    {
-        $this->actiontime = $actiontime;
 
         return $this;
     }
@@ -157,5 +148,38 @@ class Log
         $this->modified = $modified;
 
         return $this;
+    }
+
+    public function getActionTime(): ?\DateTimeInterface
+    {
+        return $this->action_time;
+    }
+
+    public function setActionTime(\DateTimeInterface $action_time): self
+    {
+        $this->action_time = $action_time;
+
+        return $this;
+    }
+
+    public function logEvent($ipAddress, $user, $record, $target, $action, $original, $modified=null)
+    {
+        $encoders = [new JsonEncoder()];
+        $normalizers = [new ObjectNormalizer()];
+        $serializer = new Serializer($normalizers, $encoders);
+        $original = $serializer->serialize($original, 'json');
+        $modified = $serializer->serialize($modified, 'json');
+
+        $log = new log();
+        $log->setUser($user);
+        $log->setRecordId($record);
+        $log->setAction($action);
+        $log->setActionTime(new \DateTime());
+        $log->setTarget($target);
+        $log->setOriginal($original);
+        $log->setIpaddress($ipAddress);
+        $log->setModified($modified);
+
+        return $log;
     }
 }

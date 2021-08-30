@@ -19,14 +19,15 @@ class ResourceTypeController extends AbstractController
     public function index(ResourceTypeRepository $resourceTypeRepository, PaginatorInterface $paginator, Request $request): Response
     {
         if($request->request->get('edit')){
-            
             $id = $request->request->get('edit');
             $resourceType = $resourceTypeRepository->findOneBy(['id'=>$id]);
             $form = $this->createForm(ResourceTypeType::class, $resourceType);
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
-                $this->getDoctrine()->getManager()->flush();
+                $entityManager = $this->getDoctrine()->getManager();
+                $entityManager->flush();
+                
                 $this->addFlash("success","Updated resource type successfully.");
 
                 return $this->redirectToRoute('resource_type_index');
@@ -41,7 +42,6 @@ class ResourceTypeController extends AbstractController
                 'edit' => $id
             ]);
         }
-
         
         $resourceType = new ResourceType();
         $form = $this->createForm(ResourceTypeType::class, $resourceType);
@@ -51,6 +51,12 @@ class ResourceTypeController extends AbstractController
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->persist($resourceType);
             $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$resourceType->getId(),"ResourceType","CREATE",$resourceType);
+            $entityManager->persist($log);
+            $entityManager->flush();
+
             $this->addFlash("success","Registered resource type successfully.");
 
             return $this->redirectToRoute('resource_type_index');
@@ -74,6 +80,11 @@ class ResourceTypeController extends AbstractController
         if ($this->isCsrfTokenValid('delete'.$resourceType->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($resourceType);
+            $entityManager->flush();
+
+            $log = new Log();
+            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$resourceType->getId(),"ResourceType","DELETE",$resourceType);
+            $entityManager->persist($log);
             $entityManager->flush();
         }
         $this->addFlash("success","Deleted resource type successfully.");

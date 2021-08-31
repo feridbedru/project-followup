@@ -18,9 +18,9 @@ class UserController extends AbstractController
     #[Route('/', name: 'user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        $this->denyAccessUnlessGranted('user_index');
+        // $this->denyAccessUnlessGranted('user_index');
         $users = $paginator->paginate($userRepository->findAll(), $request->query->getInt('page', 1), 10);
-        return $this->render('user/index.html.twig', [
+        return $this->render('user_management/users/index.html.twig', [
             'users' => $users,
         ]);
     }
@@ -47,7 +47,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('user_index');
         }
 
-        return $this->render('user/new.html.twig', [
+        return $this->render('user_management/users/new.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
         ]);
@@ -57,7 +57,7 @@ class UserController extends AbstractController
     public function show(User $user): Response
     {
         $this->denyAccessUnlessGranted('user_show');
-        return $this->render('user/show.html.twig', [
+        return $this->render('user_management/users/show.html.twig', [
             'user' => $user,
         ]);
     }
@@ -82,7 +82,7 @@ class UserController extends AbstractController
             return $this->redirectToRoute('user_index');
         }
 
-        return $this->render('user/edit.html.twig', [
+        return $this->render('user_management/users/edit.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
         ]);

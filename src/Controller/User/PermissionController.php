@@ -42,7 +42,7 @@ class PermissionController extends AbstractController
                 $request->query->getInt('page', 1),
                 18
             );
-            return $this->render('user/permission/index.html.twig', [
+            return $this->render('user_management/permission/index.html.twig', [
                 'permissions' => $data,
                 'form' => $form->createView(),
                 'edit' => $id
@@ -71,7 +71,8 @@ class PermissionController extends AbstractController
             $request->query->getInt('page', 1),
             18
         );
-        return $this->render('user/permission/index.html.twig', [
+        // dd($data);
+        return $this->render('user_management/permission/index.html.twig', [
             'permissions' => $data,
             'form' => $form->createView(),
             'edit' => false

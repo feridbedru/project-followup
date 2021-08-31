@@ -43,7 +43,7 @@ class UserGroupController extends AbstractController
                 $userGroup->setUpdatedBy($this->getUser());
                 $entityManager = $this->getDoctrine()->getManager();
                 $log = new Log();
-                $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$userGroup->getId(),"UserGroup","UPDATE",$original, $userGroup);
+                $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $userGroup->getId(), "UserGroup", "UPDATE", $original, $userGroup);
                 $entityManager->persist($log);
                 $entityManager->flush();
 
@@ -55,7 +55,7 @@ class UserGroupController extends AbstractController
                 $request->query->getInt('page', 1),
                 18
             );
-            return $this->render('user/user_group/index.html.twig', [
+            return $this->render('user_management/user_group/index.html.twig', [
                 'user_groups' => $data,
                 'form' => $form->createView(),
                 'searchForm' => $searchForm->createView(),
@@ -74,9 +74,9 @@ class UserGroupController extends AbstractController
             $userGroup->setRegisteredBy($this->getUser());
             $entityManager->persist($userGroup);
             $entityManager->flush();
-            
+
             $log = new Log();
-            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$userGroup->getId(),"UserGroup","CREATE", $userGroup);
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $userGroup->getId(), "UserGroup", "CREATE", $userGroup);
             $entityManager->persist($log);
             $entityManager->flush();
 
@@ -88,7 +88,7 @@ class UserGroupController extends AbstractController
             $request->query->getInt('page', 1),
             18
         );
-        return $this->render('user/user_group/index.html.twig', [
+        return $this->render('user_management/user_group/index.html.twig', [
             'user_groups' => $data,
             'form' => $form->createView(),
             'searchForm' => $searchForm->createView(),
@@ -131,7 +131,7 @@ class UserGroupController extends AbstractController
             $assignedPermId[] = $perm->getId();
         }
         return $this->render(
-            'user/user_group/user.html.twig',
+            'user_management/user_group/user.html.twig',
             [
                 'user_group' => $userGroup,
                 'permission' => $permissionRepository->findAll(),
@@ -160,7 +160,7 @@ class UserGroupController extends AbstractController
             $userGroup->setUpdatedBy($this->getUser());
             $this->getDoctrine()->getManager()->flush();
         }
-        return $this->render('user/user_group/permission.html.twig', [
+        return $this->render('user_management/user_group/permission.html.twig', [
             'user_group' => $userGroup,
             'permissions' => $permissionRepository->findForUserGroup($userGroup->getPermission()),
 

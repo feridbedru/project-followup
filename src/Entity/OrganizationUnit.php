@@ -50,9 +50,15 @@ class OrganizationUnit
      */
     private $projects;
 
+    /**
+     * @ORM\OneToMany(targetEntity=User::class, mappedBy="unit")
+     */
+    private $users;
+
     public function __construct()
     {
         $this->projects = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -149,6 +155,36 @@ class OrganizationUnit
             // set the owning side to null (unless already changed)
             if ($project->getUnit() === $this) {
                 $project->setUnit(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+            $user->setUnit($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getUnit() === $this) {
+                $user->setUnit(null);
             }
         }
 

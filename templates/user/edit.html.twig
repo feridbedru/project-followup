@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit User{% endblock %}
+{% block breadcrumb %}
+<li class="breadcrumb-item">
+    <a href="{{path('user_index')}}">{% trans %} User {% endtrans %}</a>
+</li>
+<li class="breadcrumb-item active">{% trans %} Edit {% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}{% trans %} Edit User{% endtrans %}
+{% endblock %}
+{% block body %}
+{% if is_granted("user_edit") %}
+    <div class="card card-info">
+        <div class="card-header">
+            <h5>{% trans %} Edit User {% endtrans %}</h5>
+        </div>
+        <div class="card-body">
+            {{ include('user/_form.html.twig', {'button_label': 'Update' }) }}
+            {{ include('user/_delete_form.html.twig') }}
+        </div>
+    </div>
+<br>
+{% endif %}
+{% endblock %}

@@ -162,13 +162,13 @@ class Log
         return $this;
     }
 
-    public function logEvent($ipAddress, $user, $record, $target, $action, $original, $modified=null)
+    public function logEvent($ipAddress, $user, $record, $target, $action, $original_data, $modified_data=null)
     {
         $encoders = [new JsonEncoder()];
         $normalizers = [new ObjectNormalizer()];
         $serializer = new Serializer($normalizers, $encoders);
-        $original = $serializer->serialize($original, 'json');
-        $modified = $serializer->serialize($modified, 'json');
+        $original = $serializer->serialize($original_data, 'json');
+        $modified = $serializer->serialize($modified_data, 'json');
 
         $log = new log();
         $log->setUser($user);

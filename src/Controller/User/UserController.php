@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -26,7 +27,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request): Response
+    public function new(Request $request,UserPasswordEncoderInterface $userPasswordEncoderInterface): Response
     {
         $this->denyAccessUnlessGranted('user_create');
         $user = new User();
@@ -35,6 +36,13 @@ class UserController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $user->setCreatedBy($this->getUser());
+            $user->setCreatedAt(new \DateTime());
+            $user->setIsActive(1);
+            $user->setStatus(1);
+            $user->setUsername($request->request->get("email"));
+            $password = $this->randomPassword();
+            $user->setPassword($userPasswordEncoderInterface->encodePassword($user,$password));
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -51,6 +59,19 @@ class UserController extends AbstractController
             'user' => $user,
             'form' => $form->createView(),
         ]);
+    }
+
+    private function randomPassword()
+    {
+        $alphabet = 'AaBbCcDdEeFfGgHhIiJjKkLlMmNnPpQqRrSsTtUuVvWwXxYyZz1234567890!@#$%^&*().?';
+        $pass = array();
+        $alphaLength = strlen($alphabet) - 1;
+        for ($i = 0; $i < 8; $i++) {
+            $n = rand(0, $alphaLength);
+            $pass[] = $alphabet[$n];
+        }
+        $password = implode($pass);
+        return $password; 
     }
 
     #[Route('/{id}', name: 'user_show', methods: ['GET'])]

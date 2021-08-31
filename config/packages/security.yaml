@@ -1,8 +1,31 @@
+framework:
+    rate_limiter:
+        # define 2 rate limiters (one for username+IP, the other for IP)
+        username_ip_login:
+            policy: token_bucket
+            limit: 5
+            rate: { interval: "5 minutes" }
+
+        ip_login:
+            policy: sliding_window
+            limit: 50
+            interval: "15 minutes"
+
+services:
+    # our custom login rate limiter
+    app.login_rate_limiter:
+        class: Symfony\Component\Security\Http\RateLimiter\DefaultLoginRateLimiter
+        arguments:
+            # globalFactory is the limiter for IP
+            $globalFactory: "@limiter.ip_login"
+            # localFactory is the limiter for username+IP
+            $localFactory: "@limiter.username_ip_login"
+
 security:
     # Enables the new Symfony Security system based on Authenticators, all used authenticators must support this before enabling this.
     enable_authenticator_manager: true
     access_decision_manager:
-        strategy: ~ 
+        strategy: ~
         service: ~
         allow_if_all_abstain: false
         allow_if_equal_granted_denied: true
@@ -10,23 +33,23 @@ security:
         App\Entity\User: bcrypt
 
     password_hashers:
-        App\Entity\User: auto
+        App\Entity\User:
+            algorithm: auto
 
     providers:
         app_user_provider:
             entity:
                 class: App\Entity\User
-                property: username
+                property: apiToken
 
-    firewalls: 
+    firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
             lazy: true
             login_throttling:
-                max_attempts: 3
-                interval: "15 minutes"
+                limiter: app.login_rate_limiter
             guard:
                 authenticators:
                     - App\Security\LoginFormAuthenticator

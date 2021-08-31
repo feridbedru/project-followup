@@ -83,7 +83,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private $photo;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $phone;
 
@@ -102,6 +102,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @ORM\JoinColumn(nullable=false)
      */
     private $unit;
+
+    /**
+     * @ORM\Column(type="string", unique=true, nullable=true)
+     */
+    private $apiToken;
 
     public function __construct()
     {
@@ -348,6 +353,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setUnit(?OrganizationUnit $unit): self
     {
         $this->unit = $unit;
+
+        return $this;
+    }
+
+    public function getApiToken(): ?string
+    {
+        return $this->apiToken;
+    }
+
+    public function setApiToken(?string $apiToken): self
+    {
+        $this->apiToken = $apiToken;
 
         return $this;
     }

@@ -2,10 +2,14 @@
 
 namespace App\Form;
 
+use App\Entity\Organization;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Doctrine\ORM\EntityRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class UserType extends AbstractType
 {
@@ -21,13 +25,23 @@ class UserType extends AbstractType
             // ->add('confirmToken')
             // ->add('created_at')
             // ->add('status')
-            ->add('photo')
+            ->add('photo', FileType::class, array('data_class' => null,'required' => false))
             ->add('phone')
             ->add('position')
             ->add('full_name')
             // ->add('created_by')
             // ->add('userGroup')
             ->add('unit')
+            // ->add('organization', EntityType::class, [
+            //     'class' => Organization::class,
+            //     'placeholder' => "Organization",
+            //     'required' => true,
+            //     'query_builder' => function (EntityRepository $er){
+            //         $res = $er->createQueryBuilder('r')
+            //         ->andWhere('r.name is not null');
+            //         return $res;
+            //     }
+            // ])
         ;
     }
 

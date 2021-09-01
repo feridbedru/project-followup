@@ -6,6 +6,8 @@ use App\Repository\LogRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 
 /**
@@ -164,21 +166,20 @@ class Log
 
     public function logEvent($ipAddress, $user, $record, $target, $action, $original_data, $modified_data=null)
     {
-        $encoders = [new JsonEncoder()];
-        $normalizers = [new ObjectNormalizer()];
-        $serializer = new Serializer($normalizers, $encoders);
-        $original = $serializer->serialize($original_data, 'json');
-        $modified = $serializer->serialize($modified_data, 'json');
-
+        // $encoders = [new JsonEncoder()];
+        // $normalizers = [new ObjectNormalizer()];
+        // $serializer = new Serializer($normalizers, $encoders);
+        // $original = $serializer->serialize($original_data, 'json');
+        // $modified = $serializer->serialize($modified_data, 'json');
         $log = new log();
         $log->setUser($user);
         $log->setRecordId($record);
         $log->setAction($action);
         $log->setActionTime(new \DateTime());
         $log->setTarget($target);
-        $log->setOriginal($original);
+        $log->setOriginal($original_data);
         $log->setIpaddress($ipAddress);
-        $log->setModified($modified);
+        $log->setModified($modified_data);
 
         return $log;
     }

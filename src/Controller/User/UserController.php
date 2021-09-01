@@ -35,12 +35,13 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // dd();
             $entityManager = $this->getDoctrine()->getManager();
             $user->setCreatedBy($this->getUser());
             $user->setCreatedAt(new \DateTime());
             $user->setIsActive(1);
             $user->setStatus(1);
-            $user->setUsername($request->request->get("email"));
+            $user->setUsername($request->request->get('user')["email"]);
             $password = $this->randomPassword();
             $user->setPassword($userPasswordEncoderInterface->encodePassword($user,$password));
             $entityManager->persist($user);

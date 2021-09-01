@@ -6,6 +6,7 @@ use App\Repository\OrganizationUnitRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @ORM\Entity(repositoryClass=OrganizationUnitRepository::class)
@@ -47,11 +48,13 @@ class OrganizationUnit
 
     /**
      * @ORM\OneToMany(targetEntity=Project::class, mappedBy="unit")
+     * @Ignore()
      */
     private $projects;
 
     /**
      * @ORM\OneToMany(targetEntity=User::class, mappedBy="unit")
+     * @Ignore()
      */
     private $users;
 

@@ -6,6 +6,7 @@ use App\Repository\ProgramRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 /**
  * @ORM\Entity(repositoryClass=ProgramRepository::class)
@@ -67,6 +68,7 @@ class Program
 
     /**
      * @ORM\OneToMany(targetEntity=Project::class, mappedBy="program")
+     * @Ignore()
      */
     private $projects;
 

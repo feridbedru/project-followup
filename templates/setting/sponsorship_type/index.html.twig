@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Sponsor
+{% block title %}Sponsorship Type
 {% endblock %}
 {% block breadcrumb %}
 	<li class="breadcrumb-item">
-		<a href="{{path('sponsor_index')}}">{% trans %}
-			Sponsor
+		<a href="{{path('sponsorship_type_index')}}">{% trans %}
+			Sponsorship Type
 			{% endtrans %}</a>
 	</li>
 	<li class="breadcrumb-item active">{% trans %}
@@ -14,12 +14,12 @@
 {% endblock %}
 {% block pagetitle %}
 	{% trans %}
-	Sponsor{% endtrans %}
+	Sponsorship Type{% endtrans %}
 {% endblock %}
 {% block body %}
 	<div class="row">
 		<div class="col-md-4">
-			{% if is_granted("sponsor_create") %}
+			{% if is_granted("sponsorship_type_create") %}
 				<div class="card card-info">
 					<div class="card-header">
 						<h3 class="card-title">
@@ -33,7 +33,7 @@
 					<div class="card-body">
 						{% if edit  %}
 							{% set button_label = 'Update' %}
-						{% endif %} {{ include('setting/sponsor/_form.html.twig') }}
+						{% endif %} {{ include('setting/sponsorship_type/_form.html.twig') }}
 					</div>
 				</div>
 			{% endif %}
@@ -41,9 +41,8 @@
 		<div class="col-md-8">
 			<div class="card card-info">
 				<div class="card-header">
-					<h3 class="card-title">{% trans %}
-						Sponsor List
-						{% endtrans %}</h3>
+					<h5 class="card-title">{% trans %}
+						Sponsorship Type List{% endtrans %}</h5>
 					<div class="card-tools">
 						<form class="form-inline ml-3">
 							<div class="input-group input-group-sm">
@@ -62,37 +61,33 @@
 						<thead>
 							<tr>
 								<th>#</th>
-								<th>{{ knp_pagination_sortable(sponsors, 'Name'|trans, 's.name') }}</th>
-								<th>{{ knp_pagination_sortable(sponsors, 'Contact Person'|trans, 's.contact_person') }}</th>
-								<th>{{ knp_pagination_sortable(sponsors, 'Email'|trans, 's.email') }}</th>
-								<th>{{ knp_pagination_sortable(sponsors, 'Phone'|trans, 's.phone') }}</th>
+								<th>{{ knp_pagination_sortable(sponsorship_types, 'Name'|trans, 's.name') }}</th>
+								<th>{{ knp_pagination_sortable(sponsorship_types, 'Description'|trans, 's.description') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
 						<tbody>
 							{% set i = 1 %}
-							{% for sponsor in sponsors %}
+							{% for sponsorship_type in sponsorship_types %}
 								<tr>
 									<td>{{ i }}
 										{% set i = i+1 %}
 									</td>
-									<td>{{ sponsor.name }}</td>
-									<td>{{ sponsor.contactPerson }}</td>
-									<td>{{ sponsor.email }}</td>
-									<td>{{ sponsor.phone }}</td>
+									<td>{{ sponsorship_type.name }}</td>
+									<td>{{ sponsorship_type.description|raw }}</td>
 									<td>
 
-										{% if is_granted("sponsor_edit") %}
+										{% if is_granted("sponsorship_type_edit") %}
 											<form class="d-inline" method="post">
-												<input type="hidden" name="edit" value="{{sponsor.id}}">
-												<button class="btn btn-warning btn-sm text-white" title="Edit">
+												<input type="hidden" name="edit" value="{{sponsorship_type.id}}">
+												<button class="btn btn-warning text-white btn-sm" title="Edit">
 													<i class="fa fa-edit"></i>
 												</button>
 											</form>
 										{% endif %}
-										{% if is_granted("sponsor_delete") %}
-											<form method="post" class="d-inline" action="{{ path('sponsor_delete', {'id': sponsor.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
-												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sponsor.id) }}">
+										{% if is_granted("sponsorship_type_delete") %}
+											<form method="post" class="d-inline" action="{{ path('sponsorship_type_delete', {'id': sponsorship_type.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sponsorship_type.id) }}">
 												<button class="btn btn-danger btn-sm">
 													<span class="fa fa-trash"></span>
 												</button>
@@ -102,14 +97,25 @@
 								</tr>
 							{% else %}
 								<tr>
-									<td colspan="6">{% trans %}no records found{% endtrans %}</td>
+									<td colspan="4">{% trans %}no records found{% endtrans %}</td>
 								</tr>
 							{% endfor %}
 						</tbody>
 					</table>
-					<div class="navigation">{{ knp_pagination_render(sponsors) }}</div>
+					<div class="navigation">{{ knp_pagination_render(sponsorship_types) }}</div>
 				</div>
 			</div>
 		</div>
 	</div>
+{% endblock %}
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{ asset('assets/plugins/summernote/summernote-bs4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+	<script src="{{ asset('assets/plugins/summernote/summernote-bs4.min.js') }}"></script>
+	<script>
+		$(function () {
+$('.wyiswig').summernote({placeholder: 'Enter details here', tabsize: 2, height: 200})
+})
+	</script>
 {% endblock %}

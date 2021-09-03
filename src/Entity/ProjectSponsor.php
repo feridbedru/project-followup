@@ -24,12 +24,6 @@ class ProjectSponsor
     private $project;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Sponsor::class)
-     * @ORM\JoinColumn(nullable=false)
-     */
-    private $sponsor;
-
-    /**
      * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false)
      */
@@ -39,6 +33,23 @@ class ProjectSponsor
      * @ORM\Column(type="datetime")
      */
     private $created_at;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Organization::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $organization;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=SponsorshipType::class)
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $type;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $additional_info;
 
     public function getId(): ?int
     {
@@ -53,18 +64,6 @@ class ProjectSponsor
     public function setProject(?Project $project): self
     {
         $this->project = $project;
-
-        return $this;
-    }
-
-    public function getSponsor(): ?Sponsor
-    {
-        return $this->sponsor;
-    }
-
-    public function setSponsor(?Sponsor $sponsor): self
-    {
-        $this->sponsor = $sponsor;
 
         return $this;
     }
@@ -89,6 +88,42 @@ class ProjectSponsor
     public function setCreatedAt(\DateTimeInterface $created_at): self
     {
         $this->created_at = $created_at;
+
+        return $this;
+    }
+
+    public function getOrganization(): ?Organization
+    {
+        return $this->organization;
+    }
+
+    public function setOrganization(?Organization $organization): self
+    {
+        $this->organization = $organization;
+
+        return $this;
+    }
+
+    public function getType(): ?SponsorshipType
+    {
+        return $this->type;
+    }
+
+    public function setType(?SponsorshipType $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getAdditionalInfo(): ?string
+    {
+        return $this->additional_info;
+    }
+
+    public function setAdditionalInfo(string $additional_info): self
+    {
+        $this->additional_info = $additional_info;
 
         return $this;
     }

@@ -31,11 +31,6 @@ class Program
     private $description;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
-     */
-    private $stakeholders;
-
-    /**
      * @ORM\ManyToOne(targetEntity=Currency::class)
      * @ORM\JoinColumn(nullable=false)
      */
@@ -78,9 +73,15 @@ class Program
      */
     private $program_manager;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Organization::class)
+     */
+    private $stakeholders;
+
     public function __construct()
     {
         $this->projects = new ArrayCollection();
+        $this->stakeholders = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -108,18 +109,6 @@ class Program
     public function setDescription(?string $description): self
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    public function getStakeholders(): ?string
-    {
-        return $this->stakeholders;
-    }
-
-    public function setStakeholders(?string $stakeholders): self
-    {
-        $this->stakeholders = $stakeholders;
 
         return $this;
     }
@@ -242,4 +231,29 @@ class Program
 
         return $this;
     }
+
+    /**
+     * @return Collection|Organization[]
+     */
+    public function getStakeholders(): Collection
+    {
+        return $this->stakeholders;
+    }
+
+    public function addStakeholder(Organization $stakeholder): self
+    {
+        if (!$this->stakeholders->contains($stakeholder)) {
+            $this->stakeholders[] = $stakeholder;
+        }
+
+        return $this;
+    }
+
+    public function removeStakeholder(Organization $stakeholder): self
+    {
+        $this->stakeholders->removeElement($stakeholder);
+
+        return $this;
+    }
+
 }

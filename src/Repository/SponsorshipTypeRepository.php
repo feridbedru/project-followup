@@ -2,24 +2,24 @@
 
 namespace App\Repository;
 
-use App\Entity\Sponsor;
+use App\Entity\SponsorshipType;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method Sponsor|null find($id, $lockMode = null, $lockVersion = null)
- * @method Sponsor|null findOneBy(array $criteria, array $orderBy = null)
- * @method Sponsor[]    findAll()
- * @method Sponsor[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method SponsorshipType|null find($id, $lockMode = null, $lockVersion = null)
+ * @method SponsorshipType|null findOneBy(array $criteria, array $orderBy = null)
+ * @method SponsorshipType[]    findAll()
+ * @method SponsorshipType[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class SponsorRepository extends ServiceEntityRepository
+class SponsorshipTypeRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, Sponsor::class);
+        parent::__construct($registry, SponsorshipType::class);
     }
 
-    public function findSponsor($search=null)
+    public function findSponsorshipType($search=null)
     {
         $qb=$this->createQueryBuilder('s');
         if($search)
@@ -29,7 +29,7 @@ class SponsorRepository extends ServiceEntityRepository
             ->getQuery();
     }
     // /**
-    //  * @return Sponsor[] Returns an array of Sponsor objects
+    //  * @return SponsorshipType[] Returns an array of SponsorshipType objects
     //  */
     /*
     public function findByExampleField($value)
@@ -46,7 +46,7 @@ class SponsorRepository extends ServiceEntityRepository
     */
 
     /*
-    public function findOneBySomeField($value): ?Sponsor
+    public function findOneBySomeField($value): ?SponsorshipType
     {
         return $this->createQueryBuilder('s')
             ->andWhere('s.exampleField = :val')

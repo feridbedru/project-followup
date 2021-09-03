@@ -19,8 +19,7 @@
 					<li class="nav-item has-treeview">
 						<a href="#" class="nav-link ">
 							<i class="nav-icon fas fa-project-diagram"></i>
-							<p>
-								{{ project.name }}
+							<p> {{ project.name }}
 								<i class="right fas fa-angle-left"></i>
 							</p>
 						</a>
@@ -33,11 +32,11 @@
 							</li>
 							{% if project.status != 2 %}
 								<li class="nav-item">
-								<a href="{{ path('project_structure_index', {'project': project.id })}}" class="nav-link">
-									<i class="fas fa-list-alt nav-icon"></i>
-									<p>Structure</p>
-								</a>
-							</li>
+									<a href="{{ path('project_structure_index', {'project': project.id })}}" class="nav-link">
+										<i class="fas fa-list-alt nav-icon"></i>
+										<p>Structure</p>
+									</a>
+								</li>
 							{% endif %}
 							{% if project.status >= 3 %}
 								<li class="nav-item">
@@ -49,11 +48,11 @@
 							{% endif %}
 							{% if project.status !=2 %}
 								<li class="nav-item">
-								<a href="{{ path('project_resource_index', {'project': project.id })}}" class="nav-link">
-									<i class="fas fa-list-alt nav-icon"></i>
-									<p>Knowledge</p>
-								</a>
-							</li>
+									<a href="{{ path('project_resource_index', {'project': project.id })}}" class="nav-link">
+										<i class="fas fa-list-alt nav-icon"></i>
+										<p>Knowledge</p>
+									</a>
+								</li>
 							{% endif %}
 							<li class="nav-item">
 								<a href="{{ path('project_milestone_index', {'project': project.id })}}" class="nav-link">
@@ -80,10 +79,33 @@
 								</a>
 							</li>
 							<li class="nav-item">
-								<a href="{{ path('project_email_index', {'project': project.id })}}" class="nav-link">
-									<i class="fas fa-list-alt nav-icon"></i>
-									<p>Emails</p>
+								<a href="#" class="nav-link">
+									<i class="nav-icon fas fa-list-alt"></i>
+									<p>
+										Others
+										<i class="right fas fa-angle-left"></i>
+									</p>
 								</a>
+								<ul class="nav nav-treeview">
+									<li class="nav-item">
+										<a href="{{ path('project_email_index', {'project': project.id })}}" class="nav-link">
+											<i class="fas fa-list-alt nav-icon"></i>
+											<p>Emails</p>
+										</a>
+									</li>
+									<li class="nav-item">
+										<a href="{{ path('project_sponsor_index', {'project': project.id })}}" class="nav-link">
+											<i class="fas fa-list-alt nav-icon"></i>
+											<p>Sponsor</p>
+										</a>
+									</li>
+									<li class="nav-item">
+										<a href="{{ path('project_version_index', {'project': project.id })}}" class="nav-link">
+											<i class="fas fa-list-alt nav-icon"></i>
+											<p>Version</p>
+										</a>
+									</li>
+								</ul>
 							</li>
 						</ul>
 					</li>
@@ -98,129 +120,129 @@
 					</a>
 				</li>
 				{# <li class="nav-item">
-					<a href="{{ path('calendar_index')}}" class="nav-link">
-						<i class="nav-icon fas fa-calendar"></i>
-						<p>
-							Calendar
-						</p>
-					</a>
-				</li> #}
+									<a href="{{ path('calendar_index')}}" class="nav-link">
+										<i class="nav-icon fas fa-calendar"></i>
+										<p>
+											Calendar
+										</p>
+									</a>
+								</li> #}
 				<hr>
 				{% if is_granted("project_index") %}
-				<li class="nav-item has-treeview">
-					<a href="#" class="nav-link ">
-						<i class="nav-icon fas fa-project-diagram"></i>
-						<p>
-							Projects
-							<i class="right fas fa-angle-left"></i>
-						</p>
-					</a>
-					<ul class="nav nav-treeview">
-						{% if is_granted("project_create") %}
-						<li class="nav-item">
-							<a href="{{ path('project_new')}}" class="nav-link ">
-								<i class="fas fa-plus-circle nav-icon"></i>
-								<p>New</p>
-							</a>
-						</li>
-						{% endif %}
-						<li class="nav-item">
-							<a href="{{ path('project_index')}}" class="nav-link">
-								<i class="fas fa-list-alt nav-icon"></i>
-								<p>List</p>
-							</a>
-						</li>
-					</ul>
-				</li>
+					<li class="nav-item has-treeview">
+						<a href="#" class="nav-link ">
+							<i class="nav-icon fas fa-project-diagram"></i>
+							<p>
+								Projects
+								<i class="right fas fa-angle-left"></i>
+							</p>
+						</a>
+						<ul class="nav nav-treeview">
+							{% if is_granted("project_create") %}
+								<li class="nav-item">
+									<a href="{{ path('project_new')}}" class="nav-link ">
+										<i class="fas fa-plus-circle nav-icon"></i>
+										<p>New</p>
+									</a>
+								</li>
+							{% endif %}
+							<li class="nav-item">
+								<a href="{{ path('project_index')}}" class="nav-link">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>List</p>
+								</a>
+							</li>
+						</ul>
+					</li>
 				{% endif %}
 				{% if is_granted("program_index") %}
-				<li class="nav-item has-treeview">
-					<a href="#" class="nav-link ">
-						<i class="nav-icon fas fa-passport"></i>
-						<p>
-							Programs
-							<i class="right fas fa-angle-left"></i>
-						</p>
-					</a>
-					<ul class="nav nav-treeview">
-					{% if is_granted("program_create") %}
-						<li class="nav-item">
-							<a href="{{ path('program_new')}}" class="nav-link ">
-								<i class="fas fa-plus-circle nav-icon"></i>
-								<p>New</p>
-							</a>
-						</li>
-					{% endif %}
-						<li class="nav-item">
-							<a href="{{ path('program_index')}}" class="nav-link">
-								<i class="fas fa-list-alt nav-icon"></i>
-								<p>List</p>
-							</a>
-						</li>
-					</ul>
-				</li>
+					<li class="nav-item has-treeview">
+						<a href="#" class="nav-link ">
+							<i class="nav-icon fas fa-passport"></i>
+							<p>
+								Programs
+								<i class="right fas fa-angle-left"></i>
+							</p>
+						</a>
+						<ul class="nav nav-treeview">
+							{% if is_granted("program_create") %}
+								<li class="nav-item">
+									<a href="{{ path('program_new')}}" class="nav-link ">
+										<i class="fas fa-plus-circle nav-icon"></i>
+										<p>New</p>
+									</a>
+								</li>
+							{% endif %}
+							<li class="nav-item">
+								<a href="{{ path('program_index')}}" class="nav-link">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>List</p>
+								</a>
+							</li>
+						</ul>
+					</li>
 				{% endif %}
 				{% if is_granted("user_group_index") or is_granted("permission_index") %}
-				<li class="nav-item has-treeview">
-					<a href="#" class="nav-link ">
-						<i class="nav-icon fas fa-users"></i>
-						<p>
-							Users
-							<i class="right fas fa-angle-left"></i>
-						</p>
-					</a>
-					<ul class="nav nav-treeview">
-						<li class="nav-item">
-							<a href="{{ path('user_index')}}" class="nav-link ">
-								<i class="far fa-user nav-icon"></i>
-								<p>User</p>
-							</a>
-						</li>
-						{% if is_granted("user_group_index") %}
-						<li class="nav-item">
-							<a href="{{ path('user_group_index')}}" class="nav-link">
-								<i class="fas fa-user-friends nav-icon"></i>
-								<p>User Group</p>
-							</a>
-						</li>
-						{% endif %}
-						{% if is_granted("permission_index") %}
-						<li class="nav-item">
-							<a href="{{ path('permission_index')}}" class="nav-link">
-								<i class="fas fa-key nav-icon"></i>
-								<p>Permission</p>
-							</a>
-						</li>
-						{% endif %}
-					</ul>
-				</li>
+					<li class="nav-item has-treeview">
+						<a href="#" class="nav-link ">
+							<i class="nav-icon fas fa-users"></i>
+							<p>
+								Users
+								<i class="right fas fa-angle-left"></i>
+							</p>
+						</a>
+						<ul class="nav nav-treeview">
+							<li class="nav-item">
+								<a href="{{ path('user_index')}}" class="nav-link ">
+									<i class="far fa-user nav-icon"></i>
+									<p>User</p>
+								</a>
+							</li>
+							{% if is_granted("user_group_index") %}
+								<li class="nav-item">
+									<a href="{{ path('user_group_index')}}" class="nav-link">
+										<i class="fas fa-user-friends nav-icon"></i>
+										<p>User Group</p>
+									</a>
+								</li>
+							{% endif %}
+							{% if is_granted("permission_index") %}
+								<li class="nav-item">
+									<a href="{{ path('permission_index')}}" class="nav-link">
+										<i class="fas fa-key nav-icon"></i>
+										<p>Permission</p>
+									</a>
+								</li>
+							{% endif %}
+						</ul>
+					</li>
 				{% endif %}
 				{% if is_granted("report_index") %}
-				<li class="nav-item has-treeview">
-					<a href="#" class="nav-link ">
-						<i class="nav-icon fas fa-file-download"></i>
-						<p>
-							Reports
-							<i class="right fas fa-angle-left"></i>
-						</p>
-					</a>
-					<ul class="nav nav-treeview">
-					{% if is_granted("report_create") %}
-						<li class="nav-item">
-							<a href="{{ path('report_new')}}" class="nav-link ">
-								<i class="fas fa-plus-circle nav-icon"></i>
-								<p>New</p>
-							</a>
-						</li>
-					{% endif %}
-						<li class="nav-item">
-							<a href="{{ path('report_index')}}" class="nav-link">
-								<i class="fas fa-list-alt nav-icon"></i>
-								<p>List</p>
-							</a>
-						</li>
-					</ul>
-				</li>
+					<li class="nav-item has-treeview">
+						<a href="#" class="nav-link ">
+							<i class="nav-icon fas fa-file-download"></i>
+							<p>
+								Reports
+								<i class="right fas fa-angle-left"></i>
+							</p>
+						</a>
+						<ul class="nav nav-treeview">
+							{% if is_granted("report_create") %}
+								<li class="nav-item">
+									<a href="{{ path('report_new')}}" class="nav-link ">
+										<i class="fas fa-plus-circle nav-icon"></i>
+										<p>New</p>
+									</a>
+								</li>
+							{% endif %}
+							<li class="nav-item">
+								<a href="{{ path('report_index')}}" class="nav-link">
+									<i class="fas fa-list-alt nav-icon"></i>
+									<p>List</p>
+								</a>
+							</li>
+						</ul>
+					</li>
 				{% endif %}
 				<li class="nav-item">
 					<a href="{{ path('alignment_matrix')}}" class="nav-link">
@@ -230,66 +252,66 @@
 						</p>
 					</a>
 				</li>
-				{% if is_granted("currency_index") or is_granted("resource_type_index") or is_granted("sponsor_index") or is_granted("organization_index") or is_granted("organization_unit_index") or is_granted("email_template_index") or is_granted("goal_index")%}
-				<li class="nav-item has-treeview">
-					<a href="#" class="nav-link "> 
-						<i class="nav-icon fas fa-cog"></i>
-						<p>
-							Settings
-							<i class="right fas fa-angle-left"></i>
-						</p>
-					</a>
-					<ul class="nav nav-treeview">
-						{% if is_granted("currency_index") %}
-						<li class="nav-item "> 
-							<a href="{{ path('currency_index')}}" class="nav-link">
-								<i class="fas fa-dollar-sign nav-icon"></i>
-								<p>Currency</p>
-							</a>
-						</li>
-						{% endif %}
-						{% if is_granted("resource_type_index") %}
-						<li class="nav-item">
-							<a href="{{ path('resource_type_index')}}" class="nav-link">
-								<i class="fas fa-file-alt nav-icon"></i>
-								<p>Resource Type</p>
-							</a>
-						</li>
-						{% endif %}
-						{% if is_granted("sponsor_index") %}
-						<li class="nav-item">
-							<a href="{{ path('sponsor_index')}}" class="nav-link">
-								<i class="fas fa-money-check nav-icon"></i>
-								<p>Sponsor</p>
-							</a>
-						</li>
-						{% endif %}
-						{% if is_granted("organization_index") %}
-						<li class="nav-item">
-							<a href="{{ path('organization_index')}}" class="nav-link">
-								<i class="fas fa-sitemap nav-icon"></i>
-								<p>Organization</p>
-							</a>
-						</li>
-						{% endif %}
-						{% if is_granted("email_template_index") %}
-						<li class="nav-item">
-							<a href="{{ path('email_template_index')}}" class="nav-link">
-								<i class="fas fa-mail-bulk nav-icon"></i>
-								<p>Email Template</p>
-							</a>
-						</li>
-						{% endif %}
-						{% if is_granted("goal_index") %}
-						<li class="nav-item">
-							<a href="{{ path('goal_index')}}" class="nav-link">
-								<i class="fas fa-bullseye nav-icon"></i>
-								<p>Goal</p>
-							</a>
-						</li>
-						{% endif %}
-					</ul>
-				</li>
+				{% if is_granted("currency_index") or is_granted("resource_type_index") or is_granted("sponsorship_type_index") or is_granted("organization_index") or is_granted("organization_unit_index") or is_granted("email_template_index") or is_granted("goal_index")%}
+					<li class="nav-item has-treeview">
+						<a href="#" class="nav-link ">
+							<i class="nav-icon fas fa-cog"></i>
+							<p>
+								Settings
+								<i class="right fas fa-angle-left"></i>
+							</p>
+						</a>
+						<ul class="nav nav-treeview">
+							{% if is_granted("currency_index") %}
+								<li class="nav-item ">
+									<a href="{{ path('currency_index')}}" class="nav-link">
+										<i class="fas fa-dollar-sign nav-icon"></i>
+										<p>Currency</p>
+									</a>
+								</li>
+							{% endif %}
+							{% if is_granted("resource_type_index") %}
+								<li class="nav-item">
+									<a href="{{ path('resource_type_index')}}" class="nav-link">
+										<i class="fas fa-file-alt nav-icon"></i>
+										<p>Resource Type</p>
+									</a>
+								</li>
+							{% endif %}
+							{% if is_granted("sponsorship_type_index") %}
+								<li class="nav-item">
+									<a href="{{ path('sponsorship_type_index')}}" class="nav-link">
+										<i class="fas fa-money-check nav-icon"></i>
+										<p>Sponsorship Type</p>
+									</a>
+								</li>
+							{% endif %}
+							{% if is_granted("organization_index") %}
+								<li class="nav-item">
+									<a href="{{ path('organization_index')}}" class="nav-link">
+										<i class="fas fa-sitemap nav-icon"></i>
+										<p>Organization</p>
+									</a>
+								</li>
+							{% endif %}
+							{% if is_granted("email_template_index") %}
+								<li class="nav-item">
+									<a href="{{ path('email_template_index')}}" class="nav-link">
+										<i class="fas fa-mail-bulk nav-icon"></i>
+										<p>Email Template</p>
+									</a>
+								</li>
+							{% endif %}
+							{% if is_granted("goal_index") %}
+								<li class="nav-item">
+									<a href="{{ path('goal_index')}}" class="nav-link">
+										<i class="fas fa-bullseye nav-icon"></i>
+										<p>Goal</p>
+									</a>
+								</li>
+							{% endif %}
+						</ul>
+					</li>
 				{% endif %}
 			</ul>
 		</nav>

@@ -6,6 +6,7 @@ use App\Entity\ProjectVersion;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class ProjectVersionType extends AbstractType
 {
@@ -14,9 +15,7 @@ class ProjectVersionType extends AbstractType
         $builder
             ->add('version')
             ->add('description')
-            ->add('released_date')
-            // ->add('created_at')
-            // ->add('project')
+            ->add('released_date', DateType::class, ['widget' => 'single_text'])
         ;
     }
 

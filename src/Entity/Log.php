@@ -177,9 +177,9 @@ class Log
         $log->setAction($action);
         $log->setActionTime(new \DateTime());
         $log->setTarget($target);
-        $log->setOriginal($original_data);
+        $log->setOriginal($target);
         $log->setIpaddress($ipAddress);
-        $log->setModified($modified_data);
+        $log->setModified($target);
 
         return $log;
     }

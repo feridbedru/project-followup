@@ -4,7 +4,7 @@
 {% endblock %}
 {% block breadcrumb %}
 	<li class="breadcrumb-item">
-		<a href="{{path('project_sponsor_index')}}">{% trans %}
+		<a href="{{path('project_sponsor_index', {'project':project.id})}}">{% trans %}
 			Project Sponsor
 			{% endtrans %}</a>
 	</li>
@@ -34,7 +34,7 @@
 						{% if edit  %}
 							{% set button_label = 'Update' %}
 						{% endif %}
-						{{ include('project_sponsor/_form.html.twig') }}
+						{{ include('project/sponsor/_form.html.twig') }}
 					</div>
 				</div>
 			{% endif %}
@@ -63,7 +63,9 @@
 						<thead>
 							<tr>
 								<th>#</th>
-								<th>{{ knp_pagination_sortable(project_sponsors, 'Sponsor'|trans, 'p.sponsor') }}</th>
+								<th>{{ knp_pagination_sortable(project_sponsors, 'Organization'|trans, 'p.organization') }}</th>
+								<th>{{ knp_pagination_sortable(project_sponsors, 'Type'|trans, 'p.type') }}</th>
+								<th>{{ knp_pagination_sortable(project_sponsors, 'Detail'|trans, 'p.additional_info') }}</th>
 								<th>{% trans %}Actions{% endtrans %}</th>
 							</tr>
 						</thead>
@@ -74,7 +76,9 @@
 									<td>{{ i }}
 										{% set i = i+1 %}
 									</td>
-									<td>{{ project_sponsor.sponsor.name }}</td>
+									<td>{{ project_sponsor.organization.name }}</td>
+									<td>{{ project_sponsor.type.name }}</td>
+									<td>{{ project_sponsor.additionalInfo }}</td>
 									<td>
 
 										{% if is_granted("project_sponsor_edit") %}
@@ -86,7 +90,7 @@
 											</form>
 										{% endif %}
 										{% if is_granted("project_sponsor_delete") %}
-											<form method="post" class="d-inline" action="{{ path('project_sponsor_delete', {'id': project_sponsor.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
+											<form method="post" class="d-inline" action="{{ path('project_sponsor_delete', {'id': project_sponsor.id, 'project': project.id }) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
 												<input type="hidden" name="_token" value="{{ csrf_token('delete' ~ project_sponsor.id) }}">
 												<button class="btn btn-danger btn-sm">
 													<span class="fa fa-trash"></span>

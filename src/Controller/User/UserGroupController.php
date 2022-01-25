@@ -28,9 +28,9 @@ class UserGroupController extends AbstractController
         $searchForm = $this->createForm(UserGroupFilterType::class, $userGroup);
         $searchForm->handleRequest($request);
 
-        // $this->denyAccessUnlessGranted('usr_grp_vw');
+        // $this->denyAccessUnlessGranted('user_group_show');
         if ($request->request->get('edit')) {
-            // $this->denyAccessUnlessGranted('edt_usr_grp');
+            // $this->denyAccessUnlessGranted('user_group_edit');
             $id = $request->request->get('edit');
             $userGroup = $userGroupRepository->findOneBy(['id' => $id]);
             $original = clone $userGroup;
@@ -67,7 +67,7 @@ class UserGroupController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // $this->denyAccessUnlessGranted('ad_usr_grp');
+            // $this->denyAccessUnlessGranted('user_group_add');
             $entityManager = $this->getDoctrine()->getManager();
             $userGroup->setIsActive(true);
             $userGroup->setCreatedAt(new \DateTime());
@@ -99,7 +99,7 @@ class UserGroupController extends AbstractController
     #[Route('/{id}/users', name: 'user_group_users', methods: ['GET', 'POST'])]
     public function user(UserGroup $userGroup, Request $request, UserRepository $userRepository, PermissionRepository $permissionRepository): Response
     {
-        //$this->denyAccessUnlessGranted('ad_usr_t_grp');
+        //$this->denyAccessUnlessGranted('user_to_user_group');
         if ($request->request->get('save')) {
             $users = $userRepository->findAll();
             foreach ($users as $user) {
@@ -145,7 +145,7 @@ class UserGroupController extends AbstractController
     #[Route('/{id}/permission', name: 'user_group_permission', methods: ['POST'])]
     public function permission(UserGroup $userGroup, Request $request, PermissionRepository $permissionRepository): Response
     {
-        // $this->denyAccessUnlessGranted('ad_prmsn_t_grp');
+        // $this->denyAccessUnlessGranted('permission_to_group');
 
         if ($request->request->get('usergrouppermission')) {
             $permissions = $permissionRepository->findAll();
@@ -170,7 +170,7 @@ class UserGroupController extends AbstractController
     #[Route('/{id}/activate', name: 'user_group_action', methods: ['POST'])]
     public function action(UserGroup $userGroup, Request $request): Response
     {
-        // $this->denyAccessUnlessGranted('edt_usr_grp');
+        // $this->denyAccessUnlessGranted('user_group_edit');
         $userGroup->setIsActive($request->request->get('activateUserGroup'));
         $userGroup->setUpdatedAt(new \DateTime());
         $userGroup->setUpdatedBy($this->getUser());
@@ -182,7 +182,7 @@ class UserGroupController extends AbstractController
     #[Route('/{id}', name: 'user_group_delete', methods: ['POST'])]
     public function delete(Request $request, UserGroup $userGroup): Response
     {
-        //$this->denyAccessUnlessGranted('dlt_usr_grp');
+        //$this->denyAccessUnlessGranted('user_group_delete');
         if ($userGroup->getUsers()) {
             $this->addFlash("warning", "This user group cannot be deleted!!");
 

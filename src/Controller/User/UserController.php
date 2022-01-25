@@ -5,6 +5,7 @@ namespace App\Controller\User;
 use App\Entity\User;
 use App\Entity\Log;
 use App\Form\UserType;
+use App\Repository\EmailTemplateRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Mailer\MailerInterface;
+use App\Services\MailerService;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -27,7 +30,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request,UserPasswordEncoderInterface $userPasswordEncoderInterface): Response
+    public function new(Request $request,UserPasswordEncoderInterface $userPasswordEncoderInterface, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository): Response
     {
         $this->denyAccessUnlessGranted('user_create');
         $user = new User();
@@ -35,7 +38,6 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // dd();
             $entityManager = $this->getDoctrine()->getManager();
             $user->setCreatedBy($this->getUser());
             $user->setCreatedAt(new \DateTime());
@@ -46,6 +48,15 @@ class UserController extends AbstractController
             $user->setPassword($userPasswordEncoderInterface->encodePassword($user,$password));
             $entityManager->persist($user);
             $entityManager->flush();
+
+            $template = $emailTemplateRepository->findOneBy(['code' => 'user_account_created']);
+            $message =  $template->getContent();
+            $message = str_replace('$user', $user->getFullName(), $message);
+            $message = str_replace('$email', $user->getEmail(), $message);
+            $message = str_replace('$password', $password, $message);
+            $recievers = array();
+            array_push($recievers, $user->getEmail());
+            $mservice->sendEmail($mailer, $recievers, $template->getName(), $message);
 
             $log = new Log();
             $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$user->getId(),"User","CREATE", $user);

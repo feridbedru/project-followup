@@ -23,10 +23,11 @@ class PermissionRepository extends ServiceEntityRepository
     {
         $qb = $this->createQueryBuilder('p');
         if ($search)
-            $qb->andWhere("p.name  LIKE '%" . $search . "%'");
+            $qb->orWhere("p.name  LIKE '%" . $search . "%'");
+            $qb->orWhere("p.code  LIKE '%" . $search . "%'");
 
         return
-            $qb->orderBy('p.id', 'ASC')
+            $qb->orderBy('p.name', 'ASC')
             ->getQuery();
     }
     public function findForUserGroup($usergroup = null)

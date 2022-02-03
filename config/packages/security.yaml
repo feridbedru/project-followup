@@ -25,7 +25,7 @@ security:
     # Enables the new Symfony Security system based on Authenticators, all used authenticators must support this before enabling this.
     enable_authenticator_manager: true
     access_decision_manager:
-        strategy: ~
+        strategy: affirmative
         service: ~
         allow_if_all_abstain: false
         allow_if_equal_granted_denied: true

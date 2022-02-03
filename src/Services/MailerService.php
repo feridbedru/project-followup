@@ -13,7 +13,7 @@ class MailerService
     public function sendEmail(MailerInterface $mailer, $receiver, $subject, $message, $cc=NULL)
     {
         $email = (new Email())
-            ->from('ferid.bedru@mint.gov.et')
+            ->from('projet.followup@mint.gov.et')
             ->to(...$receiver);
             if($cc){
                 $email->cc($cc);

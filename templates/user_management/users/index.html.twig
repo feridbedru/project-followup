@@ -55,11 +55,14 @@
 								{% if is_granted("user_edit") %}
 									<a href="{{ path('user_edit', {'id': user.id}) }}" class="btn btn-sm btn-warning text-white">{% trans %}Edit{% endtrans %}</a>
 								{% endif %}
+								{% if is_granted("user_delete") %}
+									{{ include('user_management/users/_delete_form.html.twig') }}
+								{% endif %}
 							</td>
 						</tr>
 					{% else %}
 						<tr>
-							<td colspan="15">{% trans %}no records found{% endtrans %}</td>
+							<td colspan="7">{% trans %}no records found{% endtrans %}</td>
 						</tr>
 					{% endfor %}
 				</tbody>

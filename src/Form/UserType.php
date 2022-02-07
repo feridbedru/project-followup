@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
@@ -16,21 +17,23 @@ class UserType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            // ->add('username')
             ->add('email')
             // ->add('roles')
-            // ->add('password')
-            // ->add('isActive')
-            // ->add('lastLogin')
-            // ->add('confirmToken')
-            // ->add('created_at')
-            // ->add('status')
-            ->add('photo', FileType::class, array('data_class' => null,'required' => false))
+            ->add('photo', FileType::class, [
+                'required' => false,
+                'mapped' => false,
+                'constraints' => [
+                    new File([
+                        'maxSize' => '4M',
+                        'mimeTypes' => [
+                            'image/*',
+                        ],
+                    ])
+                ],
+            ])
             ->add('phone')
             ->add('position')
             ->add('full_name')
-            // ->add('created_by')
-            // ->add('userGroup')
             ->add('unit')
             // ->add('organization', EntityType::class, [
             //     'class' => Organization::class,

@@ -78,14 +78,13 @@
 												</form>
 											{% endif %}
 
-											{% if user_group.permission|length and is_granted("user_group_user") %}
+											{% if is_granted("user_group_user") %}
 												<form class="d-inline" method="post" action="{{ path('user_group_users', {'id': user_group.id}) }}">
 													<input type="hidden" name="edit" value="{{user_group.id}}">
 													<button class="btn btn-sm btn-outline-success" title="Users">
 														<i class="fa fa-users"></i>
 													</button>
 												</form>
-												<a href="{{ path('user_group_users',{'id': user_group.id})}}">manage</a>
 											{% endif %}
 											{% if is_granted("user_group_edit") %}
 												<form class="d-inline" method="post">
@@ -107,7 +106,7 @@
 									</tr>
 								{% else %}
 									<tr>
-										<td colspan="4">no records found</td>
+										<td colspan="5">no records found</td>
 									</tr>
 								{% endfor %}
 							</tbody>

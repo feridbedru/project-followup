@@ -1,19 +1,26 @@
 {% extends 'base.html.twig' %}
-
-{% block title %}User Group
+{% block breadcrumb %}
+	<li class="breadcrumb-item">
+		<a href="{{path('user_group_index')}}">{% trans %}
+			User Group
+			{% endtrans %}</a>
+	</li>
+	<li class="breadcrumb-item active">{% trans %}
+		Users
+		{% endtrans %}</li>
+{% endblock %}
+{% block pagetitle %}
+	{{ user_group.name }}
+	{% trans %}User Group{% endtrans %}
+{% endblock %}
+{% block title %}
+	Permission
 {% endblock %}
 {% block stylesheets %}
 	<link rel="stylesheet" href="{{asset('assets/plugins/bootstrap4-duallistbox/bootstrap-duallistbox.min.css')}}">
 {% endblock %}
 {% block body %}
 	<div class="card ">
-		<div class="card-header">
-			<h3 class="card-title"> {{ user_group.name }}
-			</h3>
-			<div class="card-tools">
-				<a href="{{ path('user_group_index') }}" class="btn btn-primary btn-sm">back</a>
-			</div>
-		</div>
 		<form method="POST">
 			<div class="card-body">
 				<div class="row">
@@ -38,7 +45,7 @@
 			<div class="card-footer">
 				<div class="float-right">
 					<a href="{{path('user_group_index')}}" class="btn btn-warning">Cancel</a>
-					<button class="btn btn-info  ">Save</button>
+					<button class="btn btn-info">Save</button>
 				</div>
 			</div>
 		</form>
@@ -49,7 +56,7 @@
 	<script src="{{asset('assets/plugins/bootstrap4-duallistbox/jquery.bootstrap-duallistbox.min.js')}}"></script>
 	<script>
 		$(function () {
-$('.duallistbox').bootstrapDualListbox();
-})
+			$('.duallistbox').bootstrapDualListbox();
+		})
 	</script>
 {% endblock %}

@@ -23,8 +23,8 @@
 			<div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
 				<span class="dropdown-header">{{ app.user.fullName }}</span>
 				<div class="dropdown-divider"></div>
-				<a href="#" class="dropdown-item">
-					<span class=" text-sm">User Profile</span>
+				<a href="{{ path('change_password')}}" class="dropdown-item">
+					<span class=" text-sm">Change Password</span>
 				</a>
 				<div class="dropdown-divider"></div>
 				<a href="{{ path('app_logout')}}" class="dropdown-item">

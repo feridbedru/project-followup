@@ -28,7 +28,7 @@ class ProjectPlanRevisionRepository extends ServiceEntityRepository
             ->orderBy('p.revision_id', 'DESC')
             ->groupBy('p.project')
             ->getQuery()
-            ->getSingleResult()
+            ->getOneOrNullResult()
         ;
     }
 
@@ -41,7 +41,7 @@ class ProjectPlanRevisionRepository extends ServiceEntityRepository
             ->orderBy('p.revision_id', 'DESC')
             ->groupBy('p.project')
             ->getQuery()
-            ->getSingleResult()
+            ->getOneOrNullResult()
         ;
     }
     // /**

@@ -21,7 +21,7 @@ class ProjectStructureType extends AbstractType
             ->add('reports_to', EntityType::class, [
                 'class' => ProjectStructure::class,
                 'placeholder' => "Reports to",
-                'required' => true,
+                'required' => false,
                 'query_builder' => function (EntityRepository $er) use($project){
                     $res = $er->createQueryBuilder('r')
                     ->andWhere('r.project = :project')

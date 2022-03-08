@@ -166,21 +166,19 @@ class Log
 
     public function logEvent($ipAddress, $user, $record, $target, $action, $original_data, $modified_data=null)
     {
-        // $encoders = [new JsonEncoder()];
-        // $normalizers = [new ObjectNormalizer()];
-        // $serializer = new Serializer($normalizers, $encoders);
-        // $original = $serializer->serialize($original_data, 'json');
-        // $modified = $serializer->serialize($modified_data, 'json');
+        $original = (string)$original_data;
+        $modified = (string)$modified_data;
         $log = new log();
         $log->setUser($user);
         $log->setRecordId($record);
         $log->setAction($action);
         $log->setActionTime(new \DateTime());
         $log->setTarget($target);
-        $log->setOriginal($target);
+        $log->setOriginal($original);
         $log->setIpaddress($ipAddress);
-        $log->setModified($target);
+        $log->setModified($modified);
 
         return $log;
     }
+
 }

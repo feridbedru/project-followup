@@ -15,6 +15,10 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use App\Services\MailerService;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -30,7 +34,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request,UserPasswordEncoderInterface $userPasswordEncoderInterface, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository): Response
+    public function new(Request $request, UserPasswordEncoderInterface $userPasswordEncoderInterface, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('user_create');
         $user = new User();
@@ -38,7 +42,6 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
             $user->setCreatedBy($this->getUser());
             $user->setCreatedAt(new \DateTime());
             $user->setIsActive(true);
@@ -46,9 +49,9 @@ class UserController extends AbstractController
             $user->setRoles(['ROLE_USER']);
             $user->setUsername($request->request->get('user')["email"]);
             $password = $this->randomPassword();
-            $user->setPassword($userPasswordEncoderInterface->encodePassword($user,$password));
-            $entityManager->persist($user);
-            $entityManager->flush();
+            $user->setPassword($userPasswordEncoderInterface->encodePassword($user, $password));
+            $em->persist($user);
+            $em->flush();
 
             $template = $emailTemplateRepository->findOneBy(['code' => 'user_account_created']);
             $message =  $template->getContent();
@@ -60,10 +63,10 @@ class UserController extends AbstractController
             $mservice->sendEmail($mailer, $recievers, $template->getName(), $message);
 
             $log = new Log();
-            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$user->getId(),"User","CREATE", $user);
-            $entityManager->persist($log);
-            $entityManager->flush();
-            $this->addFlash("success","created user successfully.");
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $user->getId(), "User", "CREATE", $user);
+            $em->persist($log);
+            $em->flush();
+            $this->addFlash("success", "created user successfully.");
 
             return $this->redirectToRoute('user_index');
         }
@@ -84,10 +87,10 @@ class UserController extends AbstractController
             $pass[] = $alphabet[$n];
         }
         $password = implode($pass);
-        return $password; 
+        return $password;
     }
 
-    #[Route('/{id}', name: 'user_show', methods: ['GET'])]
+    #[Route('/{id}/show', name: 'user_show', methods: ['GET'])]
     public function show(User $user): Response
     {
         $this->denyAccessUnlessGranted('user_show');
@@ -97,7 +100,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user): Response
+    public function edit(Request $request, User $user, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('user_edit');
         $form = $this->createForm(UserType::class, $user);
@@ -105,13 +108,12 @@ class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager = $this->getDoctrine()->getManager();
             $log = new Log();
-            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$user->getId(),"User","UPDATE",$original, $user);
-            $entityManager->persist($log);
-            $entityManager->flush();
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $user->getId(), "User", "UPDATE", $original, $user);
+            $em->persist($log);
+            $em->flush();
 
-            $this->addFlash("success","Updated user successfully.");
+            $this->addFlash("success", "Updated user successfully.");
 
             return $this->redirectToRoute('user_index');
         }
@@ -121,21 +123,59 @@ class UserController extends AbstractController
             'form' => $form->createView(),
         ]);
     }
+    /**
+     * @Route("/changePassword", name="change_password", methods={"POST","GET"})
+     */
+    public function changePassword(Request $request, UserPasswordEncoderInterface $userPasswordEncoderInterface, EntityManagerInterface $em)
+    {
+        $user = $this->getUser();
+        $form = $this->createFormBuilder()
+            ->add('oldPassword', PasswordType::class)
+            ->add('newPassword', RepeatedType::class, [
+                'type' => PasswordType::class,
+                'invalid_message' => 'The password fields must match.',
+                'options' => ['attr' => ['class' => 'password-field']],
+                'required' => true,
+                'first_options'  => ['label' => 'New Password'],
+                'second_options' => ['label' => 'Repeat Password'],
+            ])
+            ->add('change', SubmitType::class)
+            ->getForm();
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $user = $this->getUser();
+            if ($userPasswordEncoderInterface->isPasswordValid($user, $form->getData()['oldPassword'])) {
+                $password = $form->getData()['newPassword'];
+                $user->setPassword($userPasswordEncoderInterface->encodePassword($user, $password));
+                if (!$user->getLastLogin())
+                    $user->setLastLogin(new \DateTime());
+                $em->flush();
+                $this->addFlash('success', "Password changed successfully.");
+            } else {
+                $this->addFlash('danger', "Incorrect Password");
+            }
+        }
+
+        return $this->render('user_management/users/password.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 
     #[Route('/{id}', name: 'user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user): Response
     {
         $this->denyAccessUnlessGranted('user_delete');
-        if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $user->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($user);
             $log = new Log();
-            $log =  $log->logEvent($request->getClientIp(),$this->getUser(),$user->getId(),"User","DELETE", $user);
+            $log =  $log->logEvent($request->getClientIp(), $this->getUser(), $user->getId(), "User", "DELETE", $user);
             $entityManager->persist($log);
             $entityManager->flush();
         }
 
-        $this->addFlash("success","Deleted user successfully.");
+        $this->addFlash("success", "Deleted user successfully.");
 
         return $this->redirectToRoute('user_index');
     }

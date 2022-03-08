@@ -6,6 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Mime\Email;
 
 class SecurityController extends AbstractController
 {
@@ -39,4 +41,19 @@ class SecurityController extends AbstractController
         echo "INSERT INTO `permission`(`name`, `code`, `description`) VALUES ('" . $entity_name . " List','" . $entity_small . "_index', 'Allows users to list " . $entity_name . "');";
         // return $entity_spaceless;
     }
+
+    // #[Route('/email')]
+    // public function sendEmail(MailerInterface $mailer)
+    // {
+    //     $email = (new Email())
+    //         ->from('project.followup@mint.gov.et')
+    //         ->to('ferid.bedru@mint.gov.et')
+    //         ->subject('Time for Symfony Mailer!')
+    //         ->text('Sending emails is fun again!')
+    //         ->html('<p>See Twig integration for better HTML integration!</p>');
+
+    //     $mailer->send($email);
+
+    //     dd($mailer);
+    // }
 }

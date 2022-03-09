@@ -5,31 +5,41 @@ namespace App\Security\Voter;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
-
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 
 class PermissionVoter extends Voter
 {
-    private $session;
-    public function __construct(SessionInterface $sessionInterface)
+    private $requestStack;
+    public function __construct(RequestStack $requestStack)
     {
-        $this->session = $sessionInterface;
+        $this->requestStack = $requestStack;
     }
-    protected function supports($attribute, $subject)
+
+    /**
+     * @return mixed
+     */
+    protected function supports(string $attribute, $subject): bool
     {
         // replace with your own logic
         // https://symfony.com/doc/current/security/voters.html
 
-        $permission = $this->session->get("PERMISSION");
+        $session = $this->requestStack->getSession();
+        $permission = $session->get("PERMISSION");
+        // dd($session);
         if (!$permission)
             $permission = array();
         if ($attribute == "pat_") return true;
         return in_array($attribute, $permission);
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    /**
+     * @return boolean
+     */
+    protected function voteOnAttribute(string $attribute, $subject, TokenInterface $token): bool
     {
-        $permission = $this->session->get("PERMISSION");
+        $session = $this->requestStack->getSession();
+        $permission = $session->get("PERMISSION");
         $user = $token->getUser();
 
         // if the user is anonymous, do not grant access

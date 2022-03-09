@@ -29,10 +29,18 @@ security:
         service: ~
         allow_if_all_abstain: false
         allow_if_equal_granted_denied: true
-    encoders:
-        App\Entity\User: bcrypt
+    # encoders:
+    #     legacy_bcrypt:
+    #         algorithm: bcrypt
+    #     App\Entity\User:
+    #         algorithm: sodium
+    #         migrate_from:
+                # allow existing bcrypt accounts to log in
+                # and migrate to sodium
+                # - legacy_bcrypt
 
     password_hashers:
+        # Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
         App\Entity\User:
             algorithm: auto
 
@@ -47,19 +55,28 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
         main:
+            # anonymous: true
             provider: app_user_provider
             lazy: true
+            entry_point: form_login
             login_throttling:
                 limiter: app.login_rate_limiter
-            guard:
-                authenticators:
-                    - App\Security\UserAuthenticator
+            form_login:
+                login_path: app_login
+                check_path: app_login
+                enable_csrf: true
+                username_parameter: email
+                password_parameter: password
+                always_use_default_target_path: true
+            # guard:
+            #     authenticators:
+            #         - App\Security\UserAuthenticator
             logout:
                 path: app_logout
                 target: /
-            entry_point: App\Security\AuthenticationEntryPoint
+            
 
-    access_control:
-        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
-        - { path: ^/*, roles: ROLE_ADMIN }
+    # access_control:
+    #     - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    #     - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    #     - { path: ^/*, roles: ROLE_ADMIN }

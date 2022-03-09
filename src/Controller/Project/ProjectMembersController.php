@@ -15,14 +15,16 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use App\Services\MailerService;
+use App\Services\ProjectAccessService;
 
 #[Route('project/{project}/members')]
 class ProjectMembersController extends AbstractController
 {
     #[Route('/', name: 'project_members_index', methods: ['GET', 'POST'])]
-    public function index(ProjectMembersRepository $projectMembersRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ProjectMembersRepository $projectMembersRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if ($request->request->get('edit')) {
 
             $id = $request->request->get('edit');
@@ -88,9 +90,10 @@ class ProjectMembersController extends AbstractController
     }
 
     #[Route('/{id}/status', name: 'member_status', methods: ['POST'])]
-    public function action(ProjectMembersRepository $projectMembersRepository, ProjectMembers $projectMember, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    public function action(ProjectMembersRepository $projectMembersRepository, ProjectMembers $projectMember, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, ProjectAccessService $projectAccessService)
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $template = $emailTemplateRepository->findOneBy(['code' => 'add_individual_to_project']);
         $memberId = $request->request->get('memberId');
         $em = $this->getDoctrine()->getManager();
@@ -121,10 +124,10 @@ class ProjectMembersController extends AbstractController
     }
 
     #[Route('/{id}/delete', name: 'project_members_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectRepository $projectRepository, ProjectMembers $projectMember): Response
+    public function delete(Request $request, ProjectRepository $projectRepository, ProjectMembers $projectMember, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
-
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $this->denyAccessUnlessGranted('project_member_delete');
         if ($this->isCsrfTokenValid('delete' . $projectMember->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();

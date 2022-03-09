@@ -12,14 +12,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 #[Route('/project/{project}/structure')]
 class ProjectStructureController extends AbstractController
 {
     #[Route('/', name: 'project_structure_index', methods: ['GET', 'POST'])]
-    public function index(ProjectStructureRepository $projectStructureRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ProjectStructureRepository $projectStructureRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if($request->request->get('edit')){
             
             $id = $request->request->get('edit');
@@ -85,10 +87,11 @@ class ProjectStructureController extends AbstractController
     }
 
     #[Route('/{id}', name: 'project_structure_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectRepository $projectRepository, ProjectStructure $projectStructure): Response
+    public function delete(Request $request, ProjectRepository $projectRepository, ProjectStructure $projectStructure, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('project_structure_delete');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if ($this->isCsrfTokenValid('delete'.$projectStructure->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectStructure);

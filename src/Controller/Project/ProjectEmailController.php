@@ -15,11 +15,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 class ProjectEmailController extends AbstractController
 {
     #[Route('/project/{project}/email', name: 'project_email_index')]
-    public function index(ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectStructureRepository $projectStructureRepository, EmailTemplateRepository $emailTemplateRepository): Response
+    public function index(ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectStructureRepository $projectStructureRepository, EmailTemplateRepository $emailTemplateRepository, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         if ($request->request->get('edit')) {

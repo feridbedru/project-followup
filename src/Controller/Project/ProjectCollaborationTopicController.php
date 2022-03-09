@@ -12,14 +12,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 #[Route('/project/{project}/topic')]
 class ProjectCollaborationTopicController extends AbstractController
 {
     #[Route('/', name: 'project_collaboration_topic_index', methods: ['GET', 'POST'])]
-    public function index(ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if ($request->request->get('edit')) {
 
             $id = $request->request->get('edit');
@@ -84,10 +86,11 @@ class ProjectCollaborationTopicController extends AbstractController
     }
 
     #[Route('/{id}', name: 'project_collaboration_topic_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectCollaborationTopic $projectCollaborationTopic, ProjectRepository $projectRepository): Response
+    public function delete(Request $request, ProjectCollaborationTopic $projectCollaborationTopic, ProjectRepository $projectRepository, ProjectAccessService $projectAccessService): Response
     {
-        $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
         $this->denyAccessUnlessGranted('project_collaboration_topic_delete');
+        $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if ($this->isCsrfTokenValid('delete' . $projectCollaborationTopic->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectCollaborationTopic);

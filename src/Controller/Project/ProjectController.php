@@ -22,6 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use App\Services\MailerService;
+use App\Services\ProjectAccessService;
 
 #[Route('/project')]
 class ProjectController extends AbstractController
@@ -37,9 +38,10 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/dashboard', name: 'project_dashboard', methods: ['GET'])]
-    public function dashboard(Project $project): Response
+    public function dashboard(Project $project, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('project_show');
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         return $this->render('project/dashboard.html.twig', [
             'project' => $project,
         ]);
@@ -77,9 +79,10 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/show', name: 'project_show', methods: ['GET', 'POST'])]
-    public function show(Project $project, ProjectResourceRepository $projectResourceRepository, ProjectPlanCommentRepository $projectPlanCommentRepository, PlanModificationRequestRepository $planModificationRequestRepository): Response
+    public function show(Project $project, ProjectResourceRepository $projectResourceRepository, ProjectPlanCommentRepository $projectPlanCommentRepository, PlanModificationRequestRepository $planModificationRequestRepository, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('project_show');
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $projectResource = $projectResourceRepository->findBy(['project' => $project]);
         $comments = $projectPlanCommentRepository->findBy(['project' => $project]);
         $modificationRequest = $planModificationRequestRepository->findOneBy(['project' => $project, 'status' => 1]);
@@ -91,8 +94,9 @@ class ProjectController extends AbstractController
         ]);
     }
     #[Route('/{id}/status', name: 'plan_approve_request', methods: ['POST'])]
-    public function requestApproval(Project $project, ProjectPlanRevisionRepository $projectPlanRevisionRepository, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    public function requestApproval(Project $project, ProjectPlanRevisionRepository $projectPlanRevisionRepository, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, ProjectAccessService $projectAccessService)
     {
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $max = $projectPlanRevisionRepository->findMax($project);
         $max_rev = $max['max'];
         if ($max_rev == null) {
@@ -132,8 +136,9 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/approve', name: 'plan_approve_reject', methods: ['POST', 'GET'])]
-    public function approvePlan(Project $project, ProjectRepository $projectRepository, ProjectPlanRevisionRepository $projectPlanRevisionRepository, ProjectPlanCommentRepository $projectPlanCommentRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    public function approvePlan(Project $project, ProjectRepository $projectRepository, ProjectPlanRevisionRepository $projectPlanRevisionRepository, ProjectPlanCommentRepository $projectPlanCommentRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, ProjectAccessService $projectAccessService)
     {
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $lastRevision = $projectPlanRevisionRepository->findLastRevisionDate($project);
         $justification = '';
         $specific_comments = array();
@@ -205,8 +210,9 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/implementation', name: 'project_start_implementation', methods: ['POST'])]
-    public function startImplementation(Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    public function startImplementation(Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, ProjectAccessService $projectAccessService)
     {
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $decision = $request->request->get('decision');
         $entityManager = $this->getDoctrine()->getManager();
         $projectPlanStatus = new ProjectPlanStatus();
@@ -234,8 +240,9 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/requestModification', name: 'plan_modification_request', methods: ['POST'])]
-    public function requestModification(Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    public function requestModification(Project $project, ProjectRepository $projectRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, ProjectAccessService $projectAccessService)
     {
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $comment = $request->request->get('comment');
         $entityManager = $this->getDoctrine()->getManager();
         $planModificationRequest = new PlanModificationRequest();
@@ -267,8 +274,9 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/approveRequestMod', name: 'plan_modification_approve', methods: ['POST'])]
-    public function approveRequestMod(Project $project, PlanModificationRequestRepository $planModificationRequestRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository)
+    public function approveRequestMod(Project $project, PlanModificationRequestRepository $planModificationRequestRepository, Request $request, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, ProjectAccessService $projectAccessService)
     {
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $comment = $request->request->get('approver_comment');
         $req_id = $request->request->get('req_id');
         $status = $request->request->get('status');
@@ -305,8 +313,9 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/comment', name: 'project_plan_comment', methods: ['POST'])]
-    public function submitComment(Project $project, Request $request)
+    public function submitComment(Project $project, Request $request, ProjectAccessService $projectAccessService)
     {
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $comment = $request->request->get('comment');
         $entity = $request->request->get('entity');
         $data = $request->request->get('data');
@@ -328,9 +337,10 @@ class ProjectController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'project_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Project $project): Response
+    public function edit(Request $request, Project $project, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('project_edit');
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $original = clone $project;
         $form = $this->createForm(ProjectType::class, $project);
         $form->handleRequest($request);

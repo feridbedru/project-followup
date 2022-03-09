@@ -13,14 +13,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 #[Route('project/{project}/activity/{activity}/members')]
 class ActivityUserController extends AbstractController
 {
     #[Route('/', name: 'activity_user_index', methods: ['GET', 'POST'])]
-    public function index(ActivityUserRepository $activityUserRepository, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ActivityUserRepository $activityUserRepository, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
         if ($request->request->get('edit')) {
 
@@ -94,10 +96,11 @@ class ActivityUserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'activity_user_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, ActivityUser $activityUser): Response
+    public function delete(Request $request, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, ActivityUser $activityUser, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('activity_user_delete');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
         if ($this->isCsrfTokenValid('delete' . $activityUser->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();

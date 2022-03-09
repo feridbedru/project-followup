@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Security;
@@ -23,6 +23,8 @@ use Symfony\Component\Security\Csrf\CsrfTokenManagerInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
 use Symfony\Component\Security\Guard\PasswordAuthenticatedInterface;
 use Symfony\Component\Security\Http\Util\TargetPathTrait;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
 class UserAuthenticator extends AbstractFormLoginAuthenticator implements PasswordAuthenticatedInterface
 {
@@ -33,13 +35,15 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
     private $csrfTokenManager;
     private $passwordEncoder;
     private $user;
+    private $requestStack;
 
-    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordEncoderInterface $passwordEncoder)
+    public function __construct(EntityManagerInterface $entityManager, UrlGeneratorInterface $urlGenerator, CsrfTokenManagerInterface $csrfTokenManager, UserPasswordHasherInterface $passwordEncoder, RequestStack $requestStack)
     {
         $this->entityManager = $entityManager;
         $this->urlGenerator = $urlGenerator;
         $this->csrfTokenManager = $csrfTokenManager;
         $this->passwordEncoder = $passwordEncoder;
+        $this->requestStack = $requestStack;
     }
 
     public function supports(Request $request)
@@ -48,6 +52,9 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
             && $request->isMethod('POST');
     }
 
+    /**
+     * @return mixed
+     */
     public function getCredentials(Request $request)
     {
         $credentials = [
@@ -63,6 +70,9 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
         return $credentials;
     }
 
+    /**
+     * @return mixed
+     */
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
         $token = new CsrfToken('authenticate', $credentials['csrf_token']);
@@ -79,6 +89,9 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
         return $user;
     }
 
+    /**
+     * @return mixed
+     */
     public function checkCredentials($credentials, UserInterface $user)
     {
         return $this->passwordEncoder->isPasswordValid($user, $credentials['password']);
@@ -92,70 +105,11 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
         return $credentials['password'];
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    /**
+     * @return mixed
+     */
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey): ?Response
     {
-        $user = $this->user;
-        $role = $user->getRoles()[0];
-        if ($role === "ROLE_USER") {
-            if (!$user->getLastLogin()) {
-                return new RedirectResponse($this->urlGenerator->generate('change_password'));
-            } elseif ($user->getIsActive() == false) {
-                throw new CustomUserMessageAuthenticationException('Your account is temporarily inactive. Contact the system administrator');
-                return new RedirectResponse('app_login');
-            }
-        }
-
-        $this->user->setLastLogin(new \DateTime());
-        $this->entityManager->flush();
-        $permissions = [];
-
-        if ($user->getId() == 1) {
-            $permission = $this->entityManager->getRepository(Permission::class)->findAll();
-            foreach ($permission as $key => $value1) {
-                $permissions[] = $value1->getCode();
-            }
-        } else {
-            $groups = $this->user->getUserGroup();
-            foreach ($groups as $key => $value) {
-                if (!$value->getIsActive()) {
-                    continue;
-                }
-                $permission = $value->getPermission();
-
-                foreach ($permission as $key => $value1) {
-                    $permissions[] = $value1->getCode();
-                }
-            }
-        }
-
-        $request->getSession()->set(
-            "PERMISSION",
-            $permissions
-        );
-
-        $projectMembersRepository = $this->entityManager->getRepository(ProjectMembers::class);
-        $projectRepository = $this->entityManager->getRepository(Project::class);
-        $projectMember = $projectMembersRepository->findBy(['user' => $user, 'status' => 1]);
-        $projects = [];
-        $project_list = [];
-        foreach ($projectMember as $member) {
-            $project = $projectRepository->findOneBy(['id' => $member->getProject()->getId()]);
-            array_push($projects, $project);
-        }
-        $managingProjects = $projectRepository->findBy(['project_manager' => $user]);
-        foreach ($managingProjects as $projectr) {
-            array_push($projects, $projectr);
-        }
-        foreach ($projects as $proj) {
-            if (!in_array($proj, $project_list)) {
-                $project_list[] = $proj;
-            }
-        }
-
-        $request->getSession()->set(
-            "myprojects",
-            $project_list
-        );
 
         if ($targetPath = $this->getTargetPath($request->getSession(), $providerKey)) {
             return new RedirectResponse($targetPath);
@@ -166,6 +120,9 @@ class UserAuthenticator extends AbstractFormLoginAuthenticator implements Passwo
         throw new \Exception('TODO: provide a valid redirect inside ' . __FILE__);
     }
 
+    /**
+     * @return mixed
+     */
     protected function getLoginUrl()
     {
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);

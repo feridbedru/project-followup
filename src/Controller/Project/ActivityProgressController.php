@@ -13,14 +13,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 #[Route('project/{project}/activity/{activity}/progress')]
 class ActivityProgressController extends AbstractController
 {
     #[Route('/', name: 'activity_progress_index', methods: ['GET', 'POST'])]
-    public function index(ActivityProgressRepository $activityProgressRepository, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ActivityProgressRepository $activityProgressRepository, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
         $report_days = array();
         $days = $activityProgressRepository->findReportDays($activity);
@@ -103,9 +105,10 @@ class ActivityProgressController extends AbstractController
     }
 
     #[Route('/{id}', name: 'activity_progress_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, ActivityProgress $activityProgress): Response
+    public function delete(Request $request, ProjectActivityRepository $projectActivityRepository, ProjectRepository $projectRepository, ActivityProgress $activityProgress, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $activity = $projectActivityRepository->findOneBy(['id' => $request->attributes->get('activity')]);
         $this->denyAccessUnlessGranted('activity_progress_delete');
         if ($this->isCsrfTokenValid('delete' . $activityProgress->getId(), $request->request->get('_token'))) {

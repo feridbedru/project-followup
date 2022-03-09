@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasher;
 use Symfony\Component\Mailer\MailerInterface;
 use App\Services\MailerService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -34,7 +34,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, UserPasswordEncoderInterface $userPasswordEncoderInterface, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, EntityManagerInterface $em): Response
+    public function new(Request $request, UserPasswordHasher $userPasswordHasher, MailerInterface $mailer, MailerService $mservice, EmailTemplateRepository $emailTemplateRepository, EntityManagerInterface $em): Response
     {
         $this->denyAccessUnlessGranted('user_create');
         $user = new User();
@@ -49,7 +49,7 @@ class UserController extends AbstractController
             $user->setRoles(['ROLE_USER']);
             $user->setUsername($request->request->get('user')["email"]);
             $password = $this->randomPassword();
-            $user->setPassword($userPasswordEncoderInterface->encodePassword($user, $password));
+            $user->setPassword($userPasswordHasher->hashPassword($user, $password));
             $em->persist($user);
             $em->flush();
 
@@ -126,7 +126,7 @@ class UserController extends AbstractController
     /**
      * @Route("/changePassword", name="change_password", methods={"POST","GET"})
      */
-    public function changePassword(Request $request, UserPasswordEncoderInterface $userPasswordEncoderInterface, EntityManagerInterface $em)
+    public function changePassword(Request $request, userPasswordHasher $userPasswordHasher, EntityManagerInterface $em)
     {
         $user = $this->getUser();
         $form = $this->createFormBuilder()
@@ -145,9 +145,9 @@ class UserController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $this->getUser();
-            if ($userPasswordEncoderInterface->isPasswordValid($user, $form->getData()['oldPassword'])) {
+            if ($userPasswordHasher->isPasswordValid($user, $form->getData()['oldPassword'])) {
                 $password = $form->getData()['newPassword'];
-                $user->setPassword($userPasswordEncoderInterface->encodePassword($user, $password));
+                $user->setPassword($userPasswordHasher->hashPassword($user, $password));
                 if (!$user->getLastLogin())
                     $user->setLastLogin(new \DateTime());
                 $em->flush();

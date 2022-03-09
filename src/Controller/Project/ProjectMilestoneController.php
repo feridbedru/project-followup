@@ -12,14 +12,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 #[Route('/project/{project}/milestones')]
 class ProjectMilestoneController extends AbstractController
 {
     #[Route('/', name: 'project_milestone_index', methods: ['GET', 'POST'])]
-    public function index(ProjectMilestoneRepository $projectMilestoneRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ProjectMilestoneRepository $projectMilestoneRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $milestones = $projectMilestoneRepository->findBy(['project' => $project]);
         $sum = array();
         foreach ($milestones as $milestone) {
@@ -94,10 +96,11 @@ class ProjectMilestoneController extends AbstractController
     }
 
     #[Route('/{id}', name: 'project_milestone_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectRepository $projectRepository, ProjectMilestone $projectMilestone): Response
+    public function delete(Request $request, ProjectRepository $projectRepository, ProjectMilestone $projectMilestone, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('project_milestone_delete');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if ($this->isCsrfTokenValid('delete' . $projectMilestone->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectMilestone);

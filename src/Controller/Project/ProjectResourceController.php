@@ -12,14 +12,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 #[Route('/project/{project}/resources')]
 class ProjectResourceController extends AbstractController
 {
     #[Route('/', name: 'project_resource_index', methods: ['GET', 'POST'])]
-    public function index(ProjectResourceRepository $projectResourceRepository, PaginatorInterface $paginator, Request $request, ProjectRepository $projectRepository): Response
+    public function index(ProjectResourceRepository $projectResourceRepository, PaginatorInterface $paginator, Request $request, ProjectRepository $projectRepository, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if($request->request->get('edit')){
             $id = $request->request->get('edit');
             $projectResource = $projectResourceRepository->findOneBy(['id'=>$id]);
@@ -90,10 +92,11 @@ class ProjectResourceController extends AbstractController
     }
 
     #[Route('/{id}', name: 'project_resource_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectResource $projectResource, ProjectRepository $projectRepository): Response
+    public function delete(Request $request, ProjectResource $projectResource, ProjectRepository $projectRepository, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('project_resource_delete');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if ($this->isCsrfTokenValid('delete'.$projectResource->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectResource);

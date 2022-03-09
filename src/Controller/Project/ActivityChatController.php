@@ -13,14 +13,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 #[Route('project/{project}/topic/{topic}/collaboration')]
 class ActivityChatController extends AbstractController
 {
     #[Route('/', name: 'activity_chat_index', methods: ['GET', 'POST'])]
-    public function index(ActivityChatRepository $activityChatRepository, ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ActivityChatRepository $activityChatRepository, ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $topic = $projectCollaborationTopicRepository->findOneBy(['id' => $request->attributes->get('topic')]);
         if($request->request->get('edit')){
             
@@ -92,10 +94,11 @@ class ActivityChatController extends AbstractController
     }
 
     #[Route('/{id}', name: 'activity_chat_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, ActivityChat $activityChat): Response
+    public function delete(Request $request, ProjectCollaborationTopicRepository $projectCollaborationTopicRepository, ProjectRepository $projectRepository, ActivityChat $activityChat, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('activity_chat_delete');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $topic = $projectCollaborationTopicRepository->findOneBy(['id' => $request->attributes->get('topic')]);
         if ($this->isCsrfTokenValid('delete'.$activityChat->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();

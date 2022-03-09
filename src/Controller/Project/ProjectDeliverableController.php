@@ -12,14 +12,16 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Knp\Component\Pager\PaginatorInterface;
+use App\Services\ProjectAccessService;
 
 #[Route('/project/{project}/deliverable')]
 class ProjectDeliverableController extends AbstractController
 {
     #[Route('/', name: 'project_deliverable_index', methods: ['GET', 'POST'])]
-    public function index(ProjectDeliverableRepository $projectDeliverableRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request): Response
+    public function index(ProjectDeliverableRepository $projectDeliverableRepository, ProjectRepository $projectRepository, PaginatorInterface $paginator, Request $request, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $deliverables = $projectDeliverableRepository->findBy(['project' => $project]);
         $sum = array();
         foreach ($deliverables as $deliverable) {
@@ -97,10 +99,11 @@ class ProjectDeliverableController extends AbstractController
     }
 
     #[Route('/{id}', name: 'project_deliverable_delete', methods: ['POST'])]
-    public function delete(Request $request, ProjectDeliverable $projectDeliverable, ProjectRepository $projectRepository): Response
+    public function delete(Request $request, ProjectDeliverable $projectDeliverable, ProjectRepository $projectRepository, ProjectAccessService $projectAccessService): Response
     {
         $this->denyAccessUnlessGranted('project_deliverable_delete');
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         if ($this->isCsrfTokenValid('delete' . $projectDeliverable->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($projectDeliverable);
@@ -115,14 +118,14 @@ class ProjectDeliverableController extends AbstractController
     }
 
     #[Route('/{id}/deliverydate', name: 'project_deliverable_delivery_date', methods: ['POST'])]
-    public function deliverydate(Request $request, ProjectDeliverableRepository $projectDeliverableRepository, ProjectRepository $projectRepository): Response
+    public function deliverydate(Request $request, ProjectDeliverableRepository $projectDeliverableRepository, ProjectRepository $projectRepository, ProjectAccessService $projectAccessService): Response
     {
         $project = $projectRepository->findOneBy(['id' => $request->attributes->get('project')]);
+        $projectAccessService->canUserAccessProject($this->getUser(), $project);
         $id = $request->attributes->get("id");
         $date = $request->request->get("delivered_date");
         $delivered_date = new \DateTime($date);
         $entityManager = $this->getDoctrine()->getManager();
-        // dd($delivered_date);
         $projectDeliverable = $projectDeliverableRepository->findOneBy(['id' => $id]);
         $projectDeliverable->setDeliveryDate($delivered_date);
         $entityManager->persist($projectDeliverable);
